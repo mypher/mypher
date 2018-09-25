@@ -4,25 +4,36 @@
 # SPDX-License-Identifier: LGPL-3.0+
 #
 
-# 1 : path to envfile
-# 2 : true if initialize blockchain
+# 1 : envfile name
 
-if [ $# -lt 1 ]; then
-	echo "bash start.sh [path to envfile] [true if initialize blockchain]"
+# check parameters
+if [ $# -ne 1 ]; then
+	echo "bash start.sh [envfile name] "
 	exit
 fi
-export $(grep -v '^#' $1 | xargs)
+
+# load enviroment valiable
+ENVFILE=envfile/$1.env
+export $(grep -v '^#' ${ENVFILE} | xargs)
 
 PWD=$(cd $(dirname $0) && pwd)
 SETTING=${PWD}/tmp/${UNAME}
 
+#TODO: erase in the future
+# generate key for the account
+if [ ! -e ${SETTING}/data/keys/${UNAME}.user ]; then
+	cleos create key -f ${SETTING}/data/keys/${UNAME}.user
+	cat ${SETTING}/data/keys/${UNAME}.user
+	read -p "Please register the account and enter key"
+fi
+
+# start docker
 docker run \
 	--rm \
-	--name mypher${UNAME} \
+	--name mypher_${UNAME} \
 	-p ${PUBLISH_PORT_HTTP}:8888 \
 	-p ${PUBLISH_PORT_P2P}:9876 \
-	--env-file $1 \
-	-e INIT=$2 \
+	--env-file ${ENVFILE} \
 	-v ${SETTING}/wallet:/root/eosio-wallet \
 	-v ${PWD}/contracts:/contracts \
 	-v ${PWD}/scripts:/scripts \

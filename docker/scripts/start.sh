@@ -4,14 +4,15 @@
 # SPDX-License-Identifier: LGPL-3.0+
 #
 
+source /mnt/dev/config/mypher_config.ini
+
 sleep 1
 mongod &
 sleep 15
 
 function prepare_account_key() {
-	local PA_PRI=`cat /keys/$1.user | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+	PA_PRI=`cat /keys/$1.user | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
 	PA_PUB=`cat /keys/$1.user | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
-	cleos wallet keys
 	if [ `cleos wallet keys | grep ${PA_PUB} | wc -l` -eq 0 ]; then
 		cleos wallet import --private-key ${PA_PRI}
 	fi
@@ -26,7 +27,7 @@ function terminate() {
 
 
 echo "###############################"
-echo "# prepare wallet"
+echo "# prepare default wallet"
 echo "###############################"
 if [ ! -e /keys/wallet.txt ]; then
 	cleos wallet create -f /keys/wallet.txt
@@ -44,76 +45,80 @@ if [ -z "${UNAME}" ]; then
 	echo "name must be set"
 	terminate
 fi
-if [ ! -e /keys/eosio.user ]; then
-	echo "eosio.io is not exists"
-	terminate
+
+echo "###############################"
+echo "# prepare accounts"
+echo "###############################"
+if [ -n "$GENESIS" ]; then
+	# TODO : make below process manually
+	echo " - eosio"
+	prepare_account_key eosio
+	KEY_PR_PRI=${PA_PRI}
+	KEY_PR_PUB=${PA_PUB}
+	echo " - mypher@owner"
+	prepare_account_key mypher_owner
+	KEY_MYPHER_OWNER=${PA_PUB}
+	echo " - mypher@active"
+	prepare_account_key mypher_active
+	KEY_MYPHER_ACTIVE=${PA_PUB}
 fi
 
 echo "###############################"
-echo "# prepare eosio account"
+echo "# prepare config.ini"
 echo "###############################"
-prepare_account_key eosio
+cp -f /mnt/dev/config/base_config.ini /mnt/dev/config/config.ini
 
 echo "###############################"
 echo "# start node"
 echo "###############################"
 if [ -n "$GENESIS" ]; then
-	nodeos --enable-stale-production \
-		   --producer-name eosio \
-		   --plugin eosio::chain_api_plugin \
-		   --plugin eosio::net_api_plugin \
-		   --plugin eosio::mongo_db_plugin \
-		   --plugin eosio::producer_plugin \
-		   --plugin eosio::history_plugin \
-		   --plugin eosio::history_api_plugin \
-		   --plugin eosio::http_plugin \
-		   -d /mnt/dev/data \
+	echo "signature-provider = ${KEY_PR_PUB}=KEY:${KEY_PR_PRI}" >> /mnt/dev/config/config.ini
+	nodeos --producer-name eosio \
 		   --config-dir /mnt/dev/config \
-		   --http-server-address=0.0.0.0:8888 \
-		   --access-control-allow-origin=* \
-		   --http-validate-host=false \
-		   --mongodb-uri=mongodb://127.0.0.1:27017/mypher \
-		   --contracts-console &
+		   -d /mnt/dev/data &
 	sleep 10
 	# prepare eosio.bios contract
-	if [ -n "${INIT}" ]; then
-		cleos set contract eosio /contracts/eosio.bios 
+	eosiohash=`cleos get code eosio`
+	if [[ ${eosiohash:11} =~ ^[0]*$ ]]; then
+		echo "###############################"
+		echo "# deply eosio.bios to blockchain"
+		echo "###############################"
+		cleos set contract eosio /contracts/eosio.bios
+	else
+		echo "eosio.bios is already deployed....."
+	fi
+	#prepare mypher account
+	if [ -z "`cleos get account mypher`" ]; then
+		echo "account mypher is not found..."
+		cleos create account eosio mypher ${KEY_MYPHER_OWNER} ${KEY_MYPHER_ACTIVE}
+	else
+		echo "account mypher is found..."
 	fi
 else
+	echo "###############################"
+	echo "# prepare ${UNAME} account"
+	echo "###############################"
 	if [ ! -e /keys/${UNAME}.user ]; then
-		cleos create key --file /keys/${UNAME}.user
-		prepare_account_key ${UNAME}
-		cleos -u ${CONNECT_TO} create account eosio ${UNAME} ${PA_PUB} ${PA_PUB}
-		if [ $? -ne 0 ]; then
-			echo "failed to create acount : ${UNAME}"
-			terminate
-		fi
-	else
-		prepare_account_key ${UNAME}
+		echo "key pair for ${UNAME} not found.."
+		terminate
 	fi 
+	echo " - ${UNAME}"
+	prepare_account_key ${UNAME}
+	KEY_PR_PRI=${PA_PRI}
+	KEY_PR_PUB=${PA_PUB}
+	
+	# TODO:check and register account if not found with genesis node
+	
+	echo "###############################"
+	echo "# get p2p list from genesis node"
+	echo "###############################"
+	# TODO: get lists from genesis node
+	cat /mnt/dev/config/p2plist.ini >> /mnt/dev/config/config.ini
+
+	echo "signature-provider = ${KEY_PR_PUB}=KEY:${KEY_PR_PRI}" >> /mnt/dev/config/config.ini
 	nodeos --producer-name ${UNAME} \
-		   --plugin eosio::chain_api_plugin \
-		   --plugin eosio::net_api_plugin \
-		   --plugin eosio::mongo_db_plugin \
-		   --plugin eosio::producer_plugin \
-		   --plugin eosio::history_plugin \
-		   --plugin eosio::history_api_plugin \
-		   --plugin eosio::http_plugin \
-		   -d /mnt/dev/data \
 		   --config-dir /mnt/dev/config \
-		   --http-server-address=0.0.0.0:8888 \
-		   --access-control-allow-origin=* \
-		   --http-validate-host=false \
-		   --p2p-peer-address ${CONNECT_P2P_TO} \
-		   --mongodb-uri=mongodb://127.0.0.1:27017/mypher \
-		   --contracts-console &
-	sleep 10
-	# set producer
-	if [ -n "${INIT}" ]; then
-		cleos push action eosio setprods \
-			"{ \"schedule\": [{\"producer_name\": \"${UNAME}\",\"block_signing_key\": \"${PA_PUB}\"}]}" \
-			-p eosio@active
-	fi
+		   -d /mnt/dev/data &
 fi 
 if [ $? -ne 0 ]; then
 	echo "nodeos is terminated."

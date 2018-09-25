@@ -18,6 +18,16 @@ mkdir ${BASE}/data/config
 mkdir ${BASE}/data/db
 mkdir ${BASE}/data/eosdata
 mkdir ${BASE}/data/keys
-mkdir ${BASE}/data/woek
-cp tmp/eosio.user ${BASE}/data/keys/
-
+mkdir ${BASE}/data/work
+cp nodeenv/base_config.ini ${BASE}/data/config/
+cp nodeenv/mypher_config.ini ${BASE}/data/config/
+if [ "$1" = "eosio" ]; then
+	cp nodeenv/eosio.user ${BASE}/data/keys/
+	cp nodeenv/mypher_owner.user ${BASE}/data/keys/
+	cp nodeenv/mypher_active.user ${BASE}/data/keys/
+	echo "export GENESIS=true" >> ${BASE}/data/config/mypher_config.ini
+	echo "enable-stale-production = true" >> ${BASE}/data/config/base_config.ini
+else
+	cp nodeenv/p2plist.ini ${BASE}/data/config/
+	echo "enable-stale-production = false" >> ${BASE}/data/config/base_config.ini
+fi
