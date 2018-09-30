@@ -8,7 +8,61 @@ source /mnt/dev/config/mypher_config.ini
 
 sleep 1
 mongod &
-sleep 15
+sleep 12
+pushd /app/source
+node main.js &
+popd
+
+function create_account() {
+	if [ -z "`cleos -u ${NODE_URL} get account $1`" ]; then
+		echo "create account:$1..."
+		cleos create key --file /keys/$1.owner
+		cleos create key --file /keys/$1.active
+		local OW_PRI=`cat /keys/$1.owner | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		local OW_PUB=`cat /keys/$1.owner | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+		AC_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		AC_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+		cleos wallet import --private-key ${OW_PRI}
+		cleos wallet import --private-key ${AC_PRI}
+		if [ -z "$2" ]; then
+			cleos -u ${NODE_URL} create account eosio $1 ${OW_PUB} ${AC_PUB}
+			if [ $? -ne 0 ]; then
+				echo "failed to create account $1"
+				terminate
+			fi
+		else
+			local ret=`curl -d '{"jsonrpc":"2.0","id":1,"method":"system.reg_account","params":[{"id":"'$1'","owner":"'${OW_PUB}'", "active":"'${AC_PUB}'"}]}' ${GENESIS_APP}`
+			if [ -n "`echo ${ret} | grep 'error'`" ]; then
+				echo "${ret}"
+				terminate
+			fi
+		fi
+	else
+		echo "account:$1 is already created..."
+		AC_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		AC_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+	fi
+}
+
+function create_contract() {
+	local hash=`cleos -u ${NODE_URL} get code $1`
+	if [[ ${hash:11} =~ ^[0]*$ ]]; then
+		echo "deply contract:$1 to blockchain"
+		cleos -u ${NODE_URL} set contract $1 /contracts/$1
+	else
+		echo "contract:$1 is already deployed....."
+	fi
+}
+
+function create_contract2() {
+	local hash=`cleos -u ${NODE_URL} get code $1`
+	if [[ ${hash:11} =~ ^[0]*$ ]]; then
+		echo "deply contract:$1 to blockchain"
+		cleos -u ${NODE_URL} set contract $1 /contracts/$2
+	else
+		echo "contract:$1 is already deployed....."
+	fi
+}
 
 function prepare_account_key() {
 	PA_PRI=`cat /keys/$1.user | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
@@ -21,10 +75,10 @@ function prepare_account_key() {
 function terminate() {
 	ps ax | grep "nodeos" | grep -v grep | awk '{print $1}' | xargs kill
 	ps ax | grep "mongod" | grep -v grep | awk '{print $1}' | xargs kill
+	ps ax | grep "node" | grep -v grep | awk '{print $1}' | xargs kill
 	sleep 10
 	exit 1
 }
-
 
 echo "###############################"
 echo "# prepare default wallet"
@@ -47,23 +101,6 @@ if [ -z "${UNAME}" ]; then
 fi
 
 echo "###############################"
-echo "# prepare accounts"
-echo "###############################"
-if [ -n "$GENESIS" ]; then
-	# TODO : make below process manually
-	echo " - eosio"
-	prepare_account_key eosio
-	KEY_PR_PRI=${PA_PRI}
-	KEY_PR_PUB=${PA_PUB}
-	echo " - mypher@owner"
-	prepare_account_key mypher_owner
-	KEY_MYPHER_OWNER=${PA_PUB}
-	echo " - mypher@active"
-	prepare_account_key mypher_active
-	KEY_MYPHER_ACTIVE=${PA_PUB}
-fi
-
-echo "###############################"
 echo "# prepare config.ini"
 echo "###############################"
 cp -f /mnt/dev/config/base_config.ini /mnt/dev/config/config.ini
@@ -72,41 +109,38 @@ echo "###############################"
 echo "# start node"
 echo "###############################"
 if [ -n "$GENESIS" ]; then
-	echo "signature-provider = ${KEY_PR_PUB}=KEY:${KEY_PR_PRI}" >> /mnt/dev/config/config.ini
+	NODE_URL="http://127.0.0.1:8888"
+	prepare_account_key eosio
+	echo "signature-provider = ${PA_PUB}=KEY:${PA_PRI}" >> /mnt/dev/config/config.ini
 	nodeos --producer-name eosio \
 		   --config-dir /mnt/dev/config \
+		   --max-transaction-time=1000 \
 		   -d /mnt/dev/data &
-	sleep 10
-	# prepare eosio.bios contract
-	eosiohash=`cleos get code eosio`
-	if [[ ${eosiohash:11} =~ ^[0]*$ ]]; then
-		echo "###############################"
-		echo "# deply eosio.bios to blockchain"
-		echo "###############################"
-		cleos set contract eosio /contracts/eosio.bios
-	else
-		echo "eosio.bios is already deployed....."
-	fi
-	#prepare mypher account
-	if [ -z "`cleos get account mypher`" ]; then
-		echo "account mypher is not found..."
-		cleos create account eosio mypher ${KEY_MYPHER_OWNER} ${KEY_MYPHER_ACTIVE}
-	else
-		echo "account mypher is found..."
-	fi
+	sleep 8
+	create_account eosio.msig
+	create_account eosio.sudo
+	create_account eosio.token
+	create_account eosio.bpay
+	create_account eosio.names
+	create_account eosio.ram
+	create_account eosio.ramfee
+	create_account eosio.saving
+	create_account eosio.stake
+	create_account eosio.vpay
+	create_account mypher
+	sleep 1
+	create_contract eosio.msig
+	create_contract eosio.sudo
+	create_contract eosio.token
+	cleos push action eosio.token create '[ "eosio", "10000000000.0000 SYS" ]' -p eosio.token@active
+	cleos push action eosio.token issue '[ "eosio", "1000000000.0000 SYS", "memo" ]' -p eosio@active
+	sleep 1
+	create_contract2 eosio eosio.system
+	create_contract mypher
+	sleep 1
+	cleos push action eosio setpriv '["eosio.msig", 1]' -p eosio@active
 else
-	echo "###############################"
-	echo "# prepare ${UNAME} account"
-	echo "###############################"
-	if [ ! -e /keys/${UNAME}.user ]; then
-		echo "key pair for ${UNAME} not found.."
-		terminate
-	fi 
-	echo " - ${UNAME}"
-	prepare_account_key ${UNAME}
-	KEY_PR_PRI=${PA_PRI}
-	KEY_PR_PUB=${PA_PUB}
-	
+	NODE_URL=${GENESIS_URL}
 	# TODO:check and register account if not found with genesis node
 	
 	echo "###############################"
@@ -115,8 +149,17 @@ else
 	# TODO: get lists from genesis node
 	cat /mnt/dev/config/p2plist.ini >> /mnt/dev/config/config.ini
 
-	echo "signature-provider = ${KEY_PR_PUB}=KEY:${KEY_PR_PRI}" >> /mnt/dev/config/config.ini
+	create_account ${UNAME} 1
+	sleep 1
+	echo "register ${UNAME} as producer..."
+	if [ -z "`cleos -u ${NODE_URL} system listproducers|grep ${AC_PUB}`" ]; then
+		cleos -u ${NODE_URL} system regproducer ${UNAME} ${AC_PUB}
+		sleep 1
+	fi
+	echo "signature-provider = ${AC_PUB}=KEY:${AC_PRI}" >> /mnt/dev/config/config.ini
 	nodeos --producer-name ${UNAME} \
+		   --enable-stale-production \
+		   --private-key '[ "${AC_PUB}","${AC_PRI}" ]' \
 		   --config-dir /mnt/dev/config \
 		   -d /mnt/dev/data &
 fi 

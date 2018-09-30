@@ -1,0 +1,20 @@
+{
+  "name": "mypher",
+  "version": "1.0.0",
+  "main": "sv.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kenmazsyma",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mypher/mypher/app/source"
+  },
+  "description": "",
+  "dependencies": {
+    "config": "^2.0.1",
+    "js-yaml": "^3.12.0",
+    "log4js": "^3.0.5"
+  }
+}

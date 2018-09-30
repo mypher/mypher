@@ -1,0 +1,20 @@
+DBEnv:
+    user: 'mypher'
+    pass: ''
+    host: 'localhost'
+    port: 5432
+    dbname: 'mypher'
+WebEnv:
+    url: '0.0.0.0'
+    port: 8800
+Logger:
+    appenders:
+        out:
+            type: 'console'
+            layout:
+                type: 'basic'
+    categories:
+        default:
+            appenders: 
+                - out
+            level: 'debug'
