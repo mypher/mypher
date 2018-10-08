@@ -53,8 +53,9 @@ function isbin(typ) {
 
 
 function request(req, res) {
-	let typ = getType(req.url);
-	if (typ==='') {
+	let url = req.url.split('?');
+	let typ = getType(url[0]);
+	if (req.headers['content-type']==='application/json') {
 		return callApi(req, res);
 	}
 	let write = (err ,data) => {
@@ -65,9 +66,9 @@ function request(req, res) {
 		res.end(data);
 	}
 	if (isbin(typ) === true) {
-		fs.readFile(__dirname + '/static' + req.url, write);
+		fs.readFile(__dirname + '/static' + url[0], write);
 	} else {
-		fs.readFile(__dirname + '/static' + req.url, 'utf-8', write);
+		fs.readFile(__dirname + '/static' + url[0], 'utf-8', write);
 	}
 }
 

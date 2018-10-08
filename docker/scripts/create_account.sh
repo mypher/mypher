@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: LGPL-3.0+
 #
 
-cleos system newaccount eosio --transfer $1 $2 --stake-net "100000.0000 SYS" --stake-cpu "100000.0000 SYS" --buy-ram-kbytes 1
+cleos system newaccount eosio --transfer $1 $2 --stake-net "4.0000 SYS" --stake-cpu "5.0000 SYS" --buy-ram-kbytes 8

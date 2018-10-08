@@ -1,0 +1,12 @@
+/*
+    Copyright (C) 2018 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+*/
+.footer {
+	position:fixed;
+	bottom:0;
+	border-top:2px solid #30b0f0;
+	background-color:#fff;
+	color:#30b0f0;
+	width:100%;
+}
