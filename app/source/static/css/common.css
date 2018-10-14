@@ -27,7 +27,7 @@
 }
 
 .row > .name {
-	color:#30b0f0;
+	color:#28c;
 }
 .row > label {
 	word-wrap:break-word;
@@ -75,4 +75,28 @@ td {
 
 .right {
 	text-align:right;
+}
+
+/*
+.tag {
+	float: left;
+	background-color: #fe8;
+	margin: 4px;
+	padding: 8px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	cursor: pointer;
+}*/
+
+.tag {
+	float: left;
+	padding: 0px 22px 0px 22px;
+	background: url(../img/glyphicons-66-tag2.png);
+	background-repeat: no-repeat;
+	background-position: left;
+	color: #28c;
+	min-height: 24px;
+	background-size: 16px 16px;
+	cursor: pointer;
 }

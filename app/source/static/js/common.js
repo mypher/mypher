@@ -7,8 +7,10 @@ MODE = {
 
 System = {
 	loadModule : name => {
-		$('head link:last').after('<link rel="stylesheet" href="css/' + name + '.css">');
-		$.getScript({url : '/js/' + name + '.js', async : false });
+		if ($('head link[href="css/' + name + '.css"]').length===0) {
+			$('head link:last').after('<link rel="stylesheet" href="css/' + name + '.css">');
+			$.getScript({url : '/js/' + name + '.js', async : false });
+		}
 	}
 };
 
@@ -34,7 +36,7 @@ Rpc = {
 		return Util.promise((resolve, reject) => {
 			$.ajax({
 				type: "POST",
-				url: 'http://' + location.host + '/RPC',
+				url: 'http://' + location.host,
 				data: JSON.stringify(data),
 				dataType: 'json',
 				contentType: "application/json"
@@ -274,10 +276,18 @@ let Util = {
 					var elm = l.eq(i);
 					elm.text(_L(elm.attr('ltext')));
 				}
-				l = div.find('div[btnproc]');
+				l = div.find('div[proc]');
 				for ( var i=0; i<l.length; i++ ) {
-					var elm = l.eq(i);
-					Util.initButton(elm.find('button'), btns[elm.attr('btnproc')]);
+					let elm = l.eq(i);
+					let type = elm.attr('ctrl');
+					switch (type) {
+					case 'tag':
+						Util.initTag(elm, mode, btns[elm.attr('proc')]);
+						break;
+					default:
+						Util.initButton(elm.find('button'), btns[elm.attr('proc')]);
+						break;
+					}
 				}
 				resolve();
 			});
@@ -298,6 +308,10 @@ let Util = {
 				elm.click(arr[i].click);
 			}
 		}
+	},
+	initTag : function(tag, mode, proc) {
+		let elm = tag.get(0);
+		elm.obj = new Tag(tag.eq(0), mode, proc);
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
@@ -330,6 +344,16 @@ let Util = {
 			elms = div.find('select[field=' + i + ']');
 			if (elms.length>0) {
 				elms.eq(0).val(dd).change();
+				continue;
+			}
+			elms = div.find('div[field=' + i + ']');
+			if (elms.length>0) {
+				let ctrl = elms.eq(0).attr('ctrl');
+				switch (ctrl) {
+				case 'tag':
+					elms.get(0).obj.set(dd);
+					break;
+				}
 				continue;
 			}
 			elms = div.find('input[type="radio"][field=' + i + ']');
@@ -391,5 +415,33 @@ let Util = {
 					(typeof obj.style === "object") &&
 					(typeof obj.ownerDocument ==="object");
 		}
+	}
+};
+
+
+function Tag(div, mode, proc) {
+	this.div = div;
+	this.mode = mode;
+	this.proc = proc&&proc.click;
+	let self = this;
+	div.click(() => {
+		if (self.mode==!MODE.REF) {
+			self.proc&&self.proc();
+		}
+	});
+}
+
+Tag.prototype = {
+	set : function(data) {
+		if (data instanceof Array) {
+			this.data = data;
+		} else if ( typeof data === 'string' ) {
+			this.data = [data];
+		}
+		this.div.empty();
+		this.data.forEach(txt => {
+			let elm = $('<div>').addClass('tag').text(txt);
+			this.div.append(elm);
+		});
 	}
 };

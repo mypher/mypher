@@ -90,6 +90,9 @@ var $L = {
 		'KEY' : 'キー',
 		'LOCKSTATE' : 'ロック状態',
 		'OPEN_WALLET' : '開く',
+		'BROWSE' : '閲覧',
+		'USER' : 'ユーザー',
+		'ATTRIBUTES' : '属性',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

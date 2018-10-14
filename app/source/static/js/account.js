@@ -71,26 +71,45 @@ Account = {
 		Account.div = null;
 	},
 
+	hasKey : key => {
+		return Account.data.keys[key] ? true : false;
+	},
+
 	makeContent : async () => {
 		await Account.get();
 		let div = Account.div;
 		if (!div) return;
+		let userbtn = [];
+		let key = Account.getActiveKey();
+		if (key) {
+			userbtn.push({
+				text : 'BROWSE',
+				click : () => {
+					UI.closePopup();
+					let user = new User({
+						div : $('#main'),
+						name : Account.user
+					});
+					History.run(_L('USER'), user);
+				}
+			});
+		}
 		let ret = await Util.load(div, 'parts/account.html', MODE.REF, {
 			button : [{
 				text : 'BACK',
 				click : () => {
 					Account.closePopup();
 				}
-			}]
+			}],
+			user : userbtn
 		});
-		let key = Account.getActiveKey();
 		Util.setData(div, {
 			account : Account.user,
 			account_key : key
 		});
 		if (key) {
 			let name = '';
-			if (Account.data.keys[key]) {
+			if (Account.hasKey(key)) {
 				name = 'unlockmark';
 			} else {
 				name = 'lockmark';

@@ -21,3 +21,8 @@ RUN apt-get install -y curl
 RUN n stable
 RUN ln -sf /usr/local/bin/node /usr/bin/node
 RUN apt-get purge -y nodejs npm
+RUN cd ~ && \
+    curl -O https://dist.ipfs.io/go-ipfs/v0.4.17/go-ipfs_v0.4.17_linux-386.tar.gz && \
+	tar xvfz go-ipfs_v0.4.17_linux-386.tar.gz && \
+    cd go-ipfs && \
+    ./install.sh

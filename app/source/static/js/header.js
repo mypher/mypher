@@ -17,7 +17,7 @@ Header = {
 					reject();
 				}
 				var title = $(self.div.find('span[name="title"]')[0]);
-				//History.init(title);
+				History.init(title);
 				self.refresh();
 				resolve();
 			});
@@ -59,6 +59,13 @@ Header = {
 		});
 		addItem(_L('ACCOUNT'), function() {
 			Account.popup();
+		});
+		addItem('TEST', function() {
+			let user = new User({
+				div : $('#main'),
+				name : 'testuser'
+			});
+			History.run(_L('USER'), user);
 		});
 		// loginform
 		/*if (UserManager.isLogin()) {

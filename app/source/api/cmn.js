@@ -5,9 +5,10 @@
 
 'use_strict'
 
-let db = require('../db/db');
-let dcipher = require('../db/cipher');
-let vcipher = require('../validator/cipher');
+//let db = require('../db/db');
+//let dcipher = require('../db/cipher');
+//let vcipher = require('../validator/cipher');
+const childProcess = require('child_process');
 
 let an = /^[abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_]*$/;
 module.exports = {
@@ -125,7 +126,7 @@ module.exports = {
 		return p;
 	},
 
-	chkRule : async (req, auth) => {
+/*	chkRule : async (req, auth) => {
 		try {
 			auth = auth.split(',');
 			let cnt = await db.one(
@@ -136,7 +137,7 @@ module.exports = {
 		} catch (e) {
 			return false;
 		}
-	},
+	},*/
 	chkMember : async (list, tx) => {
 		try {
 			tx = tx ? tx : db;
@@ -207,7 +208,7 @@ module.exports = {
 		return (typeof(v)==='string'&&v.length<=max&&v.length>=min);
 	},
 
-	isCipherEditable : async (sender, key) => {
+/*	isCipherEditable : async (sender, key) => {
 		let response = {};
 		try {
 			await db.tx(async t=>{
@@ -233,15 +234,25 @@ module.exports = {
 			log.error('errored in _add : ' + e);
 			throw 'system error';		
 		}	
-	},
+	},*/
 	compare : (p1, p2, names) => {
 		for (var i in names) {
 			if (p1[i]!==p2[i]) return false;
 		}
 		return true;
-	}
+	},
 
-	
+	cmd : async c => {
+		return new Promise(function(resolve, reject) {
+			childProcess.exec(c, (error, stdout, stderr) => {
+				if(error) {
+					log.error(stderr);
+					reject(stderr);
+				}
+				resolve(stdout);
+			});
+		})
+	}
 };
 
 var apicmn = module.exports;

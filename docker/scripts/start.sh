@@ -31,7 +31,7 @@ function create_account() {
 				terminate
 			fi
 		else
-			local ret=`curl -d '{"jsonrpc":"2.0","id":1,"method":"system.reg_account","params":[{"id":"'$1'","owner":"'${OW_PUB}'", "active":"'${AC_PUB}'"}]}' ${GENESIS_APP}`
+			local ret=`curl -H 'Content-Type:application/json' -d '{"jsonrpc":"2.0","id":1,"method":"system.reg_account","params":[{"id":"'$1'","owner":"'${OW_PUB}'", "active":"'${AC_PUB}'"}]}' ${GENESIS_APP}`
 			if [ -n "`echo ${ret} | grep 'error'`" ]; then
 				echo "${ret}"
 				terminate
@@ -106,6 +106,25 @@ echo "###############################"
 cp -f /mnt/dev/config/base_config.ini /mnt/dev/config/config.ini
 
 echo "###############################"
+echo "# start ipfs"
+echo "###############################"
+if [ ! -e ${IPFS_PATH}/config ]; then
+	ipfs init
+	cp /ipfs/swarm.key_ /ipfs/swarm.key
+	ipfs bootstrap rm --all
+	if [ -z "$GENESIS" ]; then
+		node /scripts/bootstrap.js ${GENESIS_APP}
+		if [ $? -ne 0 ]; then
+			echo "failed to set bootstrap lists to ipfs"
+			exit 1
+		fi
+	fi
+fi
+ipfs config Addresses.Gateway /ip4/0.0.0.0/tcp/7000
+ipfs config Addresses.API /ip4/0.0.0.0/tcp/7100
+ipfs daemon &
+
+echo "###############################"
 echo "# start node"
 echo "###############################"
 if [ -n "$GENESIS" ]; then
@@ -162,6 +181,7 @@ else
 		   --private-key '[ "${AC_PUB}","${AC_PRI}" ]' \
 		   --config-dir /mnt/dev/config \
 		   -d /mnt/dev/data &
+
 fi 
 if [ $? -ne 0 ]; then
 	echo "nodeos is terminated."

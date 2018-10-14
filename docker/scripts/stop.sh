@@ -6,3 +6,4 @@
 ps ax | grep "nodeos" | grep -v grep | awk '{print $1}' | xargs kill
 ps ax | grep "mongod" | grep -v grep | awk '{print $1}' | xargs kill
 ps ax | grep "node" | grep -v grep | awk '{print $1}' | xargs kill
+ps ax | grep "ipfs" | grep -v grep | awk '{print $1}' | xargs kill

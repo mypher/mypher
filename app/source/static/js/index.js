@@ -8,9 +8,9 @@ _ = {
 		System.loadModule('header');
 		System.loadModule('footer');
 		System.loadModule('account');
+		System.loadModule('user');
 		Header.init($('#head'));
 		Footer.init($('#tail'));
-		//UI.setMainDiv($('#main'));
 	}
 };
 

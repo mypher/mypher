@@ -5,85 +5,23 @@
 
 'use_strict'
 
-let log = require('../cmn/logger')('api.system');
+let log = require('../cmn/logger')('api.user');
 let cmn = require('./cmn');
 
 module.exports = {
-	reg_account : async d => {
-		let cmd = [ 
-			'cleos system newaccount eosio --transfer ',
-			d.id, d.active,
-			'--stake-net "', d.stakenet , ' SYS" --stake-cpu "', d.stakecpu, ' SYS" --buy-ram-kbytes ', d.buyram
-		].join(' ');
+	get : async d => {
 		try {
-			let ret = await cmn.cmd(cmd);
-			return ret;
-		} catch (e) {
-			throw e;
-		}
-	},
-	get_ipfs : async d => {
-		let cmd = 'ipfs id'
-		let ex = /(127\.0\.0\.1|::1)/;
-		try {
-			let ret = [];
-			let res = await cmn.cmd(cmd);
-			res = JSON.parse(res);
-			if (res.Addresses instanceof Array) {
-				res.Addresses.forEach(val => {
-					if (ex.exec(val)===null) {
-						ret.push(val);
-					}
-				});
-			}
-			return ret;
-		} catch (e) {
-			throw e;
-		}
-	},
-	get_state : async d => {
-		let cmd = 'cleos wallet list';
-		let ret = {
-			wallet : []
-		};
-		let res;
-		try {
-			if (d.wallet) {
-				cmd += ' -n ' + d.wallet;
-			}
-			res = await cmn.cmd(cmd);
-			res = res.split('\n');
-			res.shift();
-			res = res.join('\n');
-			let open = false;
-			JSON.parse(res).forEach(elm=> {
-				elm = elm.split(' ');
-				open = (elm.length===2) ? true : open;
-				ret.wallet.push({name:elm[0], open:(elm.length===2)});
-			});
-			ret.keys = {};
-			if (open) {
-				cmd = 'cleos wallet keys';
-				res = await cmn.cmd(cmd);
-				res = JSON.parse(res);
-				res.forEach(elm=>{
-					ret.keys[elm] = true;
-				});
-			}
-		} catch (e) {
-			throw e;
-		}
-		try {
+			let ret = {};
 			if (!cmn.isEmpty(d.user)) {
 				/*
 				cmd = 'cleos get account -j ' + d.user;
 				res = await cmdexec(cmd);
 				if (res!=='') {
-					ret.user = JSON.parse(res);
+					ret.sys = JSON.parse(res);
 				} else {
-					ret.user = null;
+					ret.sys = null;
 				}*/
-				ret.user = {
+				ret.sys = {
 					"account_name": "testuser",
 					"head_block_num": 10333,
 					"head_block_time": "2018-10-06T23:29:40.000",
@@ -158,27 +96,14 @@ module.exports = {
 					}
 				  };
 			}
+			ret.info = {
+				name : 'あああ',
+				desc : 'いいいいううううう',
+				tags : ['テスト１','テスト２','テスト３','テスト４']
+			};
+			return ret;
 		} catch (e) {
-			// not found
+			throw e;	
 		}
-		return ret;
-	},
-	open_wallet : async d => {
-		if (!d.name || !d.key) {
-			throw 'invalid params';
-		}
-		let cmd = [
-			'cleos wallet unlock -n',
-			d.name,
-			'--password',
-			d.key
-		].join(' ');
-		try {
-			let res = await cmdexec(cmd);
-			return 'SUCCESS'
-		} catch (e) {
-
-		}
-		return 'INVALID';
 	}
 };

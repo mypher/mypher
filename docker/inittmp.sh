@@ -19,6 +19,8 @@ mkdir ${BASE}/data/db
 mkdir ${BASE}/data/eosdata
 mkdir ${BASE}/data/keys
 mkdir ${BASE}/data/work
+mkdir ${BASE}/data/ipfs
+cp envfile/swarm.key ${BASE}/data/ipfs/swarm.key_
 cp nodeenv/base_config.ini ${BASE}/data/config/
 cp nodeenv/mypher_config.ini ${BASE}/data/config/
 if [ "$1" = "eosio" ]; then

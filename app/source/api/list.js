@@ -9,7 +9,8 @@ let log = require('../cmn/logger')('api.list');
 
 module.exports = {
 	cls : {
-		system : require('./system')
+		system : require('./system'),
+		user : require('./user')
 	},
 	call : async function (cn, mn, params, auth) {
 		log.debug('api.call:' + cn + ':' + mn);

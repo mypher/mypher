@@ -26,6 +26,8 @@ docker run \
 	-p ${PUBLISH_PORT_HTTP}:8888 \
 	-p ${PUBLISH_PORT_APP}:8800 \
 	-p ${PUBLISH_PORT_P2P}:9876 \
+	-p ${PUBLISH_PORT_IPFS_GATEWAY}:7000 \
+	-p ${PUBLISH_PORT_IPFS_API}:7100 \
 	--env-file ${ENVFILE} \
 	-v ${SETTING}/wallet:/root/eosio-wallet \
 	-v ${PWD}/contracts:/contracts \
@@ -36,6 +38,7 @@ docker run \
 	-v ${SETTING}/data/eosdata:/mnt/dev/data \
 	-v ${SETTING}/data/config:/mnt/dev/config \
 	-v ${SETTING}/data/keys:/keys \
+	-v ${SETTING}/data/ipfs:/ipfs \
 	mypher \
 	/bin/bash -c "/scripts/start.sh"
 
