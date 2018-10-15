@@ -126,6 +126,10 @@ module.exports = {
 		return p;
 	},
 
+	isArray : d => {
+		return d instanceof Array;
+	},
+
 /*	chkRule : async (req, auth) => {
 		try {
 			auth = auth.split(',');

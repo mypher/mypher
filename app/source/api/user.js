@@ -7,6 +7,7 @@
 
 let log = require('../cmn/logger')('api.user');
 let cmn = require('./cmn');
+let ipfs = require('../db/ipfs');
 
 module.exports = {
 	get : async d => {
@@ -96,14 +97,45 @@ module.exports = {
 					}
 				  };
 			}
-			ret.info = {
-				name : 'あああ',
-				desc : 'いいいいううううう',
-				tags : ['テスト１','テスト２','テスト３','テスト４']
-			};
-			return ret;
+			return new Promise((resolve, reject) => {
+				ipfs.files.cat('QmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi', (err,file) => {
+					if (err) {
+						reject(err);
+					}
+					ret.info = JSON.parse(file.toString('utf-8'));
+					resolve(ret);
+				});
+			});
 		} catch (e) {
 			throw e;	
+		}
+	},
+	update : async d => {
+		try {
+			if (!cmn.chkTypes([
+				{p:d.name, f:cmn.isEmpty, r:true},
+				{p:d.desc, f:cmn.isEmpty, r:true},
+				{p:d.tags, f:cmn.isArray}
+			])) {
+				response = {code:'INVALID_PARAM'};
+				return {code:'INVALID_PARAM'};
+			}
+
+			return new Promise( (resolve, reject) => {
+				let data = {
+					name : d.name,
+					desc : d.desc,
+					tags : d.tags
+				};
+				ipfs.files.add(Buffer.from(JSON.stringify(data), 'utf-8'), (err, res) => {
+					if (err) {
+						reject(err);
+					}
+					resolve(res);
+				});
+			});
+		} catch (e) {
+			throw e;
 		}
 	}
 };
