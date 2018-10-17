@@ -1,0 +1,169 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Sep 20 07:07:46 2018",
+    "version": "eosio::abi/1.0",
+    "structs": [
+        {
+            "name": "cipher",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "name"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "version",
+                    "type": "uint16"
+                },
+                {
+                    "name": "draftno",
+                    "type": "uint16"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "purpose",
+                    "type": "string"
+                },
+                {
+                    "name": "drule_req",
+                    "type": "uint16"
+                },
+                {
+                    "name": "drule_auth",
+                    "type": "string"
+                },
+                {
+                    "name": "approved",
+                    "type": "string"
+                },
+                {
+                    "name": "editor",
+                    "type": "string"
+                },
+                {
+                    "name": "formal",
+                    "type": "bool"
+                },
+                {
+                    "name": "ctime",
+                    "type": "uint64"
+                },
+                {
+                    "name": "utime",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "ccreate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "string"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "purpose",
+                    "type": "string"
+                },
+                {
+                    "name": "drule_req",
+                    "type": "uint16"
+                },
+                {
+                    "name": "drule_auth",
+                    "type": "string"
+                },
+                {
+                    "name": "editor",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "person",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                },
+				{
+					"name": "info",
+					"type": "char[]"
+				}
+            ]
+        },
+        {
+            "name": "pupdate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                },
+				{
+					"name": "info",
+					"type": "char[]"
+				}
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "ccreate",
+            "type": "ccreate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "pupdate",
+            "type": "pupdate",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "person",
+            "type": "person",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "cipher",
+            "type": "cipher",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "abi_extensions": []
+}

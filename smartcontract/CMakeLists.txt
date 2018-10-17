@@ -7,6 +7,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${EOSIO_CDT_ROOT}/lib/cmake)
 include(EosioWasmToolchain)
 
+configure_file(${CMAKE_SOURCE_DIR}/mypher.abi mypher.abi COPYONLY)
 set(CMAKE_MODULE_PATH "${EOSIO_CDT_ROOT}/lib")
 add_executable( mypher.wasm mypher.cpp person.cpp cipher.cpp validator/vcipher.cpp validator/vcommon.cpp common/conv.cpp)
 

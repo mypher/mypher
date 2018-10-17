@@ -7,6 +7,7 @@
 
 let log = require('../cmn/logger')('api.system');
 let cmn = require('./cmn');
+let eos = require('../db/eos');
 
 module.exports = {
 	reg_account : async d => {
@@ -70,6 +71,7 @@ module.exports = {
 					ret.keys[elm] = true;
 				});
 			}
+			eos.refresh();
 		} catch (e) {
 			throw e;
 		}

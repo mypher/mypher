@@ -12,20 +12,30 @@ Person::Person(account_name self) {
 	owner = self;
 }
 
-void Person::pcreate(const string& name, const string& profile) {
-	uint64_t target = string_to_name(name.c_str());
-	// chkec if already registered
-	eosio_assert(vcommon::isExist(owner, target), MES_ALREADY_REGISTERED);
-	uint64_t id = N(person);
-	uint64_t v = string_to_name(name.c_str());
-	require_auth(permission_level{target, N(owner)});
+void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::vector<char>& info) {
+	//require_auth(permission_level{id, N(owner)});
+	require_auth(id);
 
-	data d(owner, id);
-	d.emplace(target, [&](auto& dd) {
-		dd.id = target;
-		dd.name = name;
-		dd.profile = profile;
-	});
+	data d(owner, owner);
+	// search the target data
+	auto to = d.find(id);
+	// if data is not registered
+	if (to == d.end()) {
+		// register the attributes
+		d.emplace(id, [&](auto& dd) {
+			dd.id = id;
+			dd.name = name;
+			dd.tags = tags;
+			dd.info = info;
+		});
+	} else {
+		// update the attributes
+		d.modify(to, id, [&](auto& dd) {
+			dd.name = name;
+			dd.tags = tags;
+			dd.info = info;
+		});	
+	}
 }
 
 } // mypher

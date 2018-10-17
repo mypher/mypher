@@ -30,18 +30,19 @@ public:
 	 * @brief information of person
 	 */
 	struct [[eosio::table]] person {
-		uint64_t id;
+		account_name id;
 		string name;
-		string profile;
+		std::vector<std::string> tags;
+		std::vector<char> info;
 
 		auto primary_key() const { return id; }
 
-		EOSLIB_SERIALIZE( person, (id)(name)(profile) )
+		EOSLIB_SERIALIZE( person, (id)(name)(tags)(info) )
 	};
 	/**
 	 * @brief the definition of the table for "person"
 	 */
-	typedef eosio::multi_index< N(person), person> data;
+	typedef eosio::multi_index<N(person), person> data;
 	account_name owner;
 	Person(account_name self);
 
@@ -49,7 +50,7 @@ public:
 	 * @brief create new person
 	 */
 	[[eosio::action]]
-	void pcreate(const string& name, const string& profile);
+	void pupdate(const account_name id, const std::string& name, const std::vector<std::string>& tags, const std::vector<char>& info);
 
 };
 

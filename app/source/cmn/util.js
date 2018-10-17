@@ -5,7 +5,8 @@
 
 'use_strict'
 
-let os = require('os');
+const os = require('os');
+const childProcess = require('child_process');
 
 let to = src => {
 	return (typeof(src)==='string') ? new Buffer(src).toString('base64') : src;
@@ -65,5 +66,16 @@ module.exports = {
 			}
 			return ret;
 		}
+	},
+
+	cmd : async c => {
+		return new Promise(function(resolve, reject) {
+			childProcess.exec(c, (error, stdout, stderr) => {
+				if(error) {
+					reject(stderr);
+				}
+				resolve(stdout);
+			});
+		})
 	}
 }
