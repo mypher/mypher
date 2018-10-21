@@ -381,7 +381,12 @@ let Util = {
 			if (tagname==='LABEL') {
 				base[elm.attr('field')] = elm.text();
 			} else {
-				base[elm.attr('field')] = elm.val();
+				let v = elm.attr('ctrl');
+				if (v==='tag') {
+					base[elm.attr('field')] = elm.get(0).obj.get();
+				} else {
+					base[elm.attr('field')] = elm.val();
+				}
 			}
 		}
 		elms = div.find('.active [field][type="radio"]');
@@ -443,5 +448,8 @@ Tag.prototype = {
 			let elm = $('<div>').addClass('tag').text(txt);
 			this.div.append(elm);
 		});
+	},
+	get : function() {
+		return this.data;
 	}
 };

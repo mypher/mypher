@@ -1,5 +1,4 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Sep 20 07:07:46 2018",
     "version": "eosio::abi/1.0",
     "structs": [
         {
@@ -96,28 +95,40 @@
             "fields": [
                 {
                     "name": "id",
-                    "type": "uint64"
+                    "type": "name"
                 },
                 {
                     "name": "name",
                     "type": "string"
                 },
                 {
-                    "name": "profile",
+                    "name": "tags",
+                    "type": "string[]"
+                },
+                {
+                    "name": "info",
                     "type": "string"
                 }
             ]
         },
         {
-            "name": "pcreate",
+            "name": "pupdate",
             "base": "",
             "fields": [
+                {
+                    "name": "id",
+                    "type": "name"
+                },
                 {
                     "name": "name",
                     "type": "string"
                 },
                 {
-                    "name": "profile",
+                    "name": "tags",
+                    "type": "string[]"
+                },
+                {
+                    "name": "info",
                     "type": "string"
                 }
             ]
@@ -131,8 +142,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "pcreate",
-            "type": "pcreate",
+            "name": "pupdate",
+            "type": "pupdate",
             "ricardian_contract": ""
         }
     ],

@@ -33,7 +33,7 @@ public:
 		account_name id;
 		string name;
 		std::vector<std::string> tags;
-		std::vector<char> info;
+		std::string info;
 
 		auto primary_key() const { return id; }
 
@@ -50,7 +50,7 @@ public:
 	 * @brief create new person
 	 */
 	[[eosio::action]]
-	void pupdate(const account_name id, const std::string& name, const std::vector<std::string>& tags, const std::vector<char>& info);
+	void pupdate(const account_name id, const std::string& name, const std::vector<std::string>& tags, const std::string& info);
 
 };
 

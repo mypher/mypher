@@ -12,33 +12,65 @@ function User(d) {
 }
 
 User.prototype = {
+	getActiveKey : function(sys) {
+		let ret = '';
+		sys.permissions.some(v => {
+			if (v.perm_name==='active') {
+				if (v.required_auth.keys.length>0) {
+					ret = v.required_auth.keys[0].key;
+					return true;
+				}
+				return false;
+			}
+			return false;
+		});
+		return ret;
+	},
+
 	get : async function() {
 		let info = await Rpc.call(
-			'user.get',
-			[{user:this.data.id}]
+			'person.get',
+			[{id:this.data.id}]
 		);
-		this.data = {
-			id : this.data.id,
-			name : info.info.name,
-			desc : info.info.desc,
-			tags : info.info.tags
-		};
-		info.sys.permissions.forEach(elm => {
-			
+		this.data = info.data;
+		this.data.pkey = this.getActiveKey(info.sys);
+		this.data.sysdata = JSON.stringify(info.sys);
+		Rpc.call(
+			'person.get_desc',
+			[info.data]
+		).then(d => {
+			for ( let k in d ) {
+				this.data[k] = d[k];
+			}
+			this.refresh();
 		});
+	},
+
+	update : async function() {
+		let data = Util.getData(this.div, {});
+		try {
+			let ret = await Rpc.call(
+				'person.update',
+				[data]
+			);
+			this.data = data;
+			this.mode = MODE.REF;
+			this.refresh();
+		} catch (e) {
+			throw e;
+		}
 	},
 
 	refresh : async function() {
 		let btn = [];
-		let self = this;
 		switch (this.mode) {
 		case MODE.REF:
-			if (Account.hasKey(this.getKey())) {
+			if (Account.isLogin(this.data.id)) {
 				btn.push({
 					text : 'EDIT',
 					click : () => {
-						self.mode = MODE.EDIT;
-						self.refresh();
+						this.mode = MODE.EDIT;
+						this.refresh();
 					}
 				});
 			}
@@ -49,9 +81,19 @@ User.prototype = {
 				}
 			});
 			break;
-		case MODE.NEW:
-			break;
 		case MODE.EDIT:
+			btn.push({
+				text : 'COMMIT',
+				click : () => {
+					this.update();
+				}
+			});
+			btn.push({
+				text : 'BACK',
+				click : () => {
+					History.back();
+				}
+			});
 			break;
 		}
 

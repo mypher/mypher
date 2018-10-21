@@ -12,8 +12,9 @@ Person::Person(account_name self) {
 	owner = self;
 }
 
-void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::vector<char>& info) {
+void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::string& info) {
 	//require_auth(permission_level{id, N(owner)});
+	eosio::print("###check:", id);
 	require_auth(id);
 
 	data d(owner, owner);
@@ -21,6 +22,7 @@ void Person::pupdate(const account_name id, const string& name, const std::vecto
 	auto to = d.find(id);
 	// if data is not registered
 	if (to == d.end()) {
+		eosio::print("###not found", id);
 		// register the attributes
 		d.emplace(id, [&](auto& dd) {
 			dd.id = id;
@@ -29,6 +31,7 @@ void Person::pupdate(const account_name id, const string& name, const std::vecto
 			dd.info = info;
 		});
 	} else {
+		eosio::print("###found", id);
 		// update the attributes
 		d.modify(to, id, [&](auto& dd) {
 			dd.name = name;

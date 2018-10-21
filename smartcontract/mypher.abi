@@ -1,5 +1,4 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Sep 20 07:07:46 2018",
     "version": "eosio::abi/1.0",
     "structs": [
         {
@@ -96,7 +95,7 @@
             "fields": [
                 {
                     "name": "id",
-                    "type": "uint64"
+                    "type": "name"
                 },
                 {
                     "name": "name",
@@ -106,10 +105,10 @@
                     "name": "tags",
                     "type": "string[]"
                 },
-				{
-					"name": "info",
-					"type": "char[]"
-				}
+                {
+                    "name": "info",
+                    "type": "string"
+                }
             ]
         },
         {
@@ -118,7 +117,7 @@
             "fields": [
                 {
                     "name": "id",
-                    "type": "uint64"
+                    "type": "name"
                 },
                 {
                     "name": "name",
@@ -128,10 +127,10 @@
                     "name": "tags",
                     "type": "string[]"
                 },
-				{
-					"name": "info",
-					"type": "char[]"
-				}
+                {
+                    "name": "info",
+                    "type": "string"
+                }
             ]
         }
     ],

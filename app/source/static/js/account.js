@@ -6,6 +6,7 @@
 Account = {
 	data : null,
 	user : null,
+	logined : false,
 	get : async u => {
 		if (u) {
 			Account.user = u;
@@ -26,7 +27,7 @@ Account = {
 		}
 		return '';
 	},
-
+/*
 	openWallet : async name => {
 		let div = UI.popup(600,200);
 		let open = async () => {
@@ -59,6 +60,64 @@ Account = {
 			name : name,
 			key : ''
 		});
+	},*/
+
+	loginout : async () => {
+		if (Account.logined) {
+			Account.logined = false;
+			Header.refresh();
+		} else {
+			let KEY = 'account';
+			let ini = localStorage.getItem(KEY);
+			try {
+				ini = JSON.parse(ini);
+			} catch (e) {
+				ini = {
+					name : '',
+					pass : ''
+				}
+			}
+			let div = UI.popup(600,200);
+			let open = async () => {
+				let data = Util.getData(div, {});
+				try {
+					let ret = await Rpc.call(
+						'system.connect', 
+						[{id:data.name, pass:data.pass}]
+					);
+					if (ret.error) {
+						UI.alert(ret.error);
+						return;
+					}
+					if (ret===true) {
+						UI.closePopup();
+						Account.user = data.name;
+						localStorage.setItem(KEY, JSON.stringify(data));
+						Account.logined = true;
+						Header.refresh();
+					} else {
+						UI.alert(_L('INVALID_ID_OR_PASS'));
+						return;
+					}
+				} catch (e) {
+					UI.alert(e.message);
+				}
+			};
+			await Util.load(div, 'parts/login.html', MODE.REF, {
+				button : [{
+					text : 'BACK',
+					click : () => {
+						UI.closePopup();
+					}
+				},{
+					text : 'LOGIN',
+					click : () => {
+						open();
+					}
+				}]
+			});
+			Util.setData(div, ini);
+		}
 	},
 
 	popup : async () => {
@@ -73,6 +132,20 @@ Account = {
 
 	hasKey : key => {
 		return Account.data.keys[key] ? true : false;
+	},
+
+	ref : async () => {
+		if (Account.logined&&Account.user) {
+			let user = new User({
+				div : $('#main'),
+				name : Account.user
+			});
+			History.run(_L('USER'), user);
+		}
+	},
+	
+	isLogin : id => {
+		return Account.logined && (Account.user===id);
 	},
 
 	makeContent : async () => {

@@ -10,6 +10,28 @@ let cmn = require('./cmn');
 let eos = require('../db/eos');
 
 module.exports = {
+	connect : async d => {
+		try {
+			await eos.refresh([d.pass]);
+			let data = await eos.getEosData(d.id);
+			let pub = eos.pri2pub(d.pass);
+			let found = false;
+			data.permissions.some(d => {
+				d.required_auth.keys.some(dd => {
+					if (dd.key===pub) {
+						found = true;
+						return true;
+					}
+					return false;
+				});
+				return found;
+			});
+			return found;
+		} catch (e) {
+			log.error(e.message)
+			throw 'INVALID_ID_OR_PASS';
+		}
+	},
 	reg_account : async d => {
 		let cmd = [ 
 			'cleos system newaccount eosio --transfer ',

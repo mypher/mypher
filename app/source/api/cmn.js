@@ -256,6 +256,14 @@ module.exports = {
 				resolve(stdout);
 			});
 		})
+	},
+
+	isEosID : id => {
+		return (/^[1-5a-z]{1,12}$/.exec(id)!==null);
+	},
+
+	isIpfsKey : key => {
+		return (/^Qm[0-9a-zA-Z]{44}$/.exec(key)!==null);
 	}
 };
 

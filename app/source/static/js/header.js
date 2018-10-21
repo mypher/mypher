@@ -57,15 +57,13 @@ Header = {
 		addItem(_L('SEARCH'), function() {
 		//	History.backTo(0);
 		});
-		addItem(_L('ACCOUNT'), function() {
-			Account.popup();
-		});
-		addItem('TEST', function() {
-			let user = new User({
-				div : $('#main'),
-				name : 'testuser'
+		if (Account.logined) {
+			addItem(_L('ACCOUNT'), function() {
+				Account.ref();
 			});
-			History.run(_L('USER'), user);
+		}
+		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
+			Account.loginout();
 		});
 		// loginform
 		/*if (UserManager.isLogin()) {

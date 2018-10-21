@@ -20,5 +20,6 @@ add_executable( mypher.wasm mypher.cpp person.cpp cipher.cpp validator/vcipher.c
 #		eosio-abigen ${CMAKE_SOURCE_DIR}/mypher.hpp -output mypher.abi
 #)
 
-add_custom_target(cpwasm ALL COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/")
-add_custom_target(cpabi ALL COMMAND "cp" "-f" "*.abi" "../../docker/contracts/")
+file(MAKE_DIRECTORY ../docker/contracts/mypher)
+add_custom_target(cpwasm ALL COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/mypher")
+add_custom_target(cpabi ALL COMMAND "cp" "-f" "*.abi" "../../docker/contracts/mypher")
