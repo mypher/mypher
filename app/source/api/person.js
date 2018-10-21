@@ -22,6 +22,9 @@ module.exports = {
 				scope : 'mypher',
 				table : 'person',
 			}, d.id );
+			if (ret.data!==null&&ret.data.length>0) {
+				ret.data = ret.data[0];
+			}
 			ret.sys = await eos.getEosData(d.id);
 			return ret;
 		} catch (e) {
@@ -37,6 +40,17 @@ module.exports = {
 				return {code:'INVALID_PARAM'};
 			}
 			return await ipfs.get(d.info);
+		} catch (e) {
+			throw e;
+		}
+	},
+	list : async d => {
+		try {
+			return await eos.getDataByKey({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'person',
+			}, d.id, 20 );
 		} catch (e) {
 			throw e;
 		}

@@ -55,7 +55,7 @@ Header = {
 			}
 		}
 		addItem(_L('SEARCH'), function() {
-		//	History.backTo(0);
+			History.backTo(0);
 		});
 		if (Account.logined) {
 			addItem(_L('ACCOUNT'), function() {
@@ -65,41 +65,6 @@ Header = {
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();
 		});
-		// loginform
-		/*if (UserManager.isLogin()) {
-			addItem(_L('CREATE_CIPHER'), function() {
-				var cipher = new Cipher({
-					div : $('#main'),
-					mode : MODE.NEW
-				}, function(code, v) {
-					
-				});
-				History.overwrite(1, _L('CIPHER'), cipher);
-			});
-			addItem(_L('LOGOUT'), function() {
-				self.logout();
-			});
-		} else {
-			addItem(_L('LOGIN'), function() {
-				self.login();
-			});
-		}*/
-	},
-
-	login : function() {
-		var self = this;
-		/*var div = UI.popup(600, 600);
-		UserManager.login(div, function(code) {
-			UI.closePopup();
-			self.refresh();
-			History.rerun();
-		});*/
-	},
-
-	logout : function() {
-		//UserManager.logout();
-		this.refresh();
-		//History.rerun();
 	},
 
 	set : function(l) {

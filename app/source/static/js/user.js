@@ -96,8 +96,6 @@ User.prototype = {
 			});
 			break;
 		}
-
-		
 		await Util.load(this.div, 'parts/user.html', this.mode, {
 			button :btn,
 			tags :[{

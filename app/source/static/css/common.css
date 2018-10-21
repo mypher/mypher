@@ -73,6 +73,20 @@ td {
 	border-color: #1080c0;
 }
 
+.btn-detail {
+	background: url(../img/detail.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.btn-search {
+	background: url(../img/search.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
 .right {
 	text-align:right;
 }

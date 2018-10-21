@@ -9,8 +9,17 @@ _ = {
 		System.loadModule('footer');
 		System.loadModule('account');
 		System.loadModule('user');
-		Header.init($('#head'));
+		System.loadModule('search');
+		Header.init($('#head')).then(() => {
+			_.showSearch();
+		});
 		Footer.init($('#tail'));
+	},
+	showSearch : () => {
+		let search = new Search({
+			div : $('#main')
+		});
+		History.run(_L('SEARCH'), search);
 	}
 };
 
