@@ -1,0 +1,37 @@
+<!--
+    Copyright (C) 2018 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div class="form-horizontal">
+	<!-- SEARCH -->
+	<div class="form-group row">
+		<div class="col-sm-12 btn-group btn-group-toggle" data-toggle="buttons">
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="0" field="type">
+				<span ltext="USER"></span>
+			</label>
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="1" field="type">
+				<span ltext="CIPHER"></span>
+			</label>
+			<label class="btn btn-normal">
+				<input type="radio" autocomplete="off" value="2" field="type">
+				<span ltext="TASK"></span>
+			</label>
+		</div>
+		<div class="col-sm-12">
+			<br>
+		</div>
+		<div class="col-sm-12">
+			<div class="input-group" proc="search">
+				<input type="text" class="form-control" field="name">
+				<div class="input-group-append">
+					<button class="btn btn-search"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- RESULT -->
+	<div class="form-group row" id="result">
+	</div>
+</div>

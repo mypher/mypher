@@ -130,6 +130,7 @@ var $L = {
 		'AUTH_NOT_SET' : '承認者が設定されていません。',
 		'SEARCH_TARGET_NOT_SET' : '検索対象が設定されていません。',
 		'INVALID_KEY' : 'キーが正しくありません。',
+		'FAILED_TO_GET_DATA' : 'データの取得に失敗しました。',
 		'@' : ''
 	}
 };

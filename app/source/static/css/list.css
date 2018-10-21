@@ -1,0 +1,56 @@
+/*
+    Copyright (C) 2018 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+*/
+.li_area {
+	padding:16px;
+}
+
+.li_list { 
+	margin:0px;
+	padding-left:30px;
+	cursor:pointer;
+}
+
+.li_list > .li_head {
+	border-bottom:1px solid #ccc;
+}
+
+.li_list > .li_head > div > div {
+	font-weight:bold;
+}
+
+.li_list > div {
+	width:100%;
+}
+
+.li_list > div > div {
+	margin:0px;
+	overflow:hidden;
+	height:28px;
+}
+
+.li_list .odd {
+	background-color:#30b0f0;
+}
+
+.li_list .sel {
+	background-color:#ffff80;
+}
+
+.li_list > div > div > div > div > div {
+	margin:0px -24px 0px 0px;
+	overflow:hidden;
+}
+
+.li_button {
+	height:40px;
+}
+
+.li_button > div {
+	padding:20px;
+}
+
+.li_button > div > button {
+	width:100%;
+}

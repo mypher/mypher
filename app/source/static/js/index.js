@@ -10,6 +10,7 @@ _ = {
 		System.loadModule('account');
 		System.loadModule('user');
 		System.loadModule('search');
+		System.loadModule('list');
 		Header.init($('#head')).then(() => {
 			_.showSearch();
 		});
