@@ -8,16 +8,15 @@
 
 namespace mypher {
 
-Person::Person(account_name self) {
-	owner = self;
+Person::Person(account_name _self) {
+	self = _self;
 }
 
 void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::string& info) {
 	//require_auth(permission_level{id, N(owner)});
-	eosio::print("###check:", id);
 	require_auth(id);
 
-	data d(owner, owner);
+	data d(self, self);
 	// search the target data
 	auto to = d.find(id);
 	// if data is not registered

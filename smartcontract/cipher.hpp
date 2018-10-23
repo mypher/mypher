@@ -12,57 +12,76 @@ namespace mypher {
 
 using namespace std;
 
+
 /**
  * @defgroup mypher
  * @class cipher
  * @brief the contract for managing a group named "cipher"
  */
 class Cipher {
-private:
-	account_name self;
 
 public:
-	Cipher(account_name _self) {
-		self = _self;
-	};
+	Cipher(account_name _self);
 
 	/**
 	 * @brief information of cipher
 	 */
 	struct [[eosio::table]] cipher {
-		account_name id;
-		uint64_t cipherid;
+		uint64_t id;
+		uint32_t cipherid;
 		uint16_t version;
 		uint16_t draftno;
-		string name;
-		string purpose;
-		uint16_t drule_req;
-		string drule_auth;
-		string approved;
-		string editor;
 		bool formal;
-		uint64_t ctime;
-		uint64_t utime;
+		std::string name;
+		std::vector<account_name> editors;
+		std::vector<std::string> tags;
+		std::string hash;
 
 		auto primary_key() const { return id; }
+		uint64_t secondary_key() const { 
+			return gen_secondary_id(cipherid, version, draftno);	
+		}
 		
 		EOSLIB_SERIALIZE( cipher, 
-			(id)(cipherid)(version)(draftno)(name)(purpose)(drule_req)(drule_auth)
-			(approved)(editor)(formal)(ctime)(utime)
-		)
+			(id)(cipherid)(version)(draftno)(formal)(name)(editors)(tags)(hash))
 	};
 
 	/**
 	 * @brief the definition of the table for "cipher"
 	 */
-	typedef eosio::multi_index< N(cipher), cipher> data;
+	typedef eosio::multi_index< 
+			N(cipher), 
+			cipher,
+			indexed_by<N(secondary_key), const_mem_fun<cipher, uint64_t, &cipher::secondary_key>>
+	> data;
 
 	/**
 	 * @brief create new cipher
 	 */
 	[[eosio::action]]
-	void ccreate(const string& sender, const string& name, const string& purpose,
-				const uint16_t& drule_req, const string& drule_auth, const string& editor);
+	void cnew(const account_name sender, 
+				const std::string& name, const std::vector<account_name>& editors,
+				const std::vector<std::string>& tags, std::string& hash, bool formal);
+	[[eosio::action]]
+	void cdraft(const account_name sender, uint32_t cipherid, uint16_t version, uint16_t draftno, 
+				const std::string& name, const std::vector<account_name>& editors,
+				const std::vector<std::string>& tags, std::string& hash, bool formal);
+	[[eosio::action]]
+	void cupdate(const account_name sender, uint32_t cipherid, uint16_t version, uint16_t draftno, 
+				const std::string& name, const std::vector<account_name>& editors,
+				const std::vector<std::string>& tags, std::string& hash, bool formal);
+
+private:
+	account_name self;
+
+	static uint64_t gen_secondary_id(const uint32_t& cipherid, 
+									 const uint16_t& ver, const uint16_t& draftno);
+
+	bool canEdit(const account_name& sender, const std::vector<account_name>& editors);
+	uint32_t getNewCipherId(const data& d);
+	uint16_t getNewVersion(const data& d,const uint32_t cipherid);
+	uint16_t getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver);
+	bool isVersionFormaled(const data& d, const uint32_t cipherid, const uint16_t ver);
 };
 
 } // mypher
