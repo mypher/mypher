@@ -7,11 +7,109 @@
             "fields": [
                 {
                     "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint32"
+                },
+                {
+                    "name": "version",
+                    "type": "uint16"
+                },
+                {
+                    "name": "draftno",
+                    "type": "uint16"
+                },
+                {
+                    "name": "formal",
+                    "type": "bool"
+                },
+                {
+                    "name": "editors",
+                    "type": "name[]"
+                },
+                {
+                    "name": "hash",
+                    "type": "string"
+                },
+                {
+                    "name": "drule_req",
+                    "type": "uint16"
+                },
+                {
+                    "name": "drule_auth",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approved",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "ckey",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                }
+            ]
+        },
+        {
+            "name": "cnew",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "editors",
+                    "type": "name[]"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                },
+                {
+                    "name": "hash",
+                    "type": "string"
+                },
+                {
+                    "name": "drule_req",
+                    "type": "uint16"
+                },
+                {
+                    "name": "drule_auth",
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "cdraft",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
                     "type": "name"
                 },
                 {
                     "name": "cipherid",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "version",
@@ -26,7 +124,15 @@
                     "type": "string"
                 },
                 {
-                    "name": "purpose",
+                    "name": "editors",
+                    "type": "name[]"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                },
+                {
+                    "name": "hash",
                     "type": "string"
                 },
                 {
@@ -35,44 +141,44 @@
                 },
                 {
                     "name": "drule_auth",
-                    "type": "string"
-                },
-                {
-                    "name": "approved",
-                    "type": "string"
-                },
-                {
-                    "name": "editor",
-                    "type": "string"
-                },
-                {
-                    "name": "formal",
-                    "type": "bool"
-                },
-                {
-                    "name": "ctime",
-                    "type": "uint64"
-                },
-                {
-                    "name": "utime",
-                    "type": "uint64"
+                    "type": "name[]"
                 }
             ]
         },
         {
-            "name": "ccreate",
+            "name": "cupdate",
             "base": "",
             "fields": [
                 {
                     "name": "sender",
-                    "type": "string"
+                    "type": "name"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint32"
+                },
+                {
+                    "name": "version",
+                    "type": "uint16"
+                },
+                {
+                    "name": "draftno",
+                    "type": "uint16"
                 },
                 {
                     "name": "name",
                     "type": "string"
                 },
                 {
-                    "name": "purpose",
+                    "name": "editors",
+                    "type": "name[]"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                },
+                {
+                    "name": "hash",
                     "type": "string"
                 },
                 {
@@ -81,11 +187,51 @@
                 },
                 {
                     "name": "drule_auth",
-                    "type": "string"
+                    "type": "name[]"
+                }
+            ]
+        },
+        {
+            "name": "capprove",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
                 },
                 {
-                    "name": "editor",
-                    "type": "string"
+                    "name": "cipherid",
+                    "type": "uint32"
+                },
+                {
+                    "name": "version",
+                    "type": "uint16"
+                },
+                {
+                    "name": "draftno",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "crevapprove",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint32"
+                },
+                {
+                    "name": "version",
+                    "type": "uint16"
+                },
+                {
+                    "name": "draftno",
+                    "type": "uint16"
                 }
             ]
         },
@@ -137,8 +283,28 @@
     "types": [],
     "actions": [
         {
-            "name": "ccreate",
-            "type": "ccreate",
+            "name": "cnew",
+            "type": "cnew",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cdraft",
+            "type": "cdraft",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cupdate",
+            "type": "cupdate",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "capprove",
+            "type": "capprove",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "crevapprove",
+            "type": "crevapprove",
             "ricardian_contract": ""
         },
         {
@@ -158,6 +324,13 @@
         {
             "name": "cipher",
             "type": "cipher",
+            "index_type": "i64",
+            "key_names": ["secondary_key"],
+            "key_types": ["uint64"]
+        },
+        {
+            "name": "ckey",
+            "type": "ckey",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
