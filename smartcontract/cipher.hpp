@@ -54,10 +54,11 @@ public:
 		uint64_t id;
 		std::string name;
 		std::vector<std::string> tags;
+		bool formal;
 
 		uint64_t primary_key() const { return id; }
 		
-		EOSLIB_SERIALIZE(ckey, (id)(name)(tags))
+		EOSLIB_SERIALIZE(ckey, (id)(name)(tags)(formal))
 	};
 
 	/**

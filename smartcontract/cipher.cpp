@@ -100,6 +100,7 @@ void Cipher::cnew(const account_name sender,
 		dd.id = id;
 		dd.name = name;
 		dd.tags = tags;
+		dd.formal = true;
 	});
 }
 
@@ -141,6 +142,7 @@ void Cipher::cdraft(const account_name sender,
 		dd.id = id;
 		dd.name = name;
 		dd.tags = tags;
+		dd.formal = false;
 	});
 }
 
@@ -178,6 +180,7 @@ void Cipher::cupdate(const account_name sender,
 		d2.modify(target2, sender, [&](auto& dd) {
 			dd.name = name;
 			dd.tags = tags;
+			dd.formal = false;
 		});
 	}
 	eosio_assert(true, "DATA_NOT_FOUND");
@@ -204,13 +207,23 @@ void Cipher::capprove(const account_name sender,
 	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
 	eosio_assert(found!=std::end(rec->approved), "SENDER_ALREADY_APPROVED"); 
 	// update data
+	bool formal = false;
 	d.modify(target, sender, [&](auto& dd) {
 		dd.approved.push_back(sender);
 		// if fulfilled the requirement, draft become formal
 		if (dd.approved.size()==dd.drule_req) {
 			dd.formal = true;
+			formal = true;
 		}
 	});
+	// update tag data
+	if (formal) {
+		keydata d2(self, self);
+		auto target2 = d2.find(rec->id);
+		d2.modify(target2, sender, [&](auto& dd) {
+			dd.formal = true;
+		});
+	}
 }
 
 void Cipher::crevapprove(const account_name sender, 

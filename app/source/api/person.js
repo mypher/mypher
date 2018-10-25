@@ -55,6 +55,28 @@ module.exports = {
 			throw e;
 		}
 	},
+	list_bytag : async d => {
+		try {
+			// TODO:performance
+			let data = await eos.getData({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'person',
+			}, 10000 );
+			if (data.rows && data.rows instanceof Array) {
+				let ret = [];
+				data.rows.forEach(v=> {
+					if (v.tags.includes(d.tag)) {
+						ret.push(v);
+					}
+				});
+				return ret;
+			}
+			return [];
+		} catch (e) {
+			throw e;
+		}
+	},
 	update : async d => {
 		try {
 			if (!cmn.chkTypes([
