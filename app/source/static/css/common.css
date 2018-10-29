@@ -114,3 +114,15 @@ td {
 	background-size: 16px 16px;
 	cursor: pointer;
 }
+
+.userlist {
+	float: left;
+	background-color: #30b0f0;
+	margin: 4px;
+	padding: 8px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	cursor: pointer;
+}
+

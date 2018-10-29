@@ -1,0 +1,107 @@
+<!--
+    Copyright (C) 2018 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div class="form-horizontal">
+	<!-- ID -->
+	<div class="form-group row" name="cp_id" hide_on="add">
+		<label class="col-sm-3 name" ltext="ID"></label>
+		<label class="col-sm-9" field="cipherid"></label>
+	</div>
+	<!-- VER -->
+	<div class="form-group row" name="cp_ver" hide_on="add">
+		<label class="col-sm-3 name" ltext="VERSION"></label>
+		<label class="col-sm-9" field="version"></label>
+	</div>
+	<!-- DRAFT -->
+	<div class="form-group row" name="cp_draft" hide_on="add">
+		<label class="col-sm-3 name" ltext="DRAFT_NO"></label>
+		<label class="col-sm-8 col-10" field="draftno"></label>
+		<div class="col-sm-1 col-2 right" btnproc="draft">
+			<button class="btn btn-ver btn-normal"></button>
+		</div>
+	</div>
+	<hr hide_on="add">
+	<!-- EDITOR -->
+	<div class="form-group row" name="cp_editor">
+		<label class="col-sm-3 name" ltext="DRAFT_EDIT_MEMBER"></label>
+		<div class="col-sm-9" disable_on="ref" ctrl="user" proc="editors" field="editors">
+		</div>
+	</div>
+	<!-- NAME -->
+	<div class="form-group row" name="cp_name">
+		<label class="col-sm-3 name" ltext="NAME1"></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" disable_on="ref" field="name">
+		</div>
+	</div>
+	<!-- DESCRIPTION -->
+	<div class="form-group row" name="cp_desc">
+		<label class="col-sm-3 name" ltext="PURPOSE"></label>
+		<div class="col-sm-9">
+			<textarea class="form-control" disable_on="ref" field="purpose"></textarea>
+		</div>
+	</div>
+	<!-- RULE_REQ -->
+	<div class="form-group row" name="cp_gov">
+		<label class="col-sm-3 name" ltext="REQ_NUM_AUTHORS"></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" disable_on="ref" field="drule_req">
+		</div>
+	</div>
+	<!-- RULE_AUTHER -->
+	<div class="form-group row" name="cp_gov">
+		<label class="col-sm-3 name" ltext="AUTHORS"></label>
+		<div class="col-sm-9" disable_on="ref" ctrl="user" proc="authors" field="drule_auth">
+		</div>
+	</div>
+	<!-- BUTTON1 -->
+	<div class="form-group row" name="cp_button1" hide_on="ref">
+		<div class="col-sm-12 right" btnproc="button1">
+			<button type="button" class="btn btn-normal"></button>
+			<button type="button" class="btn btn-normal"></button>
+		<hr hide_on="add">
+		</div>
+	</div>
+	<!-- TOKEN -->
+	<div class="form-group row" name="cp_token" hide_on="add">
+		<label class="col-sm-3 name" ltext="TOKEN"></label>
+		<div class="col-sm-9">
+			<div class="ctrl">
+			</div>
+		</div>
+	</div>
+	<!-- TASK -->
+	<div class="form-group row" name="cp_task" hide_on="add">
+		<label class="col-sm-3 name" ltext="TASK"></label>
+		<div class="col-sm-9">
+			<div class="ctrl">
+			</div>
+		</div>
+	</div>
+	<!-- RULELIST -->
+	<div class="form-group row" name="cp_rulelist" hide_on="add">
+		<label class="col-sm-3 name" ltext="RULELIST"></label>
+		<div class="col-sm-9">
+			<div class="ctrl">
+			</div>
+		</div>
+	</div>
+	<!-- APPROVED -->
+	<div class="form-group row" name="cp_approve" hide_on="add,edit">
+		<label class="col-sm-3 name" ltext="APPROVE"></label>
+		<div class="col-sm-9" disable_on="ref" ctrl="user" proc="approved" field="approved">
+		</div>
+	</div>
+	<!-- BUTTON2 -->
+	<div class="form-group row" name="cp_button2" hide_on="add">
+		<div class="col-sm-12 right" btnproc="button2">
+			<button type="button" class="btn btn-normal"></button>
+			<button type="button" class="btn btn-normal"></button>
+			<button type="button" class="btn btn-normal"></button>
+			<button type="button" class="btn btn-normal"></button>
+			<button type="button" class="btn btn-normal"></button>
+		</div>
+	</div>
+
+</div>

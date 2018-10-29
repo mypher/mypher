@@ -146,36 +146,30 @@ let Util = {
 	},
 	N : {
 	},
-	name : function(ids) {
-		return new Promise(function(resolve, reject) {
-			var req = [];
-			var ret = {};
-			for ( var i in ids ) {
-				if (ids[i]==='') continue;
-				if (Util.N[ids[i]]) {
-					ret[ids[i]] = Util.N[ids[i]];
-				} else {
-					req.push(ids[i]);
-					ret[ids[i]] = 'name not found';
-				}
+	name : async function(ids) {
+		let req = [];
+		let ret = {};
+		ids.forEach(id => {
+			if (id==='') continue;
+			if (Util.N[id]) {
+				ret[id] = Util.N[id];
+			} else {
+				req.push(id);
+				ret[id] = id;
 			}
-			if (req.length===0) {
-				resolve(ret);
-				return;
-			}
-			Rpc.call('person.name', [req], function(res) {
-				for (var i=0; i<res.result.length; i++) {
-					var elm = res.result[i];
-					ret[elm.id] = elm.name;
-					Util.N[elm.id] = elm.name;
-				}
-				resolve(ret);
-			}, function(err) {
-				reject(err.message);
-			}, function(fail) {
-				reject(err.message);
-			});
 		});
+		if (req.length===0) {
+			return ret;
+		}
+		let names = await Rpc.call('person.getName', [req]);
+		if (names.code) {
+			throw names.code;
+		}
+		names.forEach(elm => {
+			ret[elm.id] = elm.name;
+			Util.N[elm.id] = elm.name;
+		});
+		return ret;
 	}, 
 	wait_default : 2000,
 	promise : function(func, timeout) {
@@ -284,6 +278,9 @@ let Util = {
 					case 'tag':
 						Util.initTag(elm, mode, btns[elm.attr('proc')]);
 						break;
+					case 'user':
+						Util.initUserList(elm, mode, btns[elm.attr('proc')]);
+						break;
 					default:
 						Util.initButton(elm.find('button'), btns[elm.attr('proc')]);
 						break;
@@ -312,6 +309,10 @@ let Util = {
 	initTag : function(tag, mode, proc) {
 		let elm = tag.get(0);
 		elm.obj = new Tag(tag.eq(0), mode, proc);
+	},
+	initUserList : function(list, mode, proc) {
+		let elm = list.get(0);
+		elm.obj = new UserList(list.eq(0), mode, proc);
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
@@ -353,6 +354,8 @@ let Util = {
 				case 'tag':
 					elms.get(0).obj.set(dd);
 					break;
+				case 'user':
+					elms.get(0).obj.set(dd);
 				}
 				continue;
 			}
@@ -446,6 +449,37 @@ Tag.prototype = {
 		this.div.empty();
 		this.data.forEach(txt => {
 			let elm = $('<div>').addClass('tag').text(txt);
+			this.div.append(elm);
+		});
+	},
+	get : function() {
+		return this.data;
+	}
+};
+
+function UserList(div, mode, proc) {
+	this.div = div;
+	this.mode = mode;
+	this.proc = proc&&proc.click;
+	let self = this;
+	div.click(() => {
+		if (self.mode==!MODE.REF) {
+			self.proc&&self.proc();
+		}
+	});
+}
+
+UserList.prototype = {
+	set : async function(data) {
+		if (data instanceof Array) {
+			this.data = data;
+		} else if ( typeof data === 'string' ) {
+			this.data = [data];
+		}
+		this.div.empty();
+		let ret = await Util.name(this.data);
+		this.data.forEach(d => {
+			let elm = $('<div>').addClass('userlist').text(ret[d]);
 			this.div.append(elm);
 		});
 	},

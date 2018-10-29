@@ -11,6 +11,28 @@ let ipfs = require('../db/ipfs');
 let eos = require('../db/eos');
 
 module.exports = {
+	getName : async d => {
+		try {
+			let ret = [];
+			for ( let i in d ) {
+				if (!cmn.isEosID(d.id)) {
+					return {code:'INVALID_PARAM'};
+				}
+				let data = await eos.getDataByKey({
+					code : 'mypher',
+					scope : 'mypher',
+					table : 'person',
+				}, d[i] );
+				if (data!==null&&data.length>0) {
+					ret.push({id:d[i], name:data[0].name});
+				}
+			}
+			return ret;
+		} catch (e) {
+			throw e;	
+		}
+	},
+
 	get : async d => {
 		try {
 			if (!cmn.isEosID(d.id)) {

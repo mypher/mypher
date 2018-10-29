@@ -144,6 +144,10 @@ Account = {
 		}
 	},
 	
+	loginUser : () => {
+		return Account.user ? Account.user : null;
+	}
+
 	isLogin : id => {
 		return Account.logined && (Account.user===id);
 	},
