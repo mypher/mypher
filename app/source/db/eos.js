@@ -36,7 +36,7 @@ module.exports = {
 		return await rpc.get_table_rows(d);
 	},
 
-	getDataByKey : async function(d, key, limit) {
+	getDataWithPKey : async function(d, key, limit) {
 		try {
 			if (limit) d.limit = limit;
 			else d.limit = 1;
@@ -49,6 +49,21 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
+	},
+
+	getDataWithSubKey : async function(d, kidx, key) {
+		try {
+			d.lower_bound = key;
+			d.index_position = kidx;
+			let ret = await rpc.get_table_rows(d);
+			if (ret.rows.length===0) {
+				return null;
+			}
+			return ret.rows;
+		} catch (e) {
+			throw e;
+		}
+	
 	},
 
 	getEosData : async function(name) {

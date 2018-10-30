@@ -10,6 +10,11 @@ let cmn = require('./cmn');
 let ipfs = require('../db/ipfs');
 let eos = require('../db/eos');
 
+function makeSubKey(cipherid, version, draftno) {
+
+	return parseInt(cipherid) << 32 | parseInt(version) << 16 | parseInt(draftno);
+}
+
 module.exports = {
 	list : async d => {
 		try {
@@ -53,7 +58,7 @@ module.exports = {
 	get : async d=> {
 		try {
 			let ret = {};
-			ret.data = await eos.getDataByKey({
+			ret.data = await eos.getDataWithPKey({
 				code : 'mypher',
 				scope : 'mypher',
 				table : 'cipher',
@@ -62,7 +67,7 @@ module.exports = {
 				return {code:'NOT_FOUND'};
 			}
 			ret.data = ret.data[0];
-			let key = await eos.getDataByKey({
+			let key = await eos.getDataWithPKey({
 				code : 'mypher',
 				scope : 'mypher',
 				table : 'ckey',
@@ -72,6 +77,21 @@ module.exports = {
 			}
 			ret.data.name = key[0].name;
 			ret.data.tags = key[0].tags;
+
+			// formalver
+			// formaldraft
+			// get alldata in current and previous version
+			let skey = makeSubKey(ret.data.cipherid, ret.data.version-1, 0);
+			let sdata = await eos.getDataWithSubKey({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'cipher'
+			}, 2, skey);
+			sdata.forEach(d => {
+				if (d.formal) {
+					console.log(d.cipherid, d.version, d.draftno);
+				}
+			});
 			return ret;
 		} catch (e) {
 			throw e;

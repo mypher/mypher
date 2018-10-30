@@ -18,7 +18,7 @@ module.exports = {
 				if (!cmn.isEosID(d.id)) {
 					return {code:'INVALID_PARAM'};
 				}
-				let data = await eos.getDataByKey({
+				let data = await eos.getDataWithPKey({
 					code : 'mypher',
 					scope : 'mypher',
 					table : 'person',
@@ -39,7 +39,7 @@ module.exports = {
 				return {code:'INVALID_PARAM'};
 			}
 			let ret = {};
-			ret.data = await eos.getDataByKey({
+			ret.data = await eos.getDataWithPKey({
 				code : 'mypher',
 				scope : 'mypher',
 				table : 'person',
@@ -68,7 +68,7 @@ module.exports = {
 	},
 	list : async d => {
 		try {
-			return await eos.getDataByKey({
+			return await eos.getDataWithPKey({
 				code : 'mypher',
 				scope : 'mypher',
 				table : 'person',
