@@ -40,7 +40,7 @@ public:
 
 		uint64_t primary_key() const { return id; }
 		uint64_t secondary_key() const { 
-			return gen_secondary_key(cipherid, version, draftno);	
+			return gen_secondary_key(cipherid, version);	
 		}
 		
 		EOSLIB_SERIALIZE(cipher, 
@@ -110,8 +110,7 @@ public:
 private:
 	account_name self;
 
-	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
-									 const uint16_t& ver, const uint16_t& draftno);
+	static uint64_t gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver);
 	static std::string gen_third_key(const bool& formal, const std::string& name);
 
 	bool canEdit(const account_name& sender, const std::vector<account_name>& editors);

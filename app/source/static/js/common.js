@@ -149,26 +149,28 @@ let Util = {
 	name : async function(ids) {
 		let req = [];
 		let ret = {};
-		ids.forEach(id => {
-			if (id==='') continue;
-			if (Util.N[id]) {
-				ret[id] = Util.N[id];
-			} else {
-				req.push(id);
-				ret[id] = id;
+		if (ids instanceof Array && ids.length > 0) {
+			ids.forEach(id => {
+				if (id==='') return;
+				if (Util.N[id]) {
+					ret[id] = Util.N[id];
+				} else {
+					req.push(id);
+					ret[id] = id;
+				}
+			});
+			if (req.length===0) {
+				return ret;
 			}
-		});
-		if (req.length===0) {
-			return ret;
+			let names = await Rpc.call('person.getName', [req]);
+			if (names.code) {
+				throw names.code;
+			}
+			names.forEach(elm => {
+				ret[elm.id] = elm.name;
+				Util.N[elm.id] = elm.name;
+			});
 		}
-		let names = await Rpc.call('person.getName', [req]);
-		if (names.code) {
-			throw names.code;
-		}
-		names.forEach(elm => {
-			ret[elm.id] = elm.name;
-			Util.N[elm.id] = elm.name;
-		});
 		return ret;
 	}, 
 	wait_default : 2000,
@@ -433,10 +435,17 @@ function Tag(div, mode, proc) {
 	this.proc = proc&&proc.click;
 	let self = this;
 	div.click(() => {
-		if (self.mode==!MODE.REF) {
-			self.proc&&self.proc();
+		if (self.mode!==MODE.REF) {
+			if (self.proc&&self.proc()===false) {
+				return;
+			}
+			self.click();
 		}
 	});
+	if (self.mode!==MODE.REF) {
+		div.css('border', '1px dashed #30b0f0');
+	}
+	this.data = [];
 }
 
 Tag.prototype = {
@@ -450,10 +459,40 @@ Tag.prototype = {
 		this.data.forEach(txt => {
 			let elm = $('<div>').addClass('tag').text(txt);
 			this.div.append(elm);
+			if (this.mode!==MODE.REF) {
+				let self = this;
+				elm.addClass('tagedit').click(() => {
+				});
+			}
 		});
 	},
 	get : function() {
 		return this.data;
+	},
+	click : function() {
+		let inp = this.div.find('input');
+		if (inp.length>0) {
+			inp.remove();
+			return;
+		}
+		inp = $('<input type="text">');
+		this.div.append(inp);
+		let blur = () => {
+			this.data.push(inp.val());
+			this.set(this.data);
+		};
+		inp.focus().blur(blur).keydown(v=> {
+			if (v.keyCode===9) {
+				blur();
+				window.setTimeout(() => {
+					this.click();
+				}, 50);
+				return false;
+			} else if (v.keyCode===13) {
+				blur();
+				return false;
+			}
+		});
 	}
 };
 
@@ -463,10 +502,16 @@ function UserList(div, mode, proc) {
 	this.proc = proc&&proc.click;
 	let self = this;
 	div.click(() => {
-		if (self.mode==!MODE.REF) {
-			self.proc&&self.proc();
+		if (self.mode!==MODE.REF) {
+			if (self.proc&&self.proc()===false) {
+				return;
+			}
 		}
+		self.edit();
 	});
+	if (self.mode!==MODE.REF) {
+		div.css('border', '1px dashed #30b0f0');
+	}
 }
 
 UserList.prototype = {
@@ -482,8 +527,11 @@ UserList.prototype = {
 			let elm = $('<div>').addClass('userlist').text(ret[d]);
 			this.div.append(elm);
 		});
+		return;
 	},
 	get : function() {
 		return this.data;
+	},
+	edit : function() {
 	}
 };

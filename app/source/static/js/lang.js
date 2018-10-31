@@ -53,6 +53,8 @@ var $L = {
 		'VERSION' : 'バージョン',
 		'DRAFT_NO' : '案No.',
 		'DRAFT_EDIT_MEMBER' : '案作成メンバー',
+		'REQ_NUM_AUTHORS' : '必須承認数',
+		'AUTHORS' : '承認者一覧',
 		'NEW' : '新規',
 		'REVOKE' : '破棄',
 		'RELOAD' : 'リロード',

@@ -57,7 +57,16 @@ Header = {
 		addItem(_L('SEARCH'), function() {
 			History.backTo(0);
 		});
+		Account.logined = true;
+		Account.user = 'local';
 		if (Account.logined) {
+			addItem(_L('CREATE_CIPHER'), function() {
+				let cipher = new Cipher({
+					mode : MODE.NEW,
+					div : $('#main')
+				});
+				History.run(_L('CIPHER'), cipher);
+			});
 			addItem(_L('ACCOUNT'), function() {
 				Account.ref();
 			});

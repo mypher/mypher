@@ -13,6 +13,7 @@
   },
   "description": "",
   "dependencies": {
+    "bignum": "^0.13.0",
     "config": "^2.0.1",
     "eosjs": "^20.0.0-beta1",
     "eosjs-ecc": "^4.0.4",

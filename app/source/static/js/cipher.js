@@ -92,20 +92,28 @@ Cipher.prototype = {
 		let btn1 = this.mkBtn1();
 		await Util.load(this.div, 'parts/cipher.html', this.mode, {
 			draft : [],
+			tags : {
+				click : () => {
+					return true;
+				}
+			},
 			button1 : btn1,
 			button2 : [],
-			editors : [{
+			editors : {
 				click : () => {
+					return true;
 				}
-			}],
-			authrors : [{
+			},
+			authrors : {
 				click : () => {
+					return true;
 				}
-			}],
-			approved : [{
+			},
+			approved : {
 				click : () => {
+					return true;
 				}
-			}]
+			}
 		});
 		this.set(this.data);
 	},
@@ -125,7 +133,7 @@ Cipher.prototype.Validator = {
 			return true;
 		}
 		// only the case which version is bigger than latest formal version, a draft is editable
-		if (data.formalver >= data.ver) {
+		if (data.formalver >= data.version) {
 			return false;
 		}
 		return true;
@@ -145,11 +153,11 @@ Cipher.prototype.Validator = {
 
 	canUseForSource : function(data) {
 		// a draft whose version is bigger than latest formal version can be used for source.
-		if (data.ver>data.formalver) {
+		if (data.version>data.formalver) {
 			return true;
 		}
 		// latest formal version can be used for source.
-		if (data.ver===data.formalver && data.draftno===data.formaldraft) {
+		if (data.version===data.formalver && data.draftno===data.formaldraft) {
 			return true;
 		}
 		return false;

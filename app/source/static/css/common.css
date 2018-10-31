@@ -115,6 +115,14 @@ td {
 	cursor: pointer;
 }
 
+.tagedit {
+	
+}
+
+.tag > input {
+	border: 0px;
+}
+
 .userlist {
 	float: left;
 	background-color: #30b0f0;

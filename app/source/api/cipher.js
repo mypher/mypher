@@ -5,14 +5,20 @@
 
 'use_strict'
 
-let log = require('../cmn/logger')('api.user');
-let cmn = require('./cmn');
-let ipfs = require('../db/ipfs');
-let eos = require('../db/eos');
+const log = require('../cmn/logger')('api.user');
+const cmn = require('./cmn');
+const ipfs = require('../db/ipfs');
+const eos = require('../db/eos');
+const bignum = require('bignum');
+
+const shift32 = bignum.pow(2,32);
+const shift16 = bignum.pow(2,16);
 
 function makeSubKey(cipherid, version, draftno) {
-
-	return parseInt(cipherid) << 32 | parseInt(version) << 16 | parseInt(draftno);
+	cipherid = bignum(cipherid);
+	version = bignum(version);
+	draftno = bignum(draftno);
+	return cipherid.mul(shift32).add(version.mul(shift16)).add(draftno).toString();
 }
 
 module.exports = {
@@ -78,20 +84,23 @@ module.exports = {
 			ret.data.name = key[0].name;
 			ret.data.tags = key[0].tags;
 
-			// formalver
-			// formaldraft
 			// get alldata in current and previous version
-			let skey = makeSubKey(ret.data.cipherid, ret.data.version-1, 0);
+			let min = makeSubKey(ret.data.cipherid, ret.data.version-1, 0);
+			let max = makeSubKey(ret.data.cipherid, ret.data.version+1, 0);
 			let sdata = await eos.getDataWithSubKey({
 				code : 'mypher',
 				scope : 'mypher',
-				table : 'cipher'
-			}, 2, skey);
-			sdata.forEach(d => {
-				if (d.formal) {
-					console.log(d.cipherid, d.version, d.draftno);
-				}
-			});
+				table : 'cipher',
+				limit : 65535
+			}, 2, 'i64', min, max);
+			if (sdata instanceof Array) {
+				sdata.forEach(d => {
+					if (d.formal) {
+						ret.data.formalver = d.version;
+						ret.data.formaldraft = d.draftno;
+					}
+				});
+			}
 			return ret;
 		} catch (e) {
 			throw e;

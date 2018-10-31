@@ -95,6 +95,7 @@ Account = {
 						localStorage.setItem(KEY, JSON.stringify(data));
 						Account.logined = true;
 						Header.refresh();
+						History.rerun();
 					} else {
 						UI.alert(_L('INVALID_ID_OR_PASS'));
 						return;

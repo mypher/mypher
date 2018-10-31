@@ -51,11 +51,15 @@ module.exports = {
 		}
 	},
 
-	getDataWithSubKey : async function(d, kidx, key) {
+	getDataWithSubKey : async function(d, kidx, ktype, min, max) {
 		try {
-			d.lower_bound = key;
+			d.lower_bound = min;
+			d.upper_bound = max;
 			d.index_position = kidx;
-			let ret = await rpc.get_table_rows(d);
+			d.key_type = ktype;
+			d.json = true;
+			let path = '/v1/chain/get_table_rows';
+			let ret = await rpc.fetch(path, d); 
 			if (ret.rows.length===0) {
 				return null;
 			}
