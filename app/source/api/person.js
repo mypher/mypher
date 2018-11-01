@@ -15,7 +15,7 @@ module.exports = {
 		try {
 			let ret = [];
 			for ( let i in d ) {
-				if (!cmn.isEosID(d.id)) {
+				if (!cmn.isEosID(d[i])) {
 					return {code:'INVALID_PARAM'};
 				}
 				let data = await eos.getDataWithPKey({
@@ -23,7 +23,7 @@ module.exports = {
 					scope : 'mypher',
 					table : 'person',
 				}, d[i] );
-				if (data!==null&&data.length>0) {
+				if (data!==null&&data.length>0&&d[i]===data[0].id) {
 					ret.push({id:d[i], name:data[0].name});
 				}
 			}

@@ -163,13 +163,12 @@ let Util = {
 				return ret;
 			}
 			let names = await Rpc.call('person.getName', [req]);
-			if (names.code) {
-				throw names.code;
+			if (names.code===undefined) {
+				names.forEach(elm => {
+					ret[elm.id] = elm.name;
+					Util.N[elm.id] = elm.name;
+				});
 			}
-			names.forEach(elm => {
-				ret[elm.id] = elm.name;
-				Util.N[elm.id] = elm.name;
-			});
 		}
 		return ret;
 	}, 
@@ -512,12 +511,13 @@ function UserList(div, mode, proc) {
 			if (self.proc&&self.proc()===false) {
 				return;
 			}
+			self.click();
 		}
-		self.edit();
 	});
 	if (self.mode!==MODE.REF) {
 		div.css('border', '1px dashed #30b0f0');
 	}
+	this.data = [];
 }
 
 UserList.prototype = {
@@ -528,7 +528,10 @@ UserList.prototype = {
 			this.data = [data];
 		}
 		this.div.empty();
-		let ret = await Util.name(this.data);
+		let ret = {};
+		try {
+			ret = await Util.name(this.data);
+		} catch (e) {}
 		this.data.forEach(d => {
 			let elm = $('<div>').addClass('userlist').text(ret[d]);
 			this.div.append(elm);
@@ -538,7 +541,35 @@ UserList.prototype = {
 	get : function() {
 		return this.data;
 	},
-	edit : function() {
+	click : function() {
+		let inp = this.div.find('input');
+		if (inp.length>0) {
+			inp.remove();
+			return;
+		}
+		inp = $('<input type="text">').addClass('taginp').prop('size', 2);
+		this.div.append(inp);
+		let blur = async () => {
+			let val = inp.val();
+			if (/^[ ]*$/.exec(val)) return;
+			this.data.push(val);
+			await this.set(this.data);
+		};
+		inp.focus().blur(blur).keydown(v=> {
+			if (v.keyCode===9) {
+				blur().then(() => {
+					window.setTimeout(() => {
+						this.click();
+					}, 50);
+				});
+				return false;
+			} else if (v.keyCode===13) {
+				blur();
+				return false;
+			}
+			let val = inp.val();
+			inp.prop('size', val.bytes()+2);
+		});
 	}
 };
 

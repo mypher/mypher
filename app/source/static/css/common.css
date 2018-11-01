@@ -105,7 +105,7 @@ td {
 
 .tag {
 	float: left;
-	padding: 0px 22px 0px 22px;
+	padding: 4px 22px 4px 22px;
 	background: url(../img/glyphicons-66-tag2.png);
 	background-repeat: no-repeat;
 	background-position: left;
@@ -118,17 +118,21 @@ td {
 
 .taginp {
 	border: 0px;
-	padding: 0px;
+	padding: 4px;
+	margin: 0px;
+	outline:none;
 }
 
 .userlist {
 	float: left;
 	background-color: #30b0f0;
 	margin: 4px;
-	padding: 8px;
+	padding: 2px 16px;
 	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	cursor: pointer;
+	font-size: 10pt;
+	color:#fff;
 }
 

@@ -105,5 +105,12 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
+	},
+	add : async d => {
+		try {
+
+		} catch (e) {
+			throw e;
+		}
 	}
 };

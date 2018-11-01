@@ -259,7 +259,7 @@ module.exports = {
 	},
 
 	isEosID : id => {
-		return (/^[1-5a-z]{1,12}$/.exec(id)!==null);
+		return typeof(id)==='string' && (/^[1-5a-z]{1,12}$/.exec(id)!==null);
 	},
 
 	isIpfsKey : key => {

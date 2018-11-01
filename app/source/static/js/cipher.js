@@ -123,6 +123,16 @@ Cipher.prototype = {
 			await this.current();
 		}
 		await this.refresh();
+	},
+
+	add : async function() {
+		let ret = await Rpc.call(
+			'cipher.new',
+			[this.get()]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+		}
 	}
 };
 
