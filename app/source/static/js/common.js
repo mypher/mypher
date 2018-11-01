@@ -456,12 +456,14 @@ Tag.prototype = {
 			this.data = [data];
 		}
 		this.div.empty();
-		this.data.forEach(txt => {
-			let elm = $('<div>').addClass('tag').text(txt);
+		this.data.forEach((txt, idx) => {
+			let elm = $('<div>').addClass('tag').text(txt).prop('idx', idx);
 			this.div.append(elm);
 			if (this.mode!==MODE.REF) {
 				let self = this;
-				elm.addClass('tagedit').click(() => {
+				elm.click(() => {
+					this.data = this.data.filter((n,idx) => idx!==parseInt(elm.prop('idx')));
+					this.set(this.data);
 				});
 			}
 		});
@@ -475,10 +477,12 @@ Tag.prototype = {
 			inp.remove();
 			return;
 		}
-		inp = $('<input type="text">');
+		inp = $('<input type="text">').addClass('taginp').prop('size', 2);
 		this.div.append(inp);
 		let blur = () => {
-			this.data.push(inp.val());
+			let val = inp.val();
+			if (/^[ ]*$/.exec(val)) return;
+			this.data.push(val);
 			this.set(this.data);
 		};
 		inp.focus().blur(blur).keydown(v=> {
@@ -492,6 +496,8 @@ Tag.prototype = {
 				blur();
 				return false;
 			}
+			let val = inp.val();
+			inp.prop('size', val.bytes()+2);
 		});
 	}
 };
@@ -534,4 +540,17 @@ UserList.prototype = {
 	},
 	edit : function() {
 	}
+};
+
+String.prototype.bytes = function () {
+	var length = 0;
+	for (var i = 0; i < this.length; i++) {
+		var c = this.charCodeAt(i);
+		if ((c >= 0x0 && c < 0x81) || (c === 0xf8f0) || (c >= 0xff61 && c < 0xffa0) || (c >= 0xf8f1 && c < 0xf8f4)) {
+			length += 1;
+		} else {
+			length += 2;
+		}
+	}
+	return length;
 };

@@ -115,12 +115,10 @@ td {
 	cursor: pointer;
 }
 
-.tagedit {
-	
-}
 
-.tag > input {
+.taginp {
 	border: 0px;
+	padding: 0px;
 }
 
 .userlist {
