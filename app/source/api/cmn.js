@@ -94,6 +94,15 @@ module.exports = {
 		return ((typeof(d)==='string') && (d.length===64)) || d==='';
 	},
 
+	isUint16 : d => {
+		try {
+			var d = parseInt(d);
+			return (0<=d)&&(d<=65535);
+		} catch (e) {
+			return false;
+		}
+	},
+
 	isSmallInt : d => {
 		try {
 			var d = parseInt(d);
@@ -101,11 +110,14 @@ module.exports = {
 		} catch (e) {
 			return false;
 		}
-		return true;
 	},
 
 	isEmpty : d => {
 		return (typeof(d)!=='string') || (d.length===0);
+	},
+
+	isString : d => {
+		return (typeof(d)==='string');
 	},
 
 	chkTypes : p => {

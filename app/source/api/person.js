@@ -120,7 +120,7 @@ module.exports = {
 				let ret = await ipfs.add({desc:d.desc});
 				data.info = ret[0].path;
 			}
-			return eos.pushAction({
+			return await eos.pushAction({
 				actions :[{
 					account : 'mypher',
 					name : 'pupdate',

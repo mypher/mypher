@@ -388,6 +388,8 @@ let Util = {
 				let v = elm.attr('ctrl');
 				if (v==='tag') {
 					base[elm.attr('field')] = elm.get(0).obj.get();
+				} else if (v==='user') {
+					base[elm.attr('field')] = elm.get(0).obj.get();
 				} else {
 					base[elm.attr('field')] = elm.val();
 				}

@@ -23,6 +23,10 @@ Cipher.prototype = {
 		this.data = info.data;
 	},
 
+	get : function() {
+		return Util.getData(this.div, {});
+	},
+
 	set : async function(data) {
 		this.data = data;
 		Util.setData(this.div, this.data);
@@ -126,12 +130,20 @@ Cipher.prototype = {
 	},
 
 	add : async function() {
-		let ret = await Rpc.call(
-			'cipher.new',
-			[this.get()]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
+		let data = this.get();
+		data.user = Account.user;
+		try {
+			let ret = await Rpc.call(
+				'cipher.add',
+				[data]
+			);
+			if (ret.code!==undefined) {
+				UI.alert(ret.code);
+				return;
+			}
+			History.back();
+		} catch (e) {
+			UI.alert(e.message);
 		}
 	}
 };

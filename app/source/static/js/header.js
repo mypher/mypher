@@ -57,8 +57,8 @@ Header = {
 		addItem(_L('SEARCH'), function() {
 			History.backTo(0);
 		});
-		Account.logined = true;
-		Account.user = 'local';
+		//Account.logined = true;
+		//Account.user = 'local';
 		if (Account.logined) {
 			addItem(_L('CREATE_CIPHER'), function() {
 				let cipher = new Cipher({
