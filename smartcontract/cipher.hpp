@@ -40,7 +40,7 @@ public:
 
 		uint64_t primary_key() const { return id; }
 		uint64_t secondary_key() const { 
-			return gen_secondary_key(cipherid, version);	
+			return gen_secondary_key(cipherid, version, draftno);	
 		}
 		
 		EOSLIB_SERIALIZE(cipher, 
@@ -78,8 +78,6 @@ public:
 			ckey
 	> keydata;
 
-
-
 	/**
 	 * @brief create new cipher
 	 */
@@ -88,6 +86,8 @@ public:
 				const std::string& name, const std::vector<account_name>& editors,
 				const std::vector<std::string>& tags, const std::string& hash,
 				uint16_t drule_req, const std::vector<account_name>& drule_auth);
+	[[eosio::action]]
+	void ccopy(const account_name sender, uint64_t id);
 	[[eosio::action]]
 	void cdraft(const account_name sender, 
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
@@ -110,7 +110,8 @@ public:
 private:
 	account_name self;
 
-	static uint64_t gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver);
+	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
+									 const uint16_t& ver, const uint16_t& draftno);
 	static std::string gen_third_key(const bool& formal, const std::string& name);
 
 	bool canEdit(const account_name& sender, const std::vector<account_name>& editors);

@@ -195,49 +195,6 @@ let Util = {
 		}
 		return ret;
 	},
-/*	load : function(div, file, cb) {
-		div.empty();
-		return Util.promise(function(resolve, reject) {
-			div.load(file, function(res, status) {
-				if (status==='error') {
-					reject();
-				}
-				cb(resolve, reject);
-			});
-		});
-	},
-	initDiv : function(div, mode, btns) {
-		div.find('*[disable_on]').prop('disabled', false);
-		div.find("*[hide_on]").css('display', '');
-		switch (mode) {
-		case MODE.NEW:
-			div.find('*[disable_on*=add]').prop('disabled', true);
-			div.find("*[hide_on*=add]").css('display', 'none');
-			break;
-		case MODE.EDIT:
-			div.find('*[disable_on*=edit]').prop('disabled', true);
-			div.find('*[hide_on*=edit]').css('display', 'none');
-			break;
-		case MODE.REF:
-			div.find('*[disable_on*=ref]').prop('disabled', true);
-			div.find('*[hide_on*=ref]').css('display', 'none');
-			break;
-		case MODE.REF2:
-			div.find('*[disable_on*=rf2]').prop('disabled', true);
-			div.find('*[hide_on*=rf2]').css('display', 'none');
-			break;
-		}
-		var l = div.find('*[ltext]');
-		for ( var i=0; i<l.length; i++ ) {
-			var elm = l.eq(i);
-			elm.text(_L(elm.attr('ltext')));
-		}
-		l = div.find('div[btnproc]');
-		for ( var i=0; i<l.length; i++ ) {
-			var elm = l.eq(i);
-			Util.initButton(elm.find('button'), btns[elm.attr('btnproc')]);
-		}
-	},*/
 	load : async (div, file, mode, btns) => {
 		div.empty();
 		return Util.promise(function(resolve, reject) {
@@ -282,6 +239,9 @@ let Util = {
 					case 'user':
 						Util.initUserList(elm, mode, btns[elm.attr('proc')]);
 						break;
+					case 'list':
+						Util.initList(elm, mode, btns[elm.attr('proc')]);
+						break;
 					default:
 						Util.initButton(elm.find('button'), btns[elm.attr('proc')]);
 						break;
@@ -314,6 +274,25 @@ let Util = {
 	initUserList : function(list, mode, proc) {
 		let elm = list.get(0);
 		elm.obj = new UserList(list.eq(0), mode, proc);
+	},
+	initList : function(list, mode, proc) {
+		const elm = list.get(0);
+		const data = {
+			div : list.eq(0),
+			type : mode,
+			col : proc.col,
+			key : proc.key
+		};
+		const cb = (code, d, list) => {
+			if (code===LIST_NOTIFY.DATA) {
+				proc.ondata(d, list);
+			} else if (code===LIST_NOTIFY.SELECT) {
+				proc.onselect(d, list);
+			} else if (code===LIST_NOTIFY.CREATE) {
+				proc.onadd(d, list);
+			}
+		};
+		elm.obj = new List(data, cb);
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
@@ -357,6 +336,10 @@ let Util = {
 					break;
 				case 'user':
 					elms.get(0).obj.set(dd);
+					break;
+				case 'list':
+					elms.get(0).obj.set(dd);
+					break;
 				}
 				continue;
 			}
@@ -389,6 +372,8 @@ let Util = {
 				if (v==='tag') {
 					base[elm.attr('field')] = elm.get(0).obj.get();
 				} else if (v==='user') {
+					base[elm.attr('field')] = elm.get(0).obj.get();
+				} else if (v==='list') {
 					base[elm.attr('field')] = elm.get(0).obj.get();
 				} else {
 					base[elm.attr('field')] = elm.val();
@@ -587,3 +572,4 @@ String.prototype.bytes = function () {
 	}
 	return length;
 };
+

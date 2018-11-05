@@ -112,6 +112,14 @@ module.exports = {
 		}
 	},
 
+	isNumber : d => {
+		try {
+			return parseInt(d);
+		} catch (e) {
+			return false;
+		}
+	},
+
 	isEmpty : d => {
 		return (typeof(d)!=='string') || (d.length===0);
 	},

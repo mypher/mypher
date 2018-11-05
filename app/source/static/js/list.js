@@ -27,16 +27,16 @@ List.prototype = {
 				var div = self.div.find('div[name="li_list"]');
 				// BUTTON
 				div = self.div.find('div[name="li_button"]');
-				if (self.type===MODE.NEW) {
+				if (self.type===MODE.NEW||self.type===MODE.EDIT) {
 					var btn = $(div[0]).find('button');
 					$(btn[0]).text(_L('CREATE')).click(function() {
-						self.cb(LIST_NOTIFY.CREATE);
+						self.cb(LIST_NOTIFY.CREATE, null, self);
 					});
 				} else {
 					div.css('display', 'none');
 				}
 				resolve();
-				self.cb(LIST_NOTIFY.DATA);
+				self.cb(LIST_NOTIFY.DATA, null, self);
 			});
 		});
 	},
@@ -60,7 +60,7 @@ List.prototype = {
 		for ( var i in data ) {
 			var cls = (i%2===1) ? '' : ' odd';
 			html = [
-				'<div class="row' + cls + '" key="' + i + '">'
+				'<div class="row li_row' + cls + '" key="' + i + '">'
 			];
 			for ( var j=0; j<col.length; j++ ) {
 				html.push('<div class="col-' + col[j].width + '"><div>');
@@ -72,7 +72,7 @@ List.prototype = {
 			root.append(row);
 			row.click(function() {
 				var val = $(this).attr('key');
-				self.cb(LIST_NOTIFY.SELECT, data[val]);
+				self.cb(LIST_NOTIFY.SELECT, data[val], self);
 			});
 		}
 	}

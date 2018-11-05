@@ -14,7 +14,7 @@ namespace mypher {
 using namespace eosio;
 
 uint64_t Cipher::gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver, const uint16_t& draftno) {
-	return (uint64_t{cipherid} << 32) | (uint64_t{ver} << 16) | draftno;
+	return (uint64_t{cipherid} << 24) | (uint64_t{ver} << 12) | draftno;
 }
 
 std::string Cipher::gen_third_key(const bool& formal, const std::string& name) {
@@ -36,23 +36,30 @@ uint32_t Cipher::getNewCipherId(const data& d) {
 
 uint16_t Cipher::getNewVersion(const data& d, const uint32_t cipherid) {
 	auto idx = d.get_index<N(secondary_key)>();
-	auto lower = idx.lower_bound(uint64_t{cipherid}<<32);
-	auto upper = idx.upper_bound(uint64_t{cipherid+1}<<32);
-	eosio_assert(lower==idx.end(), "SYSTEM_ERROR");
+	auto lower = idx.lower_bound(gen_secondary_key(cipherid, 1, 1));
+	auto upper = idx.upper_bound(gen_secondary_key(cipherid+1, 1, 1));
+	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
 	auto pre = lower;
+	bool formaled = false;
 	for (auto it=lower; it!=upper; ++it ) {
+		if (pre->version!=it->version) {
+			formaled = false;
+		}
+		if (it->formal==true) {
+			formaled = true;
+		}
 		pre = it;
 	}
-	return pre->version + 1;
+	return pre->version + (formaled ? 1 : 0 );
 }
 
 bool Cipher::isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver) {
 	auto idx = d.get_index<N(secondary_key)>();
-	auto id64 = uint64_t{cipherid}<<32;
+	auto id64 = uint64_t{cipherid}<<24;
 	uint16_t ver2 = ver+1;
-	auto lower = idx.lower_bound(id64|uint64_t{ver}<<16);
-	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<16);
-	eosio_assert(lower==idx.end(), "SYSTEM_ERROR");
+	auto lower = idx.lower_bound(id64|uint64_t{ver}<<12);
+	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<12);
+	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
 	for (auto it=lower; it!=upper; ++it ) {
 		if (it->formal) return true;
 	}
@@ -61,11 +68,11 @@ bool Cipher::isVersionFormal(const data& d, const uint32_t cipherid, const uint1
 
 uint16_t Cipher::getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver) {
 	auto idx = d.get_index<N(secondary_key)>();
-	auto id64 = uint64_t{cipherid}<<32;
+	auto id64 = uint64_t{cipherid}<<24;
 	uint16_t ver2 = ver+1;
-	auto lower = idx.lower_bound(id64|uint64_t{ver}<<16);
-	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<16);
-	eosio_assert(lower==idx.end(), "SYSTEM_ERROR");
+	auto lower = idx.lower_bound(id64|uint64_t{ver}<<12);
+	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<12);
+	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
 	auto pre = lower;
 	for (auto it=lower; it!=upper; ++it ) {
 		pre = it;
@@ -102,6 +109,42 @@ void Cipher::cnew(const account_name sender,
 		dd.tags = tags;
 		dd.formal = true;
 	});
+}
+
+void Cipher::ccopy(const account_name sender, const uint64_t id) {
+	require_auth(sender);
+	data d(self, self);
+	uint64_t newid = d.available_primary_key();
+	auto rec = d.find(id);
+	auto version = getNewVersion(d, rec->cipherid);
+	auto draftno = getNewDraftNo(d, rec->cipherid, version);
+	std::vector<account_name> editors;
+
+	eosio::print("##Ciher.copy:", rec->cipherid, (uint64_t)version, (uint64_t)draftno);
+	
+	editors.push_back(sender);
+	// insert new draft
+	d.emplace(sender, [&](auto& dd) {
+		dd.id = newid;
+		dd.cipherid = rec->cipherid;
+		dd.version = version;
+		dd.draftno = draftno;
+		dd.editors = editors;
+		dd.hash = rec->hash;
+		dd.drule_req = rec->drule_req;
+		dd.drule_auth = rec->drule_auth;
+		dd.formal = false;
+	});
+	// insert key data
+	keydata d2(self, self);
+	auto rec2 = d2.find(id);
+	d2.emplace(sender, [&](auto& dd) {
+		dd.id = newid;
+		dd.name = rec2->name;
+		dd.tags = rec2->tags;
+		dd.formal = false;
+	});
+	
 }
 
 void Cipher::cdraft(const account_name sender, 

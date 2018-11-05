@@ -14,11 +14,18 @@
 }
 
 .li_list > .li_head {
-	border-bottom:1px solid #ccc;
+	border:1px solid #eee;
+	background-color:#e0f4ff;
 }
 
 .li_list > .li_head > div > div {
 	font-weight:bold;
+}
+
+.li_list > .li_row {
+	border-left:1px solid #eee;
+	border-right:1px solid #eee;
+	border-bottom:1px solid #eee;
 }
 
 .li_list > div {
@@ -46,10 +53,11 @@
 
 .li_button {
 	height:40px;
+	margin:0px 20px;
 }
 
 .li_button > div {
-	padding:20px;
+	padding:8px;
 }
 
 .li_button > div > button {

@@ -28,9 +28,32 @@ Cipher.prototype = {
 	},
 
 	set : async function(data) {
+		data.purpose = _L('LOADING');
 		this.data = data;
 		Util.setData(this.div, this.data);
 		this.mkBtn2();
+		const drawDesc = o => {
+			v = {
+				purpose : o.purpose
+			};
+			Object.assign(this.data, v);
+			Util.setData(this.div, v);
+		};
+		Rpc.call(
+			'cipher.get_desc',
+			[{hash:this.data.hash}]
+		).then(info => {
+			drawDesc(info);
+		}).catch(e => {
+			drawDesc({});
+		});
+	},
+
+	newDraft : async function() {
+		const info = await Rpc.call(
+			'cipher.copy',
+			[{id.this.data.id}]
+		);
 	},
 
 	mkBtn1 : function() {
@@ -117,6 +140,60 @@ Cipher.prototype = {
 				click : () => {
 					return true;
 				}
+			},
+			token : {
+				col : [
+					{ width : 6, label : _L('ID'), name : 'id' },
+					{ width : 6, label : _L('NAME2'), name : 'name' }
+				],
+				key : [],
+				ondata : (d, list) => {
+					list.show([
+						{id:1, name:'test1'},
+						{id:2, name:'test2'},
+					]);
+				},
+				onselect : (d, list) => {
+					// d.id
+				},
+				onadd : (d, list) => {
+				}	
+			},
+			task : {
+				col : [
+					{ width : 6, label : _L('ID'), name : 'id' },
+					{ width : 6, label : _L('NAME2'), name : 'name' }
+				],
+				key : [],
+				ondata : (d, list) => {
+					list.show([
+						{id:1, name:'test1'},
+						{id:2, name:'test2'},
+					]);
+				},
+				onselect : (d, list) => {
+					// d.id
+				},
+				onadd : (d, list) => {
+				}	
+			},
+			rule : {
+				col : [
+					{ width : 6, label : _L('ID'), name : 'id' },
+					{ width : 6, label : _L('NAME2'), name : 'name' }
+				],
+				key : [],
+				ondata : (d, list) => {
+					list.show([
+						{id:1, name:'test1'},
+						{id:2, name:'test2'},
+					]);
+				},
+				onselect : (d, list) => {
+					// d.id
+				},
+				onadd : (d, list) => {
+				}	
 			}
 		});
 		this.set(this.data);

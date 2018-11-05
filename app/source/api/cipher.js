@@ -106,6 +106,43 @@ module.exports = {
 			throw e;
 		}
 	},
+	copy : async d => {
+		try {
+			if (!cmn.chkTypes([
+				{p:d.user, f:cmn.isEosID},
+				{p:d.id, f:cmn.isNumber}
+			])) {
+				return {code:'INVALID_PARAM'};
+			}
+			d.sender = d.user;
+			return await eos.pushAction({
+				actions :[{
+					account : 'mypher',
+					name : 'ccopy',
+					authorization: [{
+						actor: d.user,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			throw e;
+		}
+	},
+	get_desc : async d => {
+		try {
+			if (cmn.isEmpty(d.hash)) {
+				return {};
+			}
+			if (!cmn.isIpfsKey(d.hash)) {
+				return {code:'INVALID_PARAM'};
+			}
+			return await ipfs.get(d.hash);
+		} catch (e) {
+			throw e;
+		}
+	},
 	add : async d => {
 		try {
 			if (!cmn.chkTypes([
