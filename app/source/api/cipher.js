@@ -11,14 +11,14 @@ const ipfs = require('../db/ipfs');
 const eos = require('../db/eos');
 const bignum = require('bignum');
 
-const shift32 = bignum.pow(2,32);
-const shift16 = bignum.pow(2,16);
+const shift24 = bignum.pow(2,24);
+const shift12 = bignum.pow(2,12);
 
 function makeSubKey(cipherid, version, draftno) {
 	cipherid = bignum(cipherid);
 	version = bignum(version);
 	draftno = bignum(draftno);
-	return cipherid.mul(shift32).add(version.mul(shift16)).add(draftno).toString();
+	return cipherid.mul(shift24).add(version.mul(shift12)).add(draftno).toString();
 }
 
 module.exports = {
@@ -107,6 +107,7 @@ module.exports = {
 		}
 	},
 	copy : async d => {
+		let ret;
 		try {
 			if (!cmn.chkTypes([
 				{p:d.user, f:cmn.isEosID},
@@ -115,7 +116,7 @@ module.exports = {
 				return {code:'INVALID_PARAM'};
 			}
 			d.sender = d.user;
-			return await eos.pushAction({
+			ret = await eos.pushAction({
 				actions :[{
 					account : 'mypher',
 					name : 'ccopy',
@@ -126,6 +127,45 @@ module.exports = {
 					data:d,
 				}]
 			});
+		} catch (e) {
+			throw e;
+		}
+		await cmn.sleep(500);
+		for ( let i=0; i<5; i++) {
+			try {
+				await cmn.sleep(300);
+				ret = await eos.getTransaction(ret.transaction_id, ret.processed.block_num);
+				break;
+			} catch (e) {
+				// not sent yet
+			}
+		}
+		try {
+			// TODO:reserch another way
+			// get recent record
+			const min = makeSubKey(d.cipherid, 0, 0);
+			const max = makeSubKey(d.cipherid+1,0, 0);
+			const sdata = await eos.getDataWithSubKey({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'cipher',
+				limit : 65535
+			}, 2, 'i64', min, max);
+			if (sdata instanceof Array) {
+				let prever = sdata[sdata.length-1].version;
+				for (let i=sdata.length-1; i>=0; i-- ) {
+					const rec = sdata[i];
+					// copied record not found
+					if (prever!==rec.version) {
+						break;
+					}
+					if (rec.editors.length===1 && rec.editors[0]===d.user) {
+						return rec.id;
+					}
+					prever = rec.version;
+				}
+			}
+			return -1;
 		} catch (e) {
 			throw e;
 		}

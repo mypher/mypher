@@ -285,11 +285,21 @@ let Util = {
 		};
 		const cb = (code, d, list) => {
 			if (code===LIST_NOTIFY.DATA) {
-				proc.ondata(d, list);
+				if (proc.ondata) {
+					return proc.ondata(d, list);
+				}
 			} else if (code===LIST_NOTIFY.SELECT) {
-				proc.onselect(d, list);
+				if (proc.onselect) {
+					return proc.onselect(d, list);
+				}
 			} else if (code===LIST_NOTIFY.CREATE) {
-				proc.onadd(d, list);
+				if (proc.onadd) {
+					return proc.onadd(d, list);
+				}
+			} else if (code===LIST_NOTIFY.GETDATA) {
+				if (proc.ongetdata) {
+					return proc.ongetdata(d, list);
+				}
 			}
 		};
 		elm.obj = new List(data, cb);
@@ -368,14 +378,17 @@ let Util = {
 			if (tagname==='LABEL') {
 				base[elm.attr('field')] = elm.text();
 			} else {
-				let v = elm.attr('ctrl');
-				if (v==='tag') {
-					base[elm.attr('field')] = elm.get(0).obj.get();
-				} else if (v==='user') {
-					base[elm.attr('field')] = elm.get(0).obj.get();
-				} else if (v==='list') {
-					base[elm.attr('field')] = elm.get(0).obj.get();
-				} else {
+				const v = elm.attr('ctrl');
+				const o = elm.get(0).obj;
+				switch (v) {
+				case 'tag':
+				case 'user':
+					if (o) base[elm.attr('field')] = o.get();
+					break;
+				case 'list':
+					if (o) base[elm.attr('field')] = o.onget();
+					break;
+				default:
 					base[elm.attr('field')] = elm.val();
 				}
 			}

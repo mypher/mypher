@@ -14,7 +14,9 @@ namespace mypher {
 using namespace eosio;
 
 uint64_t Cipher::gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver, const uint16_t& draftno) {
-	return (uint64_t{cipherid} << 24) | (uint64_t{ver} << 12) | draftno;
+	uint64_t ret = (uint64_t{cipherid} << 24) | (uint64_t{ver} << 12) | draftno;
+	eosio::print("###cipherid:", cipherid, " version:", uint64_t{ver}, " draftno:", uint64_t{draftno}, "=>", ret, "\n");
+	return ret;
 }
 
 std::string Cipher::gen_third_key(const bool& formal, const std::string& name) {
@@ -55,10 +57,8 @@ uint16_t Cipher::getNewVersion(const data& d, const uint32_t cipherid) {
 
 bool Cipher::isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver) {
 	auto idx = d.get_index<N(secondary_key)>();
-	auto id64 = uint64_t{cipherid}<<24;
-	uint16_t ver2 = ver+1;
-	auto lower = idx.lower_bound(id64|uint64_t{ver}<<12);
-	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<12);
+	auto lower = idx.lower_bound(gen_secondary_key(cipherid, ver, 1));
+	auto upper = idx.upper_bound(gen_secondary_key(cipherid, ver+1, 1));
 	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
 	for (auto it=lower; it!=upper; ++it ) {
 		if (it->formal) return true;
@@ -68,16 +68,16 @@ bool Cipher::isVersionFormal(const data& d, const uint32_t cipherid, const uint1
 
 uint16_t Cipher::getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver) {
 	auto idx = d.get_index<N(secondary_key)>();
-	auto id64 = uint64_t{cipherid}<<24;
-	uint16_t ver2 = ver+1;
-	auto lower = idx.lower_bound(id64|uint64_t{ver}<<12);
-	auto upper = idx.upper_bound(id64|uint64_t{ver2}<<12);
-	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
-	auto pre = lower;
-	for (auto it=lower; it!=upper; ++it ) {
-		pre = it;
+	auto lower = idx.lower_bound(gen_secondary_key(cipherid, ver, 1));
+	auto upper = idx.upper_bound(gen_secondary_key(cipherid, ver+1, 1));
+	if (lower!=idx.end()) {
+		auto pre = lower;
+		for (auto it=lower; it!=upper; ++it ) {
+			pre = it;
+		}
+		return pre->draftno + 1;
 	}
-	return pre->draftno + 1;
+	return 1;
 }
 
 void Cipher::cnew(const account_name sender, 

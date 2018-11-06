@@ -50,10 +50,21 @@ Cipher.prototype = {
 	},
 
 	newDraft : async function() {
-		const info = await Rpc.call(
+		const newid = await Rpc.call(
 			'cipher.copy',
-			[{id.this.data.id}]
+			[{
+				user : Account.loginUser(),
+				id : this.data.id,
+				cipherid : this.data.cipherid
+			}]
 		);
+		if (newid===-1) {
+			UI.alert(_L('FAILED_TO_GET_DATA'));
+			return;
+		}
+		this.data.id = newid;
+		this.mode = MODE.REF;
+		await this.draw();
 	},
 
 	mkBtn1 : function() {

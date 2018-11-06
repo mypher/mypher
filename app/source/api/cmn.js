@@ -114,7 +114,8 @@ module.exports = {
 
 	isNumber : d => {
 		try {
-			return parseInt(d);
+			parseInt(d);
+			return true;
 		} catch (e) {
 			return false;
 		}
@@ -148,6 +149,14 @@ module.exports = {
 
 	isArray : d => {
 		return d instanceof Array;
+	},
+
+	sleep : async t => {
+		return new Promise(resolve => {
+			setTimeout(()=> {
+				resolve();
+			}, t);
+		});
 	},
 
 /*	chkRule : async (req, auth) => {

@@ -6,7 +6,8 @@
 let LIST_NOTIFY = {
 	CREATE : 1,
 	DATA : 2,
-	SELECT : 3
+	SELECT : 3,
+	GETDATA : 4
 };
 
 function List(type, cb) {
@@ -39,6 +40,10 @@ List.prototype = {
 				self.cb(LIST_NOTIFY.DATA, null, self);
 			});
 		});
+	},
+
+	onget : function() {
+		return this.cb(LIST_NOTIFY.GETDATA);
 	},
 
 	show : function(data) {

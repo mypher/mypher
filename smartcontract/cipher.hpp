@@ -39,7 +39,7 @@ public:
 		std::vector<account_name> approved;
 
 		uint64_t primary_key() const { return id; }
-		uint64_t secondary_key() const { 
+		uint64_t secondary_key() const {
 			return gen_secondary_key(cipherid, version, draftno);	
 		}
 		
