@@ -190,6 +190,7 @@ void Cipher::cdraft(const account_name sender,
 }
 
 void Cipher::cupdate(const account_name sender, 
+				uint64_t id,
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
 				const std::string& name, const std::vector<account_name>& editors,
 				const std::vector<std::string>& tags, const std::string& hash,
@@ -199,17 +200,17 @@ void Cipher::cupdate(const account_name sender,
 	require_auth(sender);
 	// check if version is already formal
 	data d(self, self);
-	eosio_assert(isVersionFormal(d, cipherid, version), "ALREADY_FORMAL");
-	auto idx = d.get_index<N(secondary_key)>();
-	// check if data is registered
-	auto key = Cipher::gen_secondary_key(cipherid, version, draftno);
-	auto rec = idx.find(key);
-	auto target = d.find(rec->id);
-	if (rec!=idx.end()) {
+	eosio_assert(!isVersionFormal(d, cipherid, version), "ALREADY_FORMAL");
+	auto rec = d.find(id);
+	if (rec!=d.end()) {
+		eosio_assert((
+			cipherid==rec->cipherid &&
+			version==rec->version && 
+			draftno==rec->draftno ), "INVALID_PARAM");
 		// check if sender can edit this draft
 		eosio_assert(canEdit(sender, rec->editors), "SENDER_CANT_EDIT");
 		// update data
-		d.modify(target, sender, [&](auto& dd) {
+		d.modify(rec, sender, [&](auto& dd) {
 			dd.editors = editors;
 			dd.hash = hash;
 			dd.drule_req = drule_req;
@@ -219,14 +220,14 @@ void Cipher::cupdate(const account_name sender,
 		});
 		// update tag data
 		keydata d2(self, self);
-		auto target2 = d2.find(rec->id);
+		auto target2 = d2.find(id);
 		d2.modify(target2, sender, [&](auto& dd) {
 			dd.name = name;
 			dd.tags = tags;
 			dd.formal = false;
 		});
 	}
-	eosio_assert(true, "DATA_NOT_FOUND");
+	eosio_assert(false, "DATA_NOT_FOUND");
 }
 
 void Cipher::capprove(const account_name sender, 

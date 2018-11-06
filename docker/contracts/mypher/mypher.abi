@@ -171,6 +171,10 @@
                     "name": "sender",
                     "type": "name"
                 },
+				{
+					"name": "id",
+					"type": "uint64"
+				},
                 {
                     "name": "cipherid",
                     "type": "uint32"

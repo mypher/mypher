@@ -97,7 +97,7 @@ Cipher.prototype = {
 			if (vali.isEditable(this.data, user)) {
 				btns.push({
 					text : 'EDIT',
-					click : () => { this.edit(); }
+					click : () => { this.startedit(); }
 				});
 			}
 			if (vali.canUseForSource(this.data) && user != null) {
@@ -233,6 +233,30 @@ Cipher.prototype = {
 		} catch (e) {
 			UI.alert(e.message);
 		}
+	},
+
+	commit : async function() {
+		let data = this.get();
+		data.user = Account.user;
+		try {
+			let ret = await Rpc.call(
+				'cipher.add',
+				[data]
+			);
+			if (ret.code!==undefined) {
+				UI.alert(ret.code);
+				return;
+			}
+			History.back();
+		} catch (e) {
+			UI.alert(e.message);
+		}
+	
+	},
+
+	startedit : async function() {
+		this.mode = MODE.EDIT;
+		await this.refresh();
 	}
 };
 

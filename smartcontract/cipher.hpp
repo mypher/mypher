@@ -95,7 +95,8 @@ public:
 				const std::vector<std::string>& tags, const std::string& hash,
 				uint16_t drule_req, const std::vector<account_name>& drule_auth);
 	[[eosio::action]]
-	void cupdate(const account_name sender, 
+	void cupdate(const account_name sender,
+				uint64_t id,
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
 				const std::string& name, const std::vector<account_name>& editors,
 				const std::vector<std::string>& tags, const std::string& hash,

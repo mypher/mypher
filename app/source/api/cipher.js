@@ -215,5 +215,42 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
+	},
+	edit : async d => {
+		try {
+			if (!cmn.chkTypes([
+				{p:d.id, f:cmn.isNumber},
+				{p:d.cipherid, f:cmn.isNumber},
+				{p:d.version, f:cmn.isUint16},
+				{p:d.draftno, f:cmn.isUint16},
+				{p:d.user, f:cmn.isEosID},
+				{p:d.editors, f:cmn.isArray},
+				{p:d.drule_req, f:cmn.isUint16},
+				{p:d.drule_auth, f:cmn.isArray},
+				{p:d.name, f:cmn.isEmpty, r:true},
+				{p:d.tags, f:cmn.isArray},
+				{p:d.purpose, f:cmn.isString}
+			])) {
+				return {code:'INVALID_PARAM'};
+			}
+			let ret = await ipfs.add({
+				purpose : d.purpose
+			});
+			d.hash = ret[0].path;
+			d.sender = d.user;
+			return await eos.pushAction({
+				actions :[{
+					account : 'mypher',
+					name : 'cupdate',
+					authorization: [{
+						actor: d.user,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			throw e;
+		}
 	}
 };
