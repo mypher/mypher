@@ -136,3 +136,16 @@ td {
 	color:#fff;
 }
 
+.section {
+	border:2px solid #eee;
+	padding:4px;
+	margin:10px 0px;
+	background : linear-gradient(0deg, #30b0f0, #30b0f080);
+}
+
+.section h5 {
+	color:#fff;
+	font-size:14pt;
+	margin:2px;
+}
+

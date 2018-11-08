@@ -12,6 +12,8 @@ _ = {
 		System.loadModule('cipher');
 		System.loadModule('search');
 		System.loadModule('list');
+		System.loadModule('cipherhist');
+		System.loadModule('token');
 		Header.init($('#head')).then(() => {
 			_.showSearch();
 		});

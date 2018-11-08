@@ -71,6 +71,13 @@ Header = {
 				Account.ref();
 			});
 		}
+			addItem(_L('CREATE_TOKEN'), function() {
+				let token = new Token({
+					mode : MODE.NEW,
+					div : $('#main')
+				});
+				History.run(_L('TOKEN'), token);
+			});
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();
 		});

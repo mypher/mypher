@@ -252,5 +252,36 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
+	},
+
+	hist : async d => {
+		try {
+			if (!cmn.isNumber(d.cipherid)) {
+				return {code:'INVALID_PARAM'};
+			}
+			let min = makeSubKey(d.cipherid, 1, 1);
+			let max = makeSubKey(d.cipherid+1, 1, 1);
+			let sdata = await eos.getDataWithSubKey({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'cipher',
+				limit : 65535
+			}, 2, 'i64', min, max);
+			if (sdata instanceof Array) {
+				sdata.forEach(async d => {
+					let key = await eos.getDataWithPKey({
+						code : 'mypher',
+						scope : 'mypher',
+						table : 'ckey',
+					}, d.id);
+					d.name = key.name
+				});
+				return sdata;
+			} else {
+				return [];
+			}
+		} catch (e) {
+			throw e;
+		}
 	}
 };

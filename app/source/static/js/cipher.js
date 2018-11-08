@@ -129,7 +129,11 @@ Cipher.prototype = {
 	refresh : async function() {
 		let btn1 = this.mkBtn1();
 		await Util.load(this.div, 'parts/cipher.html', this.mode, {
-			draft : [],
+			draft : [{
+				click : () => {
+					this.hist();
+				}
+			}],
 			tags : {
 				click : () => {
 					return true;
@@ -210,6 +214,14 @@ Cipher.prototype = {
 		this.set(this.data);
 	},
 
+	hist : async function() {
+		const ver = new CipherHist({
+			cipherid : this.data.cipherid,
+			div : $('#main')
+		});
+		History.run(_L('HISTORY1'), ver);
+	},
+
 	draw : async function() {
 		if (this.mode!==MODE.NEW) {
 			await this.current();
@@ -240,14 +252,15 @@ Cipher.prototype = {
 		data.user = Account.user;
 		try {
 			let ret = await Rpc.call(
-				'cipher.add',
+				'cipher.edit',
 				[data]
 			);
 			if (ret.code!==undefined) {
 				UI.alert(ret.code);
 				return;
 			}
-			History.back();
+			this.mode = MODE.REF;
+			await this.refresh();
 		} catch (e) {
 			UI.alert(e.message);
 		}
