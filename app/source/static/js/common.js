@@ -242,14 +242,35 @@ let Util = {
 					case 'list':
 						Util.initList(elm, mode, btns[elm.attr('proc')]);
 						break;
+					case 'date':
+						Util.initDate(elm, mode, btns[elm.attr('proc')]);
+						break;
 					default:
 						Util.initButton(elm.find('button'), btns[elm.attr('proc')]);
 						break;
 					}
 				}
+				l = div.find('select[proc]');
+				for (var i=0; i<l.length; i++) {
+					let elm = l.eq(i);
+					elm.change(btns[elm.attr('proc')].change);
+					
+				}
 				resolve();
 			});
 		});
+	},
+	initDate : function(elm, mode, arr) {
+		const id = elm.attr('field');
+		const btn = $('<div class="input-group-append"></div>')
+					.attr({ 'data-target' : '#' + id,
+							'data-toggle' : 'datetimepicker' });
+		elm.addClass('input-group date').attr({'data-target-input': 'nearest', 'id':id})
+			.append($('<input type="text" class="form-control datetimepicker-input"/>')
+					.attr('data-target', '#' + id ))
+			.append(btn);
+		btn.append($('<div class="input-group-text"><i class="cal"></i></div>'));
+		elm.datetimepicker();
 	},
 	initButton : function(btns, arr) {
 		var len = btns.length;

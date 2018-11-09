@@ -67,6 +67,11 @@ td {
 	border-color: #30b0f0;
 }
 
+.btn-disabled {
+	background-color: #78caf7;
+	border-color: #78caf7;
+}
+
 .btn-normal:not(:disabled):not(.disabled).active, .btn-normal:not(:disabled):not(.disabled):active, .show > .btn-normal.dropdown-toggle {
 	color: #fff;
 	background-color: #1080c0;
@@ -137,10 +142,10 @@ td {
 }
 
 .section {
-	border:2px solid #eee;
+	border:3px solid #ddd;
 	padding:4px;
 	margin:10px 0px;
-	background : linear-gradient(0deg, #30b0f0, #30b0f080);
+	background-color:#30b0f0;
 }
 
 .section h5 {
@@ -149,3 +154,9 @@ td {
 	margin:2px;
 }
 
+.rowspace {
+	margin-bottom:8px;
+}
+.leftnospace {
+	padding-left:0px;
+}

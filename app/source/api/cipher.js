@@ -5,7 +5,7 @@
 
 'use_strict'
 
-const log = require('../cmn/logger')('api.user');
+const log = require('../cmn/logger')('api.cipher');
 const cmn = require('./cmn');
 const ipfs = require('../db/ipfs');
 const eos = require('../db/eos');

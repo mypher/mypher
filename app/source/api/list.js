@@ -11,7 +11,8 @@ module.exports = {
 	cls : {
 		system : require('./system'),
 		person : require('./person'),
-		cipher : require('./cipher')
+		cipher : require('./cipher'),
+		token : require('./token')
 	},
 	call : async function (cn, mn, params, auth) {
 		log.debug('api.call:' + cn + ':' + mn);
