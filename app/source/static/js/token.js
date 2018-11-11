@@ -106,7 +106,7 @@ Token.prototype = {
 		btn.eq(0).prop('disabled', tokenname);
 		btn.eq(1).prop('disabled', taskname);
 		this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
-		this.div.find('input[field="term"]').prop('disabled', term);
+		this.div.find('#term').get(0).obj.disabled(term);
 		const elm = this.div.find('input[field="rcalctype"]');
 		elm.prop('disabled', nofdevtoken);
 		if (nofdevtoken) {
@@ -159,6 +159,10 @@ Token.prototype = {
 			'token.add',
 			[data]
 		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
 		History.back();
 	}
 

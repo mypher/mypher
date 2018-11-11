@@ -133,7 +133,7 @@ module.exports = {
 		let ret = false;
 		p.some(v=> {
 			let f = v.r?v.r:false;
-			ret = f ? v.f(v.p) : !v.f(v.p);
+			ret = f ? v.f(v.p, v.v) : !v.f(v.p, v.v);
 			return ret;  
 		});
 		return !ret;
@@ -149,6 +149,61 @@ module.exports = {
 
 	isArray : d => {
 		return d instanceof Array;
+	},
+
+	isDateTime : d => {
+		try {
+			new Date(
+				parseInt(d.substr(0,4)),
+				parseInt(d.substr(4,2))-1,
+				parseInt(d.substr(6,2)),
+				parseInt(d.substr(8,2)),
+				parseInt(d.substr(10,2)),
+				parseInt(d.substr(12,2)),
+				parseInt(d.substr(14,2)),
+			);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	},
+
+	isStrLen : (v, l) => {
+		try {
+			return v.length===l;
+		} catch (e) {
+			return false;
+		}
+	},
+
+	isStrNumber : v => {
+		try {
+			return /^[0-9]*$/.exec(v)!==null;
+		} catch (e) {
+			return false;
+		}
+	},
+
+	isStrHex : v => {
+		try {
+			return /^[0-9a-fA-F]*$/.exec(v)!==null;
+		} catch (e) {
+			return false;
+		}
+	},
+
+
+	isDate : d => {
+		try {
+			new Date(
+				parseInt(d.substr(0,4)),
+				parseInt(d.substr(4,2))-1,
+				parseInt(d.substr(6,2)),
+			);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	},
 
 	sleep : async t => {

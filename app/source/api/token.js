@@ -13,16 +13,18 @@ module.exports = {
 		try {
 			if (!cmn.chkTypes([
 				{p:d.name, f:cmn.isEmpty, r:true},
-	//			{p:d.type, f:cmn.isUint16},
-	//			{p:d.issuer, f:cmn.isEosID},
-	//			{p:d.limit, f:cmn.isNumber},
-	//			{p:d.when, f:cmn.isUint16},
-	//			{p:d.taskid, f:cmn.isNumber},
-	//			{p:d.tokenid, f:cmn.isNumber},
-	//			{p:d.reftoken, f:cmn.isNumber},
-	//			{p:d.term, f:cmn.isDate},
-	//			{p:d.rcalctype, f:cmn.isUint16},
-	//			{p:d.nofdevtoken, f:cmn.isNumber}
+				{p:d.type, f:cmn.isStrLen, v:1},
+				{p:d.type, f:cmn.isStrNumber },
+				{p:d.issuer, f:cmn.isEosID},
+				{p:d.limit, f:cmn.isStrNumber},
+				{p:d.when, f:cmn.isStrLen, v:1},
+				{p:d.when, f:cmn.isStrNumber },
+				{p:d.taskid, f:cmn.isStrNumber},
+				{p:d.tokenid, f:cmn.isStrNumber},
+				{p:d.reftoken, f:cmn.isStrNumber},
+				{p:d.term, f:cmn.isDateTime},
+				{p:d.rcalctype, f:cmn.isStrNumber},
+				{p:d.nofdevtoken, f:cmn.isStrNumber}
 			])) {
 				return {code:'INVALID_PARAM'};
 			}

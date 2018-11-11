@@ -146,6 +146,9 @@ let Util = {
 	},
 	N : {
 	},
+	getLocale : function() {
+		return navigator.language;
+	},
 	name : async function(ids) {
 		let req = [];
 		let ret = {};
@@ -261,16 +264,8 @@ let Util = {
 		});
 	},
 	initDate : function(elm, mode, arr) {
-		const id = elm.attr('field');
-		const btn = $('<div class="input-group-append"></div>')
-					.attr({ 'data-target' : '#' + id,
-							'data-toggle' : 'datetimepicker' });
-		elm.addClass('input-group date').attr({'data-target-input': 'nearest', 'id':id})
-			.append($('<input type="text" class="form-control datetimepicker-input"/>')
-					.attr('data-target', '#' + id ))
-			.append(btn);
-		btn.append($('<div class="input-group-text"><i class="cal"></i></div>'));
-		elm.datetimepicker();
+		const div = elm.get(0);
+		div.obj = new DateCtrl(elm);
 	},
 	initButton : function(btns, arr) {
 		var len = btns.length;
@@ -371,6 +366,9 @@ let Util = {
 				case 'list':
 					elms.get(0).obj.set(dd);
 					break;
+				case 'date':
+					elms.get(0).obj.setUTC(dd);
+					break;
 				}
 				continue;
 			}
@@ -392,10 +390,10 @@ let Util = {
 		}
 	},
 	getData : function(div, base) {
-		var elms = div.find('[field]:not([type="radio"])');
-		for ( var i=0; i<elms.length; i++ ) {
-			var elm = elms.eq(i);
-			var tagname = elm.prop('tagName');
+		let elms = div.find('[field]:not([type="radio"])');
+		for ( let i=0; i<elms.length; i++ ) {
+			const elm = elms.eq(i);
+			const tagname = elm.prop('tagName');
 			if (tagname==='LABEL') {
 				base[elm.attr('field')] = elm.text();
 			} else {
@@ -409,23 +407,32 @@ let Util = {
 				case 'list':
 					if (o) base[elm.attr('field')] = o.onget();
 					break;
+				case 'date':
+					if (o) base[elm.attr('field')] = o.getUTC();
+					break;
 				default:
 					base[elm.attr('field')] = elm.val();
 				}
 			}
 		}
+		// initialize fields
+		elms = div.find('[field][type="radio"]');
+		for ( let i=0; i<elms.length; i++ ) {
+			const elm = elms.eq(i);
+			base[elm.attr('field')] = '';
+		}
 		elms = div.find('.active [field][type="radio"]');
-		for ( var i=0; i<elms.length; i++ ) {
-			var elm = elms.eq(i);
+		for ( let i=0; i<elms.length; i++ ) {
+			const elm = elms.eq(i);
 			base[elm.attr('field')] = elm.val();
 		}
 
 		elms = div.find('*[subfield]');
-		for ( var i=0; i<elms.length; i++ ) {
-			var elm = elms.eq(i);
-			var attr = elm.attr('subfield').split('=');
+		for ( let i=0; i<elms.length; i++ ) {
+			const elm = elms.eq(i);
+			const attr = elm.attr('subfield').split('=');
 			if (attr.length!==2) continue;
-			base[attr[1]] = elm.attr(attr[0]);
+			base[attr[1]] = elm.attr(attr[0])||'';
 		}
 		return base;
 	},
@@ -445,6 +452,10 @@ let Util = {
 					(typeof obj.style === "object") &&
 					(typeof obj.ownerDocument ==="object");
 		}
+	},
+	padZero : (v, l) => {
+		v = '00000000' + v;
+		return v.substr(v.length-l, l);
 	}
 };
 
@@ -605,5 +616,163 @@ String.prototype.bytes = function () {
 		}
 	}
 	return length;
+};
+
+function DateCtrl(div) {
+	this.id = div.attr('field');
+	this.fmt = div.attr('format');
+	const btn = $('<div class="input-group-append"></div>')
+				.attr({ 'data-target' : '#' + this.id,
+						'data-toggle' : 'datetimepicker' });
+	div.addClass('input-group date').attr({'data-target-input': 'nearest', 'id':this.id})
+		.append($('<input type="text" class="form-control datetimepicker-input"/>')
+				.attr('data-target', '#' + this.id ))
+		.append(btn);
+	btn.append(
+		$('<div class="input-group-text btn-normal"><img src="img/calendar.png"/></div>')
+	);
+	div.datetimepicker({locale : Util.getLocale(), format : this.fmt});
+	this.val = null;
+	const self = this;
+	div.on('change.datetimepicker', function(e) {
+		if (!e.date) return;
+		let date = '';
+		if (self.fmt==='L') {
+			date = e.date.format('YYYYMMDD');
+		} else {
+			date = e.date.format('YYYYMMDDhhmmss');
+		}
+		self.setLocal(date, false);
+	});
+	this.div = div;
+}
+
+DateCtrl.prototype = {
+	getLocal : function() {
+		try {
+			if (this.fmt==='L') {
+				return this.formatL(
+					this.val.getUTCFullYear(),
+					this.val.getUTCMonth(),
+					this.val.getUTCDate()
+				);
+			}
+			return this.format(
+				this.val.getFullYear(),
+				this.val.getMonth(),
+				this.val.getDate(),
+				this.val.getHours(),
+				this.val.getMinutes(),
+				this.val.getSeconds()
+			);
+		} catch (e) {
+			return '';
+		}
+	},
+
+	getUTC : function() {
+		try {
+			if (this.fmt==='L') {
+				return this.formatL(
+					this.val.getUTCFullYear(),
+					this.val.getUTCMonth(),
+					this.val.getUTCDate()
+				);
+			}
+			return this.format(
+				this.val.getUTCFullYear(),
+				this.val.getUTCMonth(),
+				this.val.getUTCDate(),
+				this.val.getUTCHours(),
+				this.val.getUTCMinutes(),
+				this.val.getUTCSeconds()
+			);
+		} catch (e) {
+			return '';
+		}
+	},
+
+	format : function(YYYY,MM,DD,hh,mm,ss) {
+		return Util.padZero(YYYY,4) 
+			 + Util.padZero(MM,2)
+			 + Util.padZero(DD,2)
+			 + Util.padZero(hh,2)
+			 + Util.padZero(mm,2)
+			 + Util.padZero(ss,2);
+	},
+
+	formatL : function(YYYY,MM,DD) {
+		return Util.padZero(YYYY,4) 
+			 + Util.padZero(MM,2)
+			 + Util.padZero(DD,2);
+	},
+
+	setLocal : function(d, refresh) {
+		let date;
+		try {
+			if (d.length===8) {
+				date = new Date(
+					parseInt(d.substr(0,4)),
+					parseInt(d.substr(4,2))-1,
+					parseInt(d.substr(6,2))
+				);
+			} else {
+				date = new Date(
+					parseInt(d.substr(0,4)),
+					parseInt(d.substr(4,2))-1,
+					parseInt(d.substr(6,2)),
+					parseInt(d.substr(8,2)),
+					parseInt(d.substr(10,2)),
+					parseInt(d.substr(12,2))
+				);
+			}
+			this.val = date;
+		} catch (e) {
+			this.val = null;
+			date = '';
+		}
+		if (refresh!==false) {
+			this.div.data('datetimepicker').date(date);
+		}
+	},
+
+	setUTC : function(d, refresh) {
+		let date;
+		try {
+			if (d.length===8) {
+				date = new Date(
+					parseInt(d.substr(0,4)),
+					parseInt(d.substr(4,2))-1,
+					parseInt(d.substr(6,2))
+				);
+			} else {
+				date = new Date();
+				date.setUTCFullYear(parseInt(d.substr(0,4)));
+				date.setUTCMonth(parseInt(d.substr(4,2))-1);
+				date.setUTCDate(parseInt(d.substr(6,2)));
+				date.setUTCHours(parseInt(d.substr(8,2)));
+				date.setUTCMinutes(parseInt(d.substr(10,2)));
+				date.setUTCSeconds(parseInt(d.substr(12,2)));
+			}
+			this.val = date;
+		} catch (e) {
+			this.val = null;
+			date = '';
+		}
+		if (refresh!==false) {
+			this.div.data('datetimepicker').date(date);
+		}
+	},
+
+	disabled : function(disable) {
+		const inp = this.div.children('input');
+		inp.prop('disabled', disable);
+		if (disable) {
+			inp.val('');
+			this.div.find('div>div').addClass('btn-disabled');
+		} else {
+			this.div.find('div>div').removeClass('btn-disabled');
+		}
+	}
 };
 

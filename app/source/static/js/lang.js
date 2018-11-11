@@ -4,7 +4,7 @@
 //
 
 var $L = {
-	'jp' : {
+	'ja' : {
 		'BASIC_INFO' : '基本情報',
 		'INDIVIDUAL' : '個人',
 		'ISSUE_LIMIT' : '発行上限',
@@ -162,7 +162,7 @@ var __r = [
 ];
 
 function _L(id, prm) {
-	var w = $L['jp'][id]||'';
+	var w = $L[Util.getLocale()][id]||'';
 	prm = prm||[];
 	for ( var i=0; i<prm.length; i++) {
 		w = w.replace(__r[i], prm[i]);
