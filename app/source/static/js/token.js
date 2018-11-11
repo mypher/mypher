@@ -155,6 +155,7 @@ Token.prototype = {
 
 	create : async function() {
 		const data = this.get();
+		data.sender = Account.user;
 		let ret = await Rpc.call(
 			'token.add',
 			[data]

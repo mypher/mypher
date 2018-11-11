@@ -278,7 +278,124 @@
                     "type": "string"
                 }
             ]
-        }
+        },
+		
+        {
+            "name": "token",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "issuer2",
+                    "type": "uint64"
+                },
+                {
+                    "name": "limit",
+                    "type": "uint32"
+                },
+                {
+                    "name": "when",
+                    "type": "uint8"
+                },
+                {
+                    "name": "type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "taskid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "tokenid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "reftoken",
+                    "type": "uint32"
+                },
+                {
+                    "name": "term",
+                    "type": "string"
+                },
+                {
+                    "name": "rcalctype",
+                    "type": "uint8"
+                },
+                {
+                    "name": "nofdevtoken",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "tknew",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                },
+                {
+                    "name": "issuer2",
+                    "type": "uint64"
+                },
+                {
+                    "name": "limit",
+                    "type": "uint32"
+                },
+                {
+                    "name": "when",
+                    "type": "uint8"
+                },
+                {
+                    "name": "type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "taskid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "tokenid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "reftoken",
+                    "type": "uint32"
+                },
+                {
+                    "name": "term",
+                    "type": "string"
+                },
+                {
+                    "name": "rcalctype",
+                    "type": "uint8"
+                },
+                {
+                    "name": "nofdevtoken",
+                    "type": "uint32"
+                }
+            ]
+        },
     ],
     "types": [],
     "actions": [
@@ -311,6 +428,11 @@
             "name": "pupdate",
             "type": "pupdate",
             "ricardian_contract": ""
+        },
+        {
+            "name": "tknew",
+            "type": "tknew",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
@@ -331,6 +453,13 @@
         {
             "name": "ckey",
             "type": "ckey",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "token",
+            "type": "token",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
