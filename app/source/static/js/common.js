@@ -650,6 +650,9 @@ function DateCtrl(div) {
 DateCtrl.prototype = {
 	getLocal : function() {
 		try {
+			if (this.val.toString()==='Invalid Date') {
+				return '';
+			}
 			if (this.fmt==='L') {
 				return this.formatL(
 					this.val.getUTCFullYear(),
@@ -672,6 +675,9 @@ DateCtrl.prototype = {
 
 	getUTC : function() {
 		try {
+			if (this.val.toString()==='Invalid Date') {
+				return '';
+			}
 			if (this.fmt==='L') {
 				return this.formatL(
 					this.val.getUTCFullYear(),

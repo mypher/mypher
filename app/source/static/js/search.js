@@ -32,6 +32,9 @@ Search.prototype = {
 					case '2':
 						this.searchTask(data, data.type2);
 						break;
+					case '3':
+						this.searchToken(data, data.type2);
+						break;
 					}
 				}
 			}]
@@ -49,10 +52,10 @@ Search.prototype = {
 
 	searchUser : async function(d, f) {
 		try {
-			let data = (f==='0') 
+			const data = (f==='0') 
 				? await Rpc.call('person.list', [{id:d.name}])
 				: await Rpc.call('person.list_bytag', [{tag:d.name}]);
-			let list = new List({
+			const list = new List({
 				div : $('#result'),
 				type : MODE.REF,
 				col : [
@@ -93,10 +96,10 @@ Search.prototype = {
 
 	searchCipher : async function(d, f) {
 		try {
-			let data = (f==='0')
+			const data = (f==='0')
 				? await Rpc.call('cipher.list', [{name:d.name}])
 				: await Rpc.call('cipher.list_bytag', [{tag:d.name}]);
-			let list = new List({
+			const list = new List({
 				div : $('#result'),
 				type : MODE.REF,
 				col : [
@@ -117,7 +120,7 @@ Search.prototype = {
 						list.show(data);
 					}
 				} else if (code===LIST_NOTIFY.SELECT) {
-					let cipher = new Cipher({
+					const cipher = new Cipher({
 						div : $('#main'),
 						id : sel.id
 					});
@@ -131,6 +134,44 @@ Search.prototype = {
 	},
 
 	searchTask : async function(d, f) {
-	}
+	},
+
+	searchToken : async function(d, f) {
+		try {
+			const data = await Rpc.call('token.list', [{name:d.name}]);
+			const list = new List({
+				div : $('#result'),
+				type : MODE.REF,
+				col : [
+					{
+						width : 6,
+						label : _L('NAME2'),
+						name : 'name'
+					},
+					{
+						width : 6,
+						label : _L('ISSUER'),
+						name : 'issuer'
+					}
+				]
+			}, (code, sel) => {
+				if (code===LIST_NOTIFY.DATA) {
+					if (data&&data.length>0) {
+						list.show(data);
+					}
+				} else if (code===LIST_NOTIFY.SELECT) {
+					const token = new Token({
+						div : $('#main'),
+						id : sel.id,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), token);
+				}
+			});
+		} catch (e) {
+			UI.alert(_L('FAILED_TO_GET_DATA'));
+			console.log(e);
+		}
+	},
 };
 //# sourceURL=search.js

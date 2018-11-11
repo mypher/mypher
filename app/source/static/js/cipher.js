@@ -20,6 +20,10 @@ Cipher.prototype = {
 			'cipher.get',
 			[{id:this.data.id}]
 		);
+		if (info.code!==undefined) {
+			UI.alert(info.code);
+			return;
+		}
 		this.data = info.data;
 	},
 

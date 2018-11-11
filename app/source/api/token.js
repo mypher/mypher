@@ -9,6 +9,10 @@ const log = require('../cmn/logger')('api.token');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
 
+
+const ISSUER_CIPHER = '0';
+const ISSUER_INDIVIDUAL = '1';
+
 module.exports = {
 	add : async d => {
 		try {
@@ -30,14 +34,14 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			if (d.issuertype==='0') {
+			if (d.issuertype===ISSUER_CIPHER) {
 				const issuer = parseInt(d.issuer);
 				if (isNaN(issuer)) {
 					return {code:'INVALID_PARAM'};
 				}
 				d.issuer = '';
 				d.issuer2 = issuer;
-			} else if (d.issuertype==='1') {
+			} else if (d.issuertype===ISSUER_INDIVIDUAL) {
 				if (!cmn.isEosID(d.issuer)) {
 					return {code:'INVALID_PARAM'};
 				}
@@ -68,6 +72,58 @@ module.exports = {
 					data:d,
 				}]
 			});
+		} catch (e) {
+			throw e;
+		}
+	},
+
+	list : async d => {
+		try {
+			if (!cmn.isString(d.name)) {
+				return {code:'INVALID_PARAM'};
+			}
+			const data = await eos.getData({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'token',
+			}, 10000);
+			let ret = [];
+			data.rows.forEach( v=> {
+				if (v.name.includes(d.name)) {
+					if (v.issuer==='') {
+						v.issuer = v.issuer2;
+						v.issuertype = ISSUER_CIPHER;
+					} else {
+						v.issuertype = ISSUER_INDIVIDUAL;
+					}
+					ret.push(v);
+				}
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
+
+	get : async d=> {
+		try {
+			let ret = {};
+			ret = await eos.getDataWithPKey({
+				code : 'mypher',
+				scope : 'mypher',
+				table : 'token'
+			}, d.id);
+			if (ret===null||ret.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			ret = ret[0];
+			if (ret.issuer==='') {
+				ret.issuer = ret.issuer2;
+				ret.issuertype = ISSUER_CIPHER;
+			} else {
+				ret.issuertype = ISSUER_INDIVIDUAL;
+			}
+			return ret;
 		} catch (e) {
 			throw e;
 		}

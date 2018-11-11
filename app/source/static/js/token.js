@@ -6,7 +6,7 @@
 function Token(d) {
 	this.div = d.div;
 	this.mode = d.mode;
-	this.data = {};
+	this.data = {id:d.id};
 }
 
 Token.prototype = {
@@ -35,6 +35,15 @@ Token.prototype = {
 	},
 
 	current : async function() {
+		let info = await Rpc.call(
+			'token.get',
+			[{id:this.data.id}]
+		);
+		if (info.code!==undefined) {
+			UI.alert(info.code);
+			return;
+		}
+		this.data = info;
 	},
 
 	mkButton : function() {
