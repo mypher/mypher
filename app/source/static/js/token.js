@@ -116,13 +116,8 @@ Token.prototype = {
 		btn.eq(1).prop('disabled', taskname);
 		this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
 		this.div.find('#term').get(0).obj.disabled(term);
-		const elm = this.div.find('input[field="rcalctype"]');
-		elm.prop('disabled', nofdevtoken);
-		if (nofdevtoken) {
-			elm.parent().addClass('btn-disabled').removeClass('active');
-		} else {
-			elm.parent().removeClass('btn-disabled');
-		}
+		const elm = this.div.find('div[field="rcalctype"]');
+		elm.get(0).obj.enable(!nofdevtoken);
 		this.div.find('input[field="nofdevtoken"]').prop('disabled', nofdevtoken);
 	},
 

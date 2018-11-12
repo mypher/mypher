@@ -20,16 +20,7 @@
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ISSUER"></label>
-		<div class="col-sm-9 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="0" field="issuertype" disable_on="ref">
-				<span ltext="CIPHER"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="1" field="issuertype" disable_on="ref">
-				<span ltext="INDIVIDUAL"></span>
-			</label>
-		</div>
+		<div class="col-sm-9" ctrl="radio" field="issuertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name"></label>
@@ -80,20 +71,11 @@
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="AFTER_USE"></label>
-		<div class="col-sm-9 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="0" field="type" disable_on="ref">
-				<span ltext="COLLECT"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="1" field="type" disable_on="ref">
-				<span ltext="NOT_COLLECT"></span>
-			</label>
-		</div>
+		<div class="col-sm-9" ctrl="radio" field="type" disable_on="ref" sel="COLLECT:0,NOT_COLLECT:1"/>
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ATTRIBUTES"></label>
-		<div class="col-sm-9 form-group leftnospace" proc="attributes">
+		<div class="col-sm-9 form-group leftnospace" ctrl="button" proc="attributes">
 			<div class="input-group col-sm-12 rowspace">
 				<div class="input-group-prepend">
 					<span class="input-group-text label-normal" ltext="TASK_ID"></span>
@@ -128,18 +110,7 @@
 				<!--<input type="text" class="form-control" field="term" disable_on="ref">-->
 			</div>
 			<div class="input-group col-sm-12">
-				<div class="btn-group btn-group-toggle form-group rowspace" data-toggle="buttons">
-					<label class="btn btn-normal">
-						<input type="radio" autocomplete="off" value="0" 
-							field="rcalctype" disable_on="ref">
-						<span ltext="SPECIFIED_NUMBER"></span>
-					</label>
-					<label class="btn btn-normal">
-						<input type="radio" autocomplete="off" value="1" 
-							field="rcalctype" disable_on="ref">
-						<span ltext="ISSUED_PER_SPECIFIED"></span>
-					</label>
-				</div>
+				<div class="form-group rowspace" ctrl="radio" field="rcalctype" disable_on="ref" sel="SPECIFIED_NUMBER:0,ISSUED_PER_SPECIFIED:1"/>
 			</div>
 			<div class="input-group col-sm-12 rowspace">
 				<div class="input-group-prepend">
@@ -151,7 +122,7 @@
 	</div>
 	<!-- BUTTON -->
 	<div class="form-group row">
-		<div class="col-sm-12 right" proc="button">
+		<div class="col-sm-12 right" ctrl="button" proc="button">
 			<button class="btn btn-normal btn-md"></button>
 			<button class="btn btn-normal btn-md"></button>
 			<button class="btn btn-normal btn-md"></button>

@@ -5,42 +5,16 @@
 <div class="form-horizontal">
 	<!-- SEARCH -->
 	<div class="form-group row">
-		<div class="col-sm-12 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="0" field="type">
-				<span ltext="USER"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="1" field="type">
-				<span ltext="CIPHER"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="2" field="type">
-				<span ltext="TASK"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="3" field="type">
-				<span ltext="TOKEN"></span>
-			</label>
-		</div>
+		<div class="col-sm-12" ctrl="radio" field="type" sel="USER:0,CIPHER:1,TASK:2,TOKEN:3"/>
 		<div class="col-sm-12">
 			<br>
 		</div>
-		<div class="col-sm-12 btn-group btn-group-toggle" data-toggle="buttons">
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="0" field="type2">
-				<span ltext="NAME2"></span>
-			</label>
-			<label class="btn btn-normal">
-				<input type="radio" autocomplete="off" value="1" field="type2">
-				<span ltext="TAGS"></span>
-			</label>
-		</div>
+		<div class="col-sm-12" ctrl="radio" field="type2" sel="NAME2:0,TAGS:1"/>
 		<div class="col-sm-12">
 			<br>
 		</div>
 		<div class="col-sm-12">
-			<div class="input-group" proc="search">
+			<div class="input-group" ctrl="button" proc="search">
 				<input type="text" class="form-control" field="name">
 				<div class="input-group-append">
 					<button class="btn btn-search"></button>

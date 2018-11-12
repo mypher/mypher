@@ -206,58 +206,65 @@ let Util = {
 					reject();
 					return;
 				}
-				div.find('*[disable_on]').prop('disabled', false);
-				div.find("*[hide_on]").css('display', '');
-				switch (mode) {
-				case MODE.NEW:
-					div.find('*[disable_on*=add]').prop('disabled', true);
-					div.find("*[hide_on*=add]").css('display', 'none');
-					break;
-				case MODE.EDIT:
-					div.find('*[disable_on*=edit]').prop('disabled', true);
-					div.find('*[hide_on*=edit]').css('display', 'none');
-					break;
-				case MODE.REF:
-					div.find('*[disable_on*=ref]').prop('disabled', true);
-					div.find('*[hide_on*=ref]').css('display', 'none');
-					break;
-				case MODE.REF2:
-					div.find('*[disable_on*=rf2]').prop('disabled', true);
-					div.find('*[hide_on*=rf2]').css('display', 'none');
-					break;
-				}
-				var l = div.find('*[ltext]');
-				for ( var i=0; i<l.length; i++ ) {
-					var elm = l.eq(i);
-					elm.text(_L(elm.attr('ltext')));
-				}
-				l = div.find('div[proc]');
-				for ( var i=0; i<l.length; i++ ) {
+				let l = div.find('div[ctrl]');
+				for (let i=0; i<l.length; i++) {
 					let elm = l.eq(i);
-					let type = elm.attr('ctrl');
-					switch (type) {
+					let proc = elm.attr('proc');
+					proc = proc ? btns[proc] : null;
+					switch (elm.attr('ctrl')) {
 					case 'tag':
-						Util.initTag(elm, mode, btns[elm.attr('proc')]);
+						Util.initTag(elm, mode, proc);
 						break;
 					case 'user':
-						Util.initUserList(elm, mode, btns[elm.attr('proc')]);
+						Util.initUserList(elm, mode, proc);
 						break;
 					case 'list':
-						Util.initList(elm, mode, btns[elm.attr('proc')]);
+						Util.initList(elm, mode, proc);
 						break;
 					case 'date':
-						Util.initDate(elm, mode, btns[elm.attr('proc')]);
+						Util.initDate(elm, mode, proc);
 						break;
-					default:
-						Util.initButton(elm.find('button'), btns[elm.attr('proc')]);
+					case 'radio':
+						Util.initRadio(elm, mode, proc);
+						break;
+					case 'button':
+						Util.initButton(elm.find('button'), proc);
 						break;
 					}
 				}
 				l = div.find('select[proc]');
-				for (var i=0; i<l.length; i++) {
+				for (let i=0; i<l.length; i++) {
 					let elm = l.eq(i);
 					elm.change(btns[elm.attr('proc')].change);
-					
+				}
+				div.find('*[disable_on]').prop('disabled', false);
+				div.find("*[hide_on]").css('display', '');
+				switch (mode) {
+				case MODE.NEW:
+					div.find(':not([type="radio"])[disable_on*=add]').prop('disabled', true);
+					div.find("*[hide_on*=add]").css('display', 'none');
+					div.find('[type="radio"][disable_on*=add]').parent().click(()=> { return false; });
+					break;
+				case MODE.EDIT:
+					div.find(':not([type="radio"])[disable_on*=edit]').prop('disabled', true);
+					div.find('*[hide_on*=edit]').css('display', 'none');
+					div.find('[type="radio"][disable_on*=edit]').parent().click(()=> { return false; });
+					break;
+				case MODE.REF:
+					div.find(':not([type="radio"])[disable_on*=ref]').prop('disabled', true);
+					div.find('*[hide_on*=ref]').css('display', 'none');
+					div.find('[type="radio"][disable_on*=ref]').parent().click(()=> { return false; });
+					break;
+				case MODE.REF2:
+					div.find(':not([type="radio"])[disable_on*=rf2]').prop('disabled', true);
+					div.find('*[hide_on*=rf2]').css('display', 'none');
+					div.find('[type="radio"][disable_on*=rf2]').parent().click(()=> { return false; });
+					break;
+				}
+				l = div.find('*[ltext]');
+				for (let i=0; i<l.length; i++) {
+					let elm = l.eq(i);
+					elm.text(_L(elm.attr('ltext')));
 				}
 				resolve();
 			});
@@ -320,6 +327,10 @@ let Util = {
 		};
 		elm.obj = new List(data, cb);
 	},
+	initRadio : function(div, mode, proc) {
+		const elm = div.get(0);
+		elm.obj = new Radio(div, mode, proc);
+	},
 	setData : function(div, d) {
 		for ( var i in d ) {
 			var dd = d[i];
@@ -369,6 +380,9 @@ let Util = {
 				case 'date':
 					elms.get(0).obj.setUTC(dd);
 					break;
+				case 'radio':
+					elms.get(0).obj.set(dd);
+					break;
 				}
 				continue;
 			}
@@ -409,6 +423,9 @@ let Util = {
 					break;
 				case 'date':
 					if (o) base[elm.attr('field')] = o.getUTC();
+					break;
+				case 'radio':
+					if (o) base[elm.attr('field')] = o.get();
 					break;
 				default:
 					base[elm.attr('field')] = elm.val();
@@ -779,6 +796,71 @@ DateCtrl.prototype = {
 		} else {
 			this.div.find('div>div').removeClass('btn-disabled');
 		}
+	}
+};
+
+function Radio(div, mode, d) {
+	this.div = div;
+	this.mode = mode;
+	this.data = d;
+	div.addClass('btn-group btn-group-toggle')/*.attr('data-toggle','buttons')*/;
+	const field = div.attr('field');
+	let disable_on = div.attr('disable_on')||'';
+	disable_on = disable_on.split(',');
+	let sel = div.attr('sel').split(',');
+	sel.forEach(v => {
+		v = v.split(':');
+		const label = $('<label class="btn btn-normal"/>')
+				.append($('<input/>').attr({
+					'type' : 'radio',
+					'autocomplete' : 'off',
+					'value' : v[1],
+					'field' : field,
+				})).append($('<span/>').attr('ltext',v[0]));
+		div.append(label);
+	});
+	this.div.click(()=> {
+		return this.canedit;
+	});
+	const disable = disable_on.some(v => {
+		if (v==='add' && mode===MODE.ADD) return true;
+		if (v==='edit' && mode===MODE.EDIT) return true;
+		if (v==='ref' && mode===MODE.REF) return true;
+		if (v==='rf2' && mode===MODE.REF2) return true;
+	});
+	this.allowedit(!disable);
+	const self = this;
+	this.div.find('[type="radio"]').change(function() {
+		self.set(this.value);
+	});
+	this.value = null;
+}
+
+
+Radio.prototype = {
+	set : function(v) {
+		this.value = v;
+		let radio = this.div.find('[type="radio"]').parent().removeClass('active');
+		this.div.find(':not([value="' + v + '"])').prop('checked', false);
+		this.div.find('[value="' + v + '"]').parent().addClass('active');
+	},
+	get : function(v) {
+		return this.value;
+	},
+	enable : function(v) {
+		const radio = this.div.find('[type="radio"]');
+		if (v) {
+			radio.parent().removeClass('btn-disabled');
+			this.canedit = true;
+		} else {
+			radio.parent().addClass('btn-disabled').removeClass('active');
+			this.canedit = false;
+			this.value = null;
+		}
+		radio.prop('disabled', v ? false : true);
+	},
+	allowedit : function(v) {
+		this.canedit = v;
 	}
 };
 
