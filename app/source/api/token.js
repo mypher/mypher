@@ -25,6 +25,9 @@ module.exports = {
 				{p:d.type, f:cmn.isStrLen, v:1},
 				{p:d.type, f:cmn.isStrNumber },
 				{p:d.type, f:cmn.isEmpty, r:true },
+				{p:d.disposal, f:cmn.isStrLen, v:1},
+				{p:d.disposal, f:cmn.isStrNumber },
+				{p:d.disposal, f:cmn.isEmpty, r:true },
 				{p:d.taskid, f:cmn.isStrNumber},
 				{p:d.tokenid, f:cmn.isStrNumber},
 				{p:d.reftoken, f:cmn.isStrNumber},
@@ -51,6 +54,7 @@ module.exports = {
 			}
 			d.limit = parseInt(d.limit)||0;
 			d.when = parseInt(d.when)||0;
+			d.disposal = parseInt(d.disposal)||0;
 			d.type = parseInt(d.type)||0;
 			d.taskid = parseInt(d.taskid)||0;
 			d.tokenid = parseInt(d.tokenid)||0;
@@ -99,6 +103,10 @@ module.exports = {
 					ret.push(v);
 				}
 			});
+			ret.when = String(ret.when);
+			ret.disposal = String(ret.disposal);
+			ret.type = String(ret.type);
+			ret.rcalctype = String(ret.rcalctype);
 			return ret;
 		} catch (e) {
 			throw e;

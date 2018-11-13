@@ -309,6 +309,10 @@
                     "type": "uint8"
                 },
                 {
+                    "name": "disposal",
+                    "type": "uint8"
+                },
+                {
                     "name": "type",
                     "type": "uint8"
                 },
@@ -364,6 +368,10 @@
                 },
                 {
                     "name": "when",
+                    "type": "uint8"
+                },
+                {
+                    "name": "disposal",
                     "type": "uint8"
                 },
                 {

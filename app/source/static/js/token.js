@@ -95,37 +95,56 @@ Token.prototype = {
 		let reftoken = true;
 		let term = true;
 		let nofdevtoken = true;
-		if (type==='2') { // DEVIDE_TOKEN
+		if (Number(type)===2) { // DEVIDE_TOKEN
 			tokenname = false;
 			nofdevtoken = false;
 		}
-		switch (when) {
-			case '2': // BY_COMPLETION_OF_TASK
+		switch (Number(when)) {
+			case 2: // BY_COMPLETION_OF_TASK
 				taskname = false;
 				break;
-			case '3': // BY_NUMBER_OF_OWNED
+			case 3: // BY_NUMBER_OF_OWNED
 				tokenname = false;
 				reftoken = false;
 				break;
-			case '5': // BY_DATE
+			case 5: // BY_DATE
 				term = false;
 				break;
 		}
 		const btn = this.div.find('button.btn-search');
-		btn.eq(0).prop('disabled', tokenname);
-		btn.eq(1).prop('disabled', taskname);
-		this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
-		this.div.find('#term').get(0).obj.disabled(term);
-		const elm = this.div.find('div[field="rcalctype"]');
-		elm.get(0).obj.enable(!nofdevtoken);
-		this.div.find('input[field="nofdevtoken"]').prop('disabled', nofdevtoken);
+		if (this.mode===MODE.REF) {
+			btn.eq(0).prop('disabled', true);
+			btn.eq(1).prop('disabled', true);
+			this.div.find('input[field="reftoken"]').prop('disabled', true);
+			if (term) {
+				this.div.find('#term').get(0).obj.disabled(true);
+			} else {
+				this.div.find('#term').get(0).obj.allowedit(false);
+			}
+			const elm = this.div.find('div[field="rcalctype"]');
+			if (nofdevtoken) {
+				elm.get(0).obj.enable(false);
+			} else {
+				const obj = elm.get(0).obj;
+				obj.enable(true);
+				obj.allowedit(false);;
+			}
+			this.div.find('input[field="nofdevtoken"]').prop('disabled', true);
+		} else {
+			btn.eq(0).prop('disabled', tokenname);
+			btn.eq(1).prop('disabled', taskname);
+			this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
+			this.div.find('#term').get(0).obj.disabled(term);
+			const elm = this.div.find('div[field="rcalctype"]');
+			elm.get(0).obj.enable(!nofdevtoken);
+			this.div.find('input[field="nofdevtoken"]').prop('disabled', nofdevtoken);
+		}
 	},
 
 	refresh : async function() {
 		const btn = this.mkButton();
-		let type = 0;
-		let when = 0;
 		const self = this;
+		let init = true;
 		await Util.load(this.div, 'parts/token.html', this.mode, {
 			button : btn,
 			issuer : {
@@ -135,14 +154,14 @@ Token.prototype = {
 			},
 			type : {
 				change : (evt) => {
-					type = evt.target.value;
-					self.grayAttr(type, when);
+					const when = $('[field="when"]').val();
+					if (!init) self.grayAttr(evt.target.value, when);
 				}
 			},
 			when : {
 				change : (evt) => {
-					when = evt.target.value;
-					self.grayAttr(type, when);
+					const type = $('[field="type"]').val();
+					if (!init) self.grayAttr(type, evt.target.value);
 				}
 			},
 			attributes : [{
@@ -154,6 +173,7 @@ Token.prototype = {
 			}]
 
 		});
+		init = false;
 		this.set(this.data);
 	},
 

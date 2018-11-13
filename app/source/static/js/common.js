@@ -796,6 +796,15 @@ DateCtrl.prototype = {
 		} else {
 			this.div.find('div>div').removeClass('btn-disabled');
 		}
+	},
+	allowedit : function(allow) {
+		const inp = this.div.children('input');
+		inp.prop('disabled', !allow);
+		if (!allow) {
+			this.div.find('div>div').addClass('btn-disabled');
+		} else {
+			this.div.find('div>div').removeClass('btn-disabled');
+		}
 	}
 };
 

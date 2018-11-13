@@ -14,9 +14,9 @@ Token::Token(account_name _self) {
 
 void Token::tknew(const account_name sender, const string& name, const account_name issuer, 
 			   const uint64_t issuer2, const uint32_t limit, const uint8_t when,
-			   const uint8_t type, const uint64_t taskid, const uint64_t tokenid,
-			   const uint32_t reftoken, const string& term, const uint8_t rcalctype,
-			   const uint32_t nofdevtoken ) {
+			   const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
+			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
+			   const uint8_t rcalctype, const uint32_t nofdevtoken ) {
 	require_auth(sender);
 	data d(self, self);
 	uint64_t id = d.available_primary_key();
@@ -28,6 +28,7 @@ void Token::tknew(const account_name sender, const string& name, const account_n
 		dd.issuer2 = issuer2;
 		dd.limit = limit;
 		dd.when = when;
+		dd.disposal = disposal;
 		dd.type = type;
 		dd.taskid = taskid;
 		dd.tokenid = tokenid;
