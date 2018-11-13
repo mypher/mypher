@@ -8,10 +8,6 @@
 
 namespace mypher {
 
-Person::Person(account_name _self) {
-	self = _self;
-}
-
 void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::string& info) {
 	//require_auth(permission_level{id, N(owner)});
 	require_auth(id);

@@ -146,7 +146,7 @@ if [ -n "$GENESIS" ]; then
 	create_account eosio.saving
 	create_account eosio.stake
 	create_account eosio.vpay
-	create_account mypher
+	create_account myphersystem
 	sleep 1
 	create_contract eosio.msig
 	create_contract eosio.sudo
@@ -155,7 +155,7 @@ if [ -n "$GENESIS" ]; then
 	cleos push action eosio.token issue '[ "eosio", "50000000.0000 SYS", "memo" ]' -p eosio@active
 	sleep 1
 	create_contract2 eosio eosio.system
-	create_contract mypher
+	create_contract myphersystem
 	sleep 1
 	cleos push action eosio setpriv '["eosio.msig", 1]' -p eosio@active
 else

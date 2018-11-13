@@ -26,8 +26,8 @@ module.exports = {
 		try {
 			// TODO:performance
 			let data = await eos.getData({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'ckey',
 			}, 10000);
 			let ret = [];
@@ -46,8 +46,8 @@ module.exports = {
 		try {
 			// TODO:performance
 			let data = await eos.getData({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'ckey',
 			}, 10000);
 			let ret = [];
@@ -65,8 +65,8 @@ module.exports = {
 		try {
 			let ret = {};
 			ret.data = await eos.getDataWithPKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'cipher',
 			}, d.id);
 			if (ret.data===null||ret.data.length===0) {
@@ -74,8 +74,8 @@ module.exports = {
 			}
 			ret.data = ret.data[0];
 			let key = await eos.getDataWithPKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'ckey',
 			}, d.id);
 			if (key===null||key.length===0) {
@@ -88,8 +88,8 @@ module.exports = {
 			let min = makeSubKey(ret.data.cipherid, ret.data.version-1, 0);
 			let max = makeSubKey(ret.data.cipherid, ret.data.version+1, 0);
 			let sdata = await eos.getDataWithSubKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'cipher',
 				limit : 65535
 			}, 2, 'i64', min, max);
@@ -118,7 +118,7 @@ module.exports = {
 			d.sender = d.user;
 			ret = await eos.pushAction({
 				actions :[{
-					account : 'mypher',
+					account : 'myphersystem',
 					name : 'ccopy',
 					authorization: [{
 						actor: d.user,
@@ -146,8 +146,8 @@ module.exports = {
 			const min = makeSubKey(d.cipherid, 0, 0);
 			const max = makeSubKey(d.cipherid+1,0, 0);
 			const sdata = await eos.getDataWithSubKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'cipher',
 				limit : 65535
 			}, 2, 'i64', min, max);
@@ -203,7 +203,7 @@ module.exports = {
 			d.sender = d.user;
 			return await eos.pushAction({
 				actions :[{
-					account : 'mypher',
+					account : 'myphersystem',
 					name : 'cnew',
 					authorization: [{
 						actor: d.user,
@@ -240,7 +240,7 @@ module.exports = {
 			d.sender = d.user;
 			return await eos.pushAction({
 				actions :[{
-					account : 'mypher',
+					account : 'myphersystem',
 					name : 'cupdate',
 					authorization: [{
 						actor: d.user,
@@ -262,16 +262,16 @@ module.exports = {
 			let min = makeSubKey(d.cipherid, 1, 1);
 			let max = makeSubKey(d.cipherid+1, 1, 1);
 			let sdata = await eos.getDataWithSubKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'cipher',
 				limit : 65535
 			}, 2, 'i64', min, max);
 			if (sdata instanceof Array) {
 				sdata.forEach(async d => {
 					let key = await eos.getDataWithPKey({
-						code : 'mypher',
-						scope : 'mypher',
+						code : 'myphersystem',
+						scope : 'myphersystem',
 						table : 'ckey',
 					}, d.id);
 					d.name = key.name

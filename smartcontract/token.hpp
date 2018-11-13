@@ -8,6 +8,7 @@
 
 #include <eosiolib/eosio.hpp>
 #include "common/messageid.h"
+#include "mypherbase.hpp"
 
 namespace mypher {
 
@@ -19,9 +20,7 @@ using namespace eosio;
  * @class Token
  * @brief managing each tokens attributes
  */
-class Token {
-private:
-	account_name self;
+class Token : virtual public MypherBase {
 public:
 	/**
 	 * @brief information of token 
@@ -51,13 +50,20 @@ public:
 	 * @brief the definition of the table for "token"
 	 */
 	typedef eosio::multi_index<N(token), token> data;
-	Token(account_name _self);
 
 	/**
 	 * @brief create new person
 	 */
 	[[eosio::action]]
 	void tknew(const account_name sender, const string& name, const account_name issuer, 
+			   const uint64_t issuer2, const uint32_t limit, const uint8_t when, 
+			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
+			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
+			   const uint8_t rcalctype, const uint32_t nofdevtoken );
+
+	[[eosio::action]]
+	void tkupdate(const account_name sender, const uint64_t id,
+			   const string& name, const account_name issuer, 
 			   const uint64_t issuer2, const uint32_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 

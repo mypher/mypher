@@ -19,8 +19,8 @@ module.exports = {
 					return {code:'INVALID_PARAM'};
 				}
 				let data = await eos.getDataWithPKey({
-					code : 'mypher',
-					scope : 'mypher',
+					code : 'myphersystem',
+					scope : 'myphersystem',
 					table : 'person',
 				}, d[i] );
 				if (data!==null&&data.length>0&&d[i]===data[0].id) {
@@ -40,8 +40,8 @@ module.exports = {
 			}
 			let ret = {};
 			ret.data = await eos.getDataWithPKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'person',
 			}, d.id );
 			if (ret.data!==null&&ret.data.length>0) {
@@ -69,8 +69,8 @@ module.exports = {
 	list : async d => {
 		try {
 			return await eos.getDataWithPKey({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'person',
 			}, d.id, 20 );
 		} catch (e) {
@@ -81,8 +81,8 @@ module.exports = {
 		try {
 			// TODO:performance
 			let data = await eos.getData({
-				code : 'mypher',
-				scope : 'mypher',
+				code : 'myphersystem',
+				scope : 'myphersystem',
 				table : 'person',
 			}, 10000 );
 			if (data.rows && data.rows instanceof Array) {
@@ -122,7 +122,7 @@ module.exports = {
 			}
 			return await eos.pushAction({
 				actions :[{
-					account : 'mypher',
+					account : 'myphersystem',
 					name : 'pupdate',
 					authorization: [{
 						actor: d.id,

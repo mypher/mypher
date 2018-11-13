@@ -114,8 +114,7 @@ module.exports = {
 
 	isNumber : d => {
 		try {
-			parseInt(d);
-			return true;
+			return (parseInt(d)!=NaN);
 		} catch (e) {
 			return false;
 		}

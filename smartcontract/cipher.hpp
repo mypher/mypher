@@ -7,21 +7,20 @@
 #define CIPHER_HPP
 
 #include <eosiolib/eosio.hpp>
+#include "mypherbase.hpp"
 
 namespace mypher {
 
 using namespace std;
-
 
 /**
  * @defgroup mypher
  * @class cipher
  * @brief the contract for managing a group named "cipher"
  */
-class Cipher {
+class Cipher : virtual public MypherBase {
 
 public:
-	Cipher(account_name _self);
 
 	/**
 	 * @brief information of cipher
@@ -109,8 +108,6 @@ public:
 				uint32_t cipherid, uint16_t version, uint16_t draftno);
 
 private:
-	account_name self;
-
 	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
 									 const uint16_t& ver, const uint16_t& draftno);
 	static std::string gen_third_key(const bool& formal, const std::string& name);

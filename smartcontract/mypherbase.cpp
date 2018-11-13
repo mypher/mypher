@@ -3,4 +3,10 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-#include "vperson.hpp"
+#include "mypherbase.hpp"
+
+namespace mypher {
+
+
+
+} // mypher

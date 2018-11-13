@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-#ifndef CONTRACT_HPP
-#define CONTRACT_HPP
+#ifndef MYPHER_HPP
+#define MYPHER_HPP
 
 #include <eosiolib/eosio.hpp>
+#include "mypherbase.hpp"
 #include "person.hpp"
 #include "cipher.hpp"
 #include "token.hpp"
@@ -14,13 +15,12 @@
 using namespace eosio;
 using namespace std;
 
-
 class Mypher : public contract, public mypher::Person, public mypher::Cipher, public mypher::Token {
 
 public:
-	Mypher(account_name self) 
-	: contract(self), mypher::Person(self), mypher::Cipher(self), mypher::Token(self)
-	{}  
+	Mypher(account_name _self) 
+	: contract(_self)
+	{self = _self;}  
 };
 
-#endif // CIPHER_HPP
+#endif // MYPHER_HPP

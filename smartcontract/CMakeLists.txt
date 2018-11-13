@@ -7,9 +7,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${EOSIO_CDT_ROOT}/lib/cmake)
 include(EosioWasmToolchain)
 
-configure_file(${CMAKE_SOURCE_DIR}/mypher.abi mypher.abi COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/myphersystem.abi myphersystem.abi COPYONLY)
 set(CMAKE_MODULE_PATH "${EOSIO_CDT_ROOT}/lib")
-add_executable( mypher.wasm mypher.cpp person.cpp cipher.cpp token.cpp validator/vcipher.cpp validator/vcommon.cpp common/prim.cpp)
+add_executable( myphersystem.wasm mypherbase.cpp mypher.cpp person.cpp cipher.cpp token.cpp common/prim.cpp)
 
 #add_custom_command(
 #	OUTPUT
@@ -20,6 +20,6 @@ add_executable( mypher.wasm mypher.cpp person.cpp cipher.cpp token.cpp validator
 #		eosio-abigen ${CMAKE_SOURCE_DIR}/mypher.hpp -output mypher.abi
 #)
 
-file(MAKE_DIRECTORY ../docker/contracts/mypher)
-add_custom_target(cpwasm ALL COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/mypher")
-add_custom_target(cpabi ALL COMMAND "cp" "-f" "*.abi" "../../docker/contracts/mypher")
+file(MAKE_DIRECTORY ../docker/contracts/myphersystem)
+add_custom_target(cpwasm ALL COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/myphersystem")
+add_custom_target(cpabi ALL COMMAND "cp" "-f" "*.abi" "../../docker/contracts/myphersystem")

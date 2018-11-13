@@ -6,7 +6,6 @@
 #include <eosiolib/print.hpp>
 #include <boost/range/iterator_range.hpp>
 #include "mypher.hpp"
-#include "validator/vcipher.hpp"
 #include "common/prim.hpp"
 
 namespace mypher {
@@ -21,10 +20,6 @@ uint64_t Cipher::gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver
 
 std::string Cipher::gen_third_key(const bool& formal, const std::string& name) {
 	return (formal ? "0" : "1") + name;
-}
-
-Cipher::Cipher(account_name _self) {
-	self = _self;
 }
 
 uint32_t Cipher::getNewCipherId(const data& d) {

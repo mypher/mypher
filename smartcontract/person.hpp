@@ -7,9 +7,8 @@
 #define PERSON_HPP
 
 #include <eosiolib/eosio.hpp>
-#include "validator/vperson.hpp"
-#include "validator/vcommon.hpp"
 #include "common/messageid.h"
+#include "mypherbase.hpp"
 
 namespace mypher {
 
@@ -21,11 +20,10 @@ using namespace eosio;
  * @class cipher
  * @brief the contract for managing a group named "cipher"
  */
-class Person {
+class Person : virtual public MypherBase {
 private:
 	const static size_t MINLEN_NAME = 1;
 	const static size_t MAXLEN_NAME = 32;
-	account_name self;
 public:
 	/**
 	 * @brief information of person
@@ -44,7 +42,6 @@ public:
 	 * @brief the definition of the table for "person"
 	 */
 	typedef eosio::multi_index<N(person), person> data;
-	Person(account_name _self);
 
 	/**
 	 * @brief create new person

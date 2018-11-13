@@ -78,6 +78,15 @@ Token.prototype = {
 			});
 			break;
 		case MODE.REF:
+			if (this.canedit()) {
+				btns.push({
+					text : 'EDIT',
+					click : () => {
+						this.mode = MODE.EDIT;
+						this.refresh();
+					}
+				});
+			}
 			btns.push({
 				text : 'BACK',
 				click : () => {
@@ -189,6 +198,29 @@ Token.prototype = {
 			return;
 		}
 		History.back();
+	},
+
+	commit : async function() {
+		const data = this.get();
+		data.sender = Account.user;
+		let ret = await Rpc.call(
+			'token.update',
+			[data]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.mode = MODE.REF;
+		this.refresh();
+	},
+
+	canedit : function() {
+		if (Number(this.data.issuertype)===0) { // cipher
+			return false;
+		} else { // individual
+			return (Account.user===this.data.issuer);
+		}
 	}
 
 };
