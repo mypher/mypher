@@ -26,7 +26,7 @@ module.exports = {
 			if (!cmn.isEosID(d.issuer)) {
 				return {code:'INVALID_PARAM'};
 			}
-			d.issuer2 = 0;
+			d.issuer2 = cmn.NUMBER_NULL; 
 		} else {
 			return {code:'INVALID_PARAM'};
 		}
@@ -34,8 +34,8 @@ module.exports = {
 		d.when = parseInt(d.when)||0;
 		d.disposal = parseInt(d.disposal)||0;
 		d.type = parseInt(d.type)||0;
-		d.taskid = parseInt(d.taskid)||0;
-		d.tokenid = parseInt(d.tokenid)||0;
+		d.taskid = parseInt(d.taskid)||cmn.NUMBER_NULL;
+		d.tokenid = parseInt(d.tokenid)||cmn.NUMBER_NULL;
 		d.reftoken = parseInt(d.reftoken)||0;
 		d.rcalctype = parseInt(d.rcalctype)||0;
 		d.nofdevtoken = parseInt(d.nofdevtoken)||0;
@@ -187,6 +187,8 @@ module.exports = {
 			} else {
 				ret.issuertype = ISSUER_INDIVIDUAL;
 			}
+			d.taskid = cmn.id2st(d.taskid);
+			d.tokenid = cmn.id2st(d.tokenid);
 			return ret;
 		} catch (e) {
 			throw e;

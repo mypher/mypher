@@ -10,10 +10,10 @@
 #include "common/messageid.h"
 #include "mypherbase.hpp"
 
-namespace mypher {
-
 using namespace std;
 using namespace eosio;
+
+namespace mypher {
 
 /**
  * @defgroup mypher

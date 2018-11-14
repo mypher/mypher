@@ -279,7 +279,6 @@
                 }
             ]
         },
-		
         {
             "name": "token",
             "base": "",
@@ -469,7 +468,161 @@
                     "type": "uint32"
                 }
             ]
-        }
+        },
+        {
+            "name": "task",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "ruleid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rewardid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rquantity",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pic",
+                    "type": "name[]"
+                },
+                {
+                    "name": "formal",
+                    "type": "bool"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                }
+			]
+		},
+        {
+            "name": "tanew",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "ruleid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rewardid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rquantity",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pic",
+                    "type": "name[]"
+                },
+                {
+                    "name": "formal",
+                    "type": "bool"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                }
+			]
+		},
+        {
+            "name": "taupdate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "cipherid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "ruleid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rewardid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "rquantity",
+                    "type": "uint64"
+                },
+                {
+                    "name": "pic",
+                    "type": "name[]"
+                },
+                {
+                    "name": "formal",
+                    "type": "bool"
+                },
+                {
+                    "name": "tags",
+                    "type": "string[]"
+                }
+			]
+		}
     ],
     "types": [],
     "actions": [
@@ -512,6 +665,16 @@
             "name": "tkupdate",
             "type": "tkupdate",
             "ricardian_contract": ""
+        },
+        {
+            "name": "tanew",
+            "type": "tanew",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "taupdate",
+            "type": "taupdate",
+            "ricardian_contract": ""
         }
     ],
     "tables": [
@@ -539,6 +702,13 @@
         {
             "name": "token",
             "type": "token",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "task",
+            "type": "task",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

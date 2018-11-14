@@ -35,7 +35,7 @@ Token.prototype = {
 	},
 
 	current : async function() {
-		let info = await Rpc.call(
+		const info = await Rpc.call(
 			'token.get',
 			[{id:this.data.id}]
 		);
@@ -189,7 +189,7 @@ Token.prototype = {
 	create : async function() {
 		const data = this.get();
 		data.sender = Account.user;
-		let ret = await Rpc.call(
+		const ret = await Rpc.call(
 			'token.add',
 			[data]
 		);

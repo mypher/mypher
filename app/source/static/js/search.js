@@ -134,6 +134,46 @@ Search.prototype = {
 	},
 
 	searchTask : async function(d, f) {
+		try {
+			const data = await Rpc.call('task.list', [{name:d.name}]);
+			const list = new List({
+				div : $('#result'),
+				type : MODE.REF,
+				col : [
+					{
+						width : 6,
+						label : _L('NAME2'),
+						name : 'name'
+					},
+					{
+						width : 3,
+						label : _L('OWNER'),
+						name : 'owner'
+					},
+					{
+						width : 3,
+						label : _L('PIC'),
+						name : 'pic'
+					}
+				]
+			}, (code, sel) => {
+				if (code===LIST_NOTIFY.DATA) {
+					if (data&&data.length>0) {
+						list.show(data);
+					}
+				} else if (code===LIST_NOTIFY.SELECT) {
+					const task = new Task({
+						div : $('#main'),
+						id : sel.id,
+						mode : MODE.REF
+					});
+					History.run(_L('TASK'), task);
+				}
+			});
+		} catch (e) {
+			UI.alert(_L('FAILED_TO_GET_DATA'));
+			console.log(e);
+		}
 	},
 
 	searchToken : async function(d, f) {

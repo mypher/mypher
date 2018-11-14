@@ -16,7 +16,7 @@ void Token::tknew(const account_name sender, const string& name, const account_n
 	require_auth(sender);
 	data d(self, self);
 	uint64_t id = d.available_primary_key();
-	eosio::print("###", sender, ":", id);
+	eosio::print("#token#", sender, ":", id);
 	d.emplace(sender, [&](auto& dd) {
 		dd.id = id;
 		dd.name = name;

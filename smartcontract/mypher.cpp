@@ -5,4 +5,9 @@
 
 #include "mypher.hpp"
 
-EOSIO_ABI( Mypher, (pupdate)(ccopy)(cnew)(cdraft)(cupdate)(capprove)(crevapprove)(tknew)(tkupdate))
+EOSIO_ABI( Mypher, 
+	(pupdate)
+	(ccopy)(cnew)(cdraft)(cupdate)(capprove)(crevapprove)
+	(tknew)(tkupdate)
+	(tanew)(taupdate)
+)

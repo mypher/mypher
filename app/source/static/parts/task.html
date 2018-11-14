@@ -1,0 +1,97 @@
+<!--
+    Copyright (C) 2018 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div class="form-horizontal tk_root">
+	<!-- ID -->
+	<div class="form-group row" hide_on="add">
+		<label class="col-sm-3 name" ltext="ID"></label>
+		<label class="col-sm-9" field="id"></label>
+	</div>
+	<!-- NAME -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="NAME1"></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" disable_on="ref" field="name">
+		</div>
+	</div>
+	<!-- DESCRIPTION -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="DESC"></label>
+		<div class="col-sm-9">
+			<textarea class="form-control" disable_on="ref" field="description"></textarea>
+		</div>
+	</div>
+	<!-- OWNER -->
+	<div class="form-group row" name="cp_desc">
+		<label class="col-sm-3 name" ltext="OWNER"></label>
+		<label class="col-sm-9" field="owner"></label>
+	</div>
+	<!-- TAGS -->
+	<div class="form-group row" name="cp_desc">
+		<label class="col-sm-3 name" ltext="TAGS"></label>
+		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
+		</div>
+	</div>
+	<!-- RULE -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="RULE"></label>
+		<div class="col-sm-9">
+			<div class="input-group" ctrl="button" proc="rule">
+				<input type="text" class="form-control" disabled 
+				field="rname" subfield="rid=ruleid">
+				<div class="input-group-append"><button class="btn btn-search"></button></div>
+				<div class="input-group-append"><button class="btn btn-detail"></button></div>
+			</div>
+		</div>
+	</div>
+	<!-- REWARD -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="REWARD"></label>
+		<div class="col-sm-9">
+			<div class="input-group form-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" ltext="TOKEN_ID"></span>
+				</div>
+				<input type="text" class="form-control" disabled
+				field="rewardname" subfield="tid=rewardid">
+				<div class="input-group-append" ctrl="button" proc="reward">
+					<button class="btn btn-search"></button>
+				</div>
+			</div>
+			<div class="input-group form-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" ltext="QUANTITY"></span>
+				</div>
+				<input type="text" class="form-control" disable_on="ref" field="rquantity">
+			</div>
+		</div>
+	</div>
+	<hr>
+	<!-- PIC -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="PIC"></label>
+		<div class="col-sm-9" disable_on="ref" ctrl="user" proc="pic" field="pic"/>
+	</div>
+	<!-- PICAPPROVE -->
+	<div class="form-group row" hide_on="add,edit">
+		<label class="col-sm-3 name" ltext="PIC_APPROVE_STATE"></label>
+		<div class="col-sm-9 votestate">
+		</div>
+	</div>
+	<!-- REVIEW -->
+	<div class="form-group row" hide_on="add,edit">
+		<label class="col-sm-3 name" ltext="REVIEW_STATE"></label>
+		<div class="col-sm-9 votestate">
+		</div>
+	</div>
+	<!-- BUTTON -->
+	<div class="form-group row">
+		<div class="col-sm-12 right" ctrl="button" proc="button">
+			<button class="btn btn-normal btn-md"></button>
+			<button class="btn btn-normal btn-md"></button>
+			<button class="btn btn-normal btn-md"></button>
+			<button class="btn btn-normal btn-md"></button>
+		</div>
+	</div>
+</div>

@@ -10,30 +10,28 @@ Header = {
 	},
 
 	layout : async function() {
-		var self = this;
-		return Util.promise(function(resolve, reject) {
-			self.div.load('parts/header.html', function(res, status) {
+		return Util.promise((resolve, reject) => {
+			this.div.load('parts/header.html', (res, status) => {
 				if (status==='error') {
 					reject();
 				}
-				var title = $(self.div.find('span[name="title"]')[0]);
+				const title = $(this.div.find('span[name="title"]')[0]);
 				History.init(title);
-				self.refresh();
+				this.refresh();
 				resolve();
 			});
 		});
 	},
 
 	refresh : function() {
-		var ul = $(this.div.find('ul')[0]);
-		var duser = $(this.div.find('div[name="user"]')[0]);
-		var self = this;
-		var addItem = (label, cb) => {
-			var a = $('<a class="nav-link" href="#">');
-			var li = $('<li class="nav-item">').append(a);
-			a.text(label).click(function() {
+		const ul = $(this.div.find('ul')[0]);
+		const duser = $(this.div.find('div[name="user"]')[0]);
+		const addItem = (label, cb) => {
+			const a = $('<a class="nav-link" href="#">');
+			const li = $('<li class="nav-item">').append(a);
+			a.text(label).click(() => {
 				cb();
-				var btn = self.div.find('button:eq(0)');
+				const btn = this.div.find('button:eq(0)');
 				if (btn.attr('aria-expanded')==='true') {
 					btn.click();
 				}
@@ -44,39 +42,43 @@ Header = {
 		duser.empty();
 		if (this.data) {
 			if (this.data.menu) {
-				for ( var i in this.data.menu ) {
+				this.data.menu.forEach( d=> {
 					+ function() {
-						var m = self.data.menu[i];
-						addItem(m.text, function() {
-							m.cb();
+						addItem(d.text, function() {
+							d.cb();
 						});
 					}();
-				}
+				});
 			}
 		}
 		addItem(_L('SEARCH'), function() {
 			History.backTo(0);
 		});
-		//Account.logined = true;
-		//Account.user = 'local';
 		if (Account.logined) {
 			addItem(_L('CREATE_CIPHER'), function() {
-				let cipher = new Cipher({
+				const cipher = new Cipher({
 					mode : MODE.NEW,
 					div : $('#main')
 				});
 				History.run(_L('CIPHER'), cipher);
 			});
-			addItem(_L('ACCOUNT'), function() {
-				Account.ref();
-			});
-		}
 			addItem(_L('CREATE_TOKEN'), function() {
-				let token = new Token({
+				const token = new Token({
 					mode : MODE.NEW,
 					div : $('#main')
 				});
 				History.run(_L('TOKEN'), token);
+			});
+			addItem(_L('ACCOUNT'), function() {
+				Account.ref();
+			});
+		}
+			addItem(_L('CREATE_TASK'), function() {
+				const task = new Task({
+					mode : MODE.NEW,
+					div : $('#main')
+				});
+				History.run(_L('TOKEN'), task);
 			});
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();

@@ -52,7 +52,7 @@ public:
 	typedef eosio::multi_index<N(token), token> data;
 
 	/**
-	 * @brief create new person
+	 * @brief create new token
 	 */
 	[[eosio::action]]
 	void tknew(const account_name sender, const string& name, const account_name issuer, 
@@ -61,6 +61,9 @@ public:
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
 			   const uint8_t rcalctype, const uint32_t nofdevtoken );
 
+	/**
+	 * @brief update token data
+	 */
 	[[eosio::action]]
 	void tkupdate(const account_name sender, const uint64_t id,
 			   const string& name, const account_name issuer, 

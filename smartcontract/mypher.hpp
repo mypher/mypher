@@ -11,11 +11,16 @@
 #include "person.hpp"
 #include "cipher.hpp"
 #include "token.hpp"
+#include "task.hpp"
 
 using namespace eosio;
 using namespace std;
 
-class Mypher : public contract, public mypher::Person, public mypher::Cipher, public mypher::Token {
+class Mypher : public contract, 
+			   public mypher::Person, 
+			   public mypher::Cipher, 
+			   public mypher::Token,
+			   public mypher::Task {
 
 public:
 	Mypher(account_name _self) 

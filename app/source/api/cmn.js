@@ -177,6 +177,7 @@ module.exports = {
 
 	isStrNumber : v => {
 		try {
+			// allow null
 			return /^[0-9]*$/.exec(v)!==null;
 		} catch (e) {
 			return false;
@@ -347,7 +348,16 @@ module.exports = {
 
 	isIpfsKey : key => {
 		return (/^Qm[0-9a-zA-Z]{44}$/.exec(key)!==null);
+	},
+
+	NUMBER_NULL : 0xffffffff, // TODO:javascript can't deal with 64bit number
+
+	id2st : v => {
+		if (v===apicmn.NUMBER_NULL) {
+			return '';
+		}
+		return String(v);
 	}
 };
 
-var apicmn = module.exports;
+let apicmn = module.exports;
