@@ -20,7 +20,7 @@
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ISSUER"></label>
-		<div class="col-sm-9" ctrl="radio" field="issuertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
+		<div class="col-sm-9" ctrl="radio" field="issuertype" proc="issuertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name"></label>
@@ -77,24 +77,12 @@
 		<label class="col-sm-3 name" ltext="ATTRIBUTES"></label>
 		<div class="col-sm-9 form-group leftnospace" ctrl="button" proc="attributes">
 			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="TASK_ID"></span>
-				</div>
-				<input type="text" class="form-control" disabled 
-					subfield="tid=taskid" field="taskname">
-				<div class="input-group-append">
-					<button class="btn btn-search" disable_on="ref"></button>
-				</div>
+				<label class="col-sm-3 name" ltext="TASK"></label>
+				<div class="col-sm-9" ctrl="elm" proc="task" field="taskid" limit="1"/>
 			</div>
 			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="TOKEN_ID"></span>
-				</div>
-				<input type="text" class="form-control" disabled
-					subfield="tid=tokenid" field="tokenname">
-				<div class="input-group-append">
-					<button class="btn btn-search" disable_on="ref"></button>
-				</div>
+				<label class="col-sm-3 name" ltext="TOKEN"></label>
+				<div class="col-sm-9" ctrl="elm" proc="token" field="tokenid" limit="1"/>
 			</div>
 			<div class="input-group col-sm-12 rowspace">
 				<div class="input-group-prepend">

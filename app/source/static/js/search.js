@@ -53,8 +53,8 @@ Search.prototype = {
 	searchUser : async function(d, f) {
 		try {
 			const data = (f==='0') 
-				? await Rpc.call('person.list', [{id:d.name}])
-				: await Rpc.call('person.list_bytag', [{tag:d.name}]);
+				? await Rpc.call('person.list_byname', [d.name])
+				: await Rpc.call('person.list_bytag', [d.name]);
 			const list = new List({
 				div : $('#result'),
 				type : MODE.REF,

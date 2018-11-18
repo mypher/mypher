@@ -193,5 +193,59 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
-	}
+	},
+	list_byname : async n => {
+		try {
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'token',
+				limit : 0,
+			});
+			let ret = [];
+			data.rows.forEach(v => {
+				if (String(v.id).includes(n) || v.name.includes(n)) {
+					ret.push({
+						id : v.id,
+						name : v.name,
+						tags : v.tags
+					});
+				}
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
+	name : async d => {
+		try {
+			let min='', max = '';
+			d.forEach(v => {
+				min = (min>v) ? v : min;
+				if (max==='') {
+					max = v;
+				} else {
+					max = (max<v) ? v : max;
+				}
+			});
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'token',
+				limit : 0,
+				lower_bound : min,
+				upper_bound : max + 'a',
+			});
+			let ret = [];
+			data.rows.forEach(v => {
+				ret.push({
+					id : v.id,
+					name : v.name,
+				});
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
 };

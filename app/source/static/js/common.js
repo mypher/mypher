@@ -296,7 +296,8 @@ let Util = {
 	},
 	initElmList : function(list, mode, proc) {
 		let elm = list.get(0);
-		elm.obj = new ElmList(list.eq(0), mode, proc);
+		let limit = parseInt(list.eq(0).attr('limit'))||0;
+		elm.obj = new ElmList(list.eq(0), mode, limit, proc);
 	},
 	initList : function(list, mode, proc) {
 		const elm = list.get(0);
@@ -557,9 +558,10 @@ Tag.prototype = {
 	}
 };
 
-function ElmList(div, mode, proc) {
+function ElmList(div, mode, limit, proc) {
 	this.div = div;
 	this.mode = mode;
+	this.limit = limit;
 	this.proc = {
 		click : (proc&&proc.click)||function(){},
 		change : (proc&&proc.change)||function(){},
@@ -573,9 +575,7 @@ function ElmList(div, mode, proc) {
 			this.click();
 		}
 	});
-	if (this.mode!==MODE.REF) {
-		div.css('border', '1px dashed #30b0f0');
-	}
+	this.allowedit(this.mode!==MODE.REF);
 	this.list = $('<div/>').css('diplay','none').addClass('elmlistpd');
 	this.back = $('<div/>').css('diplay','none').addClass('elmback').click(() => {
 		this.cancelselect();
@@ -615,6 +615,12 @@ ElmList.prototype = {
 		});
 	},
 	get : function() {
+		if (this.limit===1) {
+			if (this.data.length===1) {
+				return this.data[0].key;
+			}
+			return null;
+		}
 		let ret = [];
 		this.data.forEach(v => {
 			ret.push(v.key);
@@ -622,6 +628,7 @@ ElmList.prototype = {
 		return ret;
 	},
 	click : function() {
+		if (!this.allow) return;
 		let inp = this.div.find('input');
 		if (inp.length>0) {
 			inp.remove();
@@ -635,6 +642,8 @@ ElmList.prototype = {
 				else if (len===0) {
 					this.list.hide();
 					this.back.hide();
+				} else {
+					return false;
 				}
 			});
 		this.div.append(inp);
@@ -643,23 +652,27 @@ ElmList.prototype = {
 			switch (v.keyCode) {
 			case 38 : // up cursor
 				this.changeselect(-1);
-				return false;
+				return;
 			case 40 : // down cursor
 				this.changeselect(1);
-				return false;
+				return;
 			case 8: // back space
 				if (inp.val().length===0) {
 					this.data.pop();
 					await this.set2(this.data);
 					this.cancelselect();
 					this.click();
-					return false;
+					return;
 				}
 				break;
 			case 9: // tab
 			case 13: // enter
 				await this.select();
-				return false;
+				return;
+			}
+			if (this.limit>0 && this.data.length>=this.limit) {
+				v.preventDefault();
+				return;
 			}
 			f = true;
 			let val = inp.val();
@@ -667,6 +680,7 @@ ElmList.prototype = {
 		});
 		this.inp = inp;
 	},
+
 	changeselect : function(add) {
 		const sel = this.list.find('.sel');
 		let idx = parseInt(sel.attr('idx')) || 0;
@@ -722,6 +736,22 @@ ElmList.prototype = {
 		this.list.hide();
 		this.back.hide();
 		this.inp.remove();
+	},
+
+	disabled : async function(disable) {
+		this.allowedit(!disable);
+		if (disable) {
+			this.div.addClass('elmdisabled');
+		}
+		await this.set2([]);
+	},
+	allowedit : function(allow) {
+		this.allow = allow;
+		if (allow) {
+			this.div.addClass('elmallow').removeClass('elmdisallow elmdisabled');
+		} else {
+			this.div.addClass('elmdisallow').removeClass('elmallow elmdisabled');
+		}
 	}
 };
 
@@ -911,10 +941,12 @@ DateCtrl.prototype = {
 	}
 };
 
-function Radio(div, mode, d) {
+function Radio(div, mode, proc) {
 	this.div = div;
 	this.mode = mode;
-	this.data = d;
+	this.proc = {
+		change : proc ? (proc.change||function(){}) : function(){}
+	};
 	div.addClass('btn-group btn-group-toggle')/*.attr('data-toggle','buttons')*/;
 	const field = div.attr('field');
 	let disable_on = div.attr('disable_on')||'';
@@ -943,6 +975,7 @@ function Radio(div, mode, d) {
 	this.allowedit(!disable);
 	const self = this;
 	this.div.find('[type="radio"]').change(function() {
+		self.proc.change(this.value);
 		self.set(this.value);
 	});
 	this.value = null;

@@ -62,23 +62,23 @@ Header = {
 				});
 				History.run(_L('CIPHER'), cipher);
 			});
+			addItem(_L('CREATE_TASK'), function() {
+				const task = new Task({
+					mode : MODE.NEW,
+					div : $('#main')
+				});
+				History.run(_L('TASK'), task);
+			});
+			addItem(_L('ACCOUNT'), function() {
+				Account.ref();
+			});
+		}
 			addItem(_L('CREATE_TOKEN'), function() {
 				const token = new Token({
 					mode : MODE.NEW,
 					div : $('#main')
 				});
 				History.run(_L('TOKEN'), token);
-			});
-			addItem(_L('ACCOUNT'), function() {
-				Account.ref();
-			});
-		}
-			addItem(_L('CREATE_TASK'), function() {
-				const task = new Task({
-					mode : MODE.NEW,
-					div : $('#main')
-				});
-				History.run(_L('TOKEN'), task);
 			});
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();

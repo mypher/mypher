@@ -162,6 +162,17 @@ td {
 	padding-left:0px;
 }
 
+.elmallow {
+	border : 1px dashed #30b0f0;
+}
+
+.elmdisallow {
+	border : 1px dashed #ddd;
+}
+.elmdisabled {
+	background-color:#e9ecef;
+}
+
 .elmlistpd {
 	border : 1px solid #ddd;
 	background-color:#fff;

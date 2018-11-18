@@ -120,10 +120,11 @@ Token.prototype = {
 				term = false;
 				break;
 		}
-		const btn = this.div.find('button.btn-search');
+		const task = this.div.find('div[field="taskid"]').get(0).obj;
+		const token = this.div.find('div[field="tokenid"]').get(0).obj;
 		if (this.mode===MODE.REF) {
-			btn.eq(0).prop('disabled', true);
-			btn.eq(1).prop('disabled', true);
+			task.allowedit(false);
+			token.allowedit(false);
 			this.div.find('input[field="reftoken"]').prop('disabled', true);
 			if (term) {
 				this.div.find('#term').get(0).obj.disabled(true);
@@ -140,8 +141,8 @@ Token.prototype = {
 			}
 			this.div.find('input[field="nofdevtoken"]').prop('disabled', true);
 		} else {
-			btn.eq(0).prop('disabled', tokenname);
-			btn.eq(1).prop('disabled', taskname);
+			task.disabled(taskname);
+			token.disabled(tokenname);
 			this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
 			this.div.find('#term').get(0).obj.disabled(term);
 			const elm = this.div.find('div[field="rcalctype"]');
@@ -152,9 +153,18 @@ Token.prototype = {
 
 	refresh : async function() {
 		const btn = this.mkButton();
-		const self = this;
 		let init = true;
 		await Util.load(this.div, 'parts/token.html', this.mode, {
+			issuertype : {
+				change : v => {
+					const issuer = this.div.find('input[field="issuer"]');
+					if (parseInt(v)===1) {
+						issuer.val(Account.user).prop('disabled', true);
+					} else {
+						issuer.val('').prop('disabled', false);
+					}
+				}
+			},
 			button : btn,
 			issuer : {
 				click : () => {
@@ -162,15 +172,15 @@ Token.prototype = {
 				}
 			},
 			type : {
-				change : (evt) => {
+				change : evt => {
 					const when = $('[field="when"]').val();
-					if (!init) self.grayAttr(evt.target.value, when);
+					if (!init) this.grayAttr(evt.target.value, when);
 				}
 			},
 			when : {
-				change : (evt) => {
+				change : evt => {
 					const type = $('[field="type"]').val();
-					if (!init) self.grayAttr(type, evt.target.value);
+					if (!init) this.grayAttr(type, evt.target.value);
 				}
 			},
 			attributes : [{
@@ -179,8 +189,63 @@ Token.prototype = {
 			},{
 				click : () => {
 				}
-			}]
-
+			}],
+			task : {
+				click : () => {
+					return true;
+				},
+				change : elm => {
+					Rpc.call('task.list_byname', [elm.input.val()])
+					.then(ret => {
+						let l = [];
+						ret.forEach(v => {
+							l.push({
+								key : v.id,
+								name : v.name + '（' + v.id + '）'
+							});
+						});
+						elm.obj.pulldown(l);
+					});
+				},
+				name : async l => {
+					l = await Rpc.call('task.getname', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+				}
+			},
+			token : {
+				click : () => {
+					return true;
+				},
+				change : elm => {
+					Rpc.call('token.list_byname', [elm.input.val()])
+					.then(ret => {
+						let l = [];
+						ret.forEach(v => {
+							l.push({
+								key : v.id,
+								name : v.name + '（' + v.id + '）'
+							});
+						});
+						elm.obj.pulldown(l);
+					});
+				},
+				name : async l => {
+					l = await Rpc.call('token.getname', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+				}
+			}
 		});
 		init = false;
 		this.set(this.data);

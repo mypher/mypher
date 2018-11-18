@@ -88,7 +88,7 @@ module.exports = {
 			if (data.rows && data.rows instanceof Array) {
 				let ret = [];
 				data.rows.forEach(v=> {
-					if (v.tags.includes(d.tag)) {
+					if (v.tags.includes(d)) {
 						ret.push(v);
 					}
 				});
@@ -130,7 +130,7 @@ module.exports = {
 			throw e;
 		}
 	},
-	listbyname : async n => {
+	list_byname : async n => {
 		try {
 			let data = await eos.getData({
 				code : 'myphersystem',
@@ -143,7 +143,8 @@ module.exports = {
 				if (v.id.includes(n) || v.name.includes(n)) {
 					ret.push({
 						id : v.id,
-						name : v.name
+						name : v.name,
+						tags : v.tags
 					});
 				}
 			});

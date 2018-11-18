@@ -128,7 +128,7 @@ Task.prototype = {
 					return true;
 				},
 				change : elm => {
-					Rpc.call('person.listbyname', [elm.input.val()])
+					Rpc.call('person.list_byname', [elm.input.val()])
 					.then(ret => {
 						let l = [];
 						ret.forEach(v => {
