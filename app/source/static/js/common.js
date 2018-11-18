@@ -592,7 +592,9 @@ ElmList.prototype = {
 		if ( typeof data === 'string' ) {
 			data = [data];
 		}
-		let data = await this.proc.name(data);
+		if (data&&data.length>0) {
+			data = await this.proc.name(data);
+		}
 		await this.set2(data);
 	},
 
@@ -619,7 +621,7 @@ ElmList.prototype = {
 			if (this.data.length===1) {
 				return this.data[0].key;
 			}
-			return null;
+			return "";
 		}
 		let ret = [];
 		this.data.forEach(v => {

@@ -34,8 +34,10 @@ module.exports = {
 		d.when = parseInt(d.when)||0;
 		d.disposal = parseInt(d.disposal)||0;
 		d.type = parseInt(d.type)||0;
-		d.taskid = parseInt(d.taskid)||cmn.NUMBER_NULL;
-		d.tokenid = parseInt(d.tokenid)||cmn.NUMBER_NULL;
+		d.taskid = parseInt(d.taskid);
+		d.taskid = isNaN(d.taskid) ? cmn.NUMBER_NULL : d.taskid;
+		d.tokenid = parseInt(d.tokenid);
+		d.tokenid = isNaN(d.tokenid) ? cmn.NUMBER_NULL : d.tokenid;
 		d.reftoken = parseInt(d.reftoken)||0;
 		d.rcalctype = parseInt(d.rcalctype)||0;
 		d.nofdevtoken = parseInt(d.nofdevtoken)||0;
@@ -187,8 +189,8 @@ module.exports = {
 			} else {
 				ret.issuertype = ISSUER_INDIVIDUAL;
 			}
-			d.taskid = cmn.id2st(d.taskid);
-			d.tokenid = cmn.id2st(d.tokenid);
+			ret.taskid = cmn.id2st(ret.taskid);
+			ret.tokenid = cmn.id2st(ret.tokenid);
 			return ret;
 		} catch (e) {
 			throw e;
@@ -219,24 +221,30 @@ module.exports = {
 	},
 	name : async d => {
 		try {
-			let min='', max = '';
+			let min='', max = 0;
 			d.forEach(v => {
-				min = (min>v) ? v : min;
-				if (max==='') {
+				v = parseInt(v);
+				if (isNaN(v)) return;
+				if (min==='') {
+					min = v;
 					max = v;
 				} else {
+					min = (min>v) ? v : min;
 					max = (max<v) ? v : max;
 				}
 			});
+			let ret = [];
+			if (min==='') {
+				return ret;
+			}
 			let data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
 				limit : 0,
 				lower_bound : min,
-				upper_bound : max + 'a',
+				upper_bound : max + 1,
 			});
-			let ret = [];
 			data.rows.forEach(v => {
 				ret.push({
 					id : v.id,

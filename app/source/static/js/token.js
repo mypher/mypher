@@ -208,7 +208,7 @@ Token.prototype = {
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('task.getname', [l]);
+					l = await Rpc.call('task.name', [l]);
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
@@ -216,6 +216,7 @@ Token.prototype = {
 							name : v.name + '（' + v.id + '）'
 						});
 					});
+					return ret;
 				}
 			},
 			token : {
@@ -236,7 +237,7 @@ Token.prototype = {
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('token.getname', [l]);
+					l = await Rpc.call('token.name', [l]);
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
@@ -244,6 +245,7 @@ Token.prototype = {
 							name : v.name + '（' + v.id + '）'
 						});
 					});
+					return ret;
 				}
 			}
 		});
