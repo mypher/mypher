@@ -126,6 +126,7 @@ td {
 	padding: 4px;
 	margin: 0px;
 	outline:none;
+	z-index:1;
 }
 
 .userlist {
@@ -160,3 +161,40 @@ td {
 .leftnospace {
 	padding-left:0px;
 }
+
+.elmlistpd {
+	border : 1px solid #ddd;
+	background-color:#fff;
+	padding:0px;
+	box-shadow:2px 2px #eee;
+	z-index:2;
+	overflow:scroll;
+}
+
+.elmlistpd > ul {
+	padding:0px;
+}
+
+.elmlistpd > ul > li {
+	list-style-type: none;
+	padding: 2px 8px;
+	cursor: pointer;
+}
+
+.elmlistpd > ul > .nosel {
+}
+
+.elmlistpd > ul > .sel {
+	background-color: #24aff3;
+	color: #fff;
+}
+
+.elmback {
+	position:fixed;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	z-index:1;
+}
+

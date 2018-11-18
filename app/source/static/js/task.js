@@ -126,6 +126,15 @@ Task.prototype = {
 			pic : {
 				click : () => {
 					return true;
+				},
+				change : elm => {
+					Rpc.call('person.listbyname', [elm.input.val()])
+					.then(ret => {
+						elm.obj.pulldown(ret);
+					});
+				},
+				name : async l => {
+					return await Rpc.call('person.getname', [l]);
 				}
 			},
 			button : btns

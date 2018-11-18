@@ -99,6 +99,31 @@ module.exports = {
 			throw e;
 		}
 	},
+	listbyname : async d => {
+		try {
+			return [
+				{key:'1',name:'test1'},
+				{key:'2',name:'test2'},
+				{key:'3',name:'test3'},
+				{key:'4',name:'test4'},
+				{key:'5',name:'test5'},
+				{key:'6',name:'test6'},
+				{key:'7',name:'test7'},
+				{key:'8',name:'test8'},
+			];
+		} catch (e) {
+			throw e;
+		}
+	},
+	name : async l => {
+		try {
+			return [
+				{key:'1',name:'test1'},
+			];
+		} catch (e) {
+			throw e;
+		}
+	},
 	update : async d => {
 		try {
 			if (!cmn.chkTypes([

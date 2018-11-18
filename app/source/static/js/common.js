@@ -215,8 +215,8 @@ let Util = {
 					case 'tag':
 						Util.initTag(elm, mode, proc);
 						break;
-					case 'user':
-						Util.initUserList(elm, mode, proc);
+					case 'elm':
+						Util.initElmList(elm, mode, proc);
 						break;
 					case 'list':
 						Util.initList(elm, mode, proc);
@@ -294,9 +294,9 @@ let Util = {
 		let elm = tag.get(0);
 		elm.obj = new Tag(tag.eq(0), mode, proc);
 	},
-	initUserList : function(list, mode, proc) {
+	initElmList : function(list, mode, proc) {
 		let elm = list.get(0);
-		elm.obj = new UserList(list.eq(0), mode, proc);
+		elm.obj = new ElmList(list.eq(0), mode, proc);
 	},
 	initList : function(list, mode, proc) {
 		const elm = list.get(0);
@@ -371,7 +371,7 @@ let Util = {
 				case 'tag':
 					elms.get(0).obj.set(dd);
 					break;
-				case 'user':
+				case 'elm':
 					elms.get(0).obj.set(dd);
 					break;
 				case 'list':
@@ -415,7 +415,7 @@ let Util = {
 				const o = elm.get(0).obj;
 				switch (v) {
 				case 'tag':
-				case 'user':
+				case 'elm':
 					if (o) base[elm.attr('field')] = o.get();
 					break;
 				case 'list':
@@ -517,7 +517,11 @@ Tag.prototype = {
 		});
 	},
 	get : function() {
-		return this.data;
+		let ret = [];
+		this.data.forEach(v => {
+			ret.push(v.key);
+		});
+		return ret;
 	},
 	click : function() {
 		let inp = this.div.find('input');
@@ -550,39 +554,54 @@ Tag.prototype = {
 	}
 };
 
-function UserList(div, mode, proc) {
+function ElmList(div, mode, proc) {
 	this.div = div;
 	this.mode = mode;
-	this.proc = proc&&proc.click;
-	let self = this;
+	this.proc = {
+		click : (proc&&proc.click)||function(){},
+		change : (proc&&proc.change)||function(){},
+		name : (proc&&proc.name)||function(l){return l}
+	};
 	div.click(() => {
-		if (self.mode!==MODE.REF) {
-			if (self.proc&&self.proc()===false) {
+		if (this.mode!==MODE.REF) {
+			if (this.proc.click()===false) {
 				return;
 			}
-			self.click();
+			this.click();
 		}
 	});
-	if (self.mode!==MODE.REF) {
+	if (this.mode!==MODE.REF) {
 		div.css('border', '1px dashed #30b0f0');
 	}
+	this.list = $('<div/>').css('diplay','none').addClass('elmlistpd');
+	this.back = $('<div/>').css('diplay','none').addClass('elmback').click(() => {
+		this.cancelselect();
+	});
+	$('#main').append(this.list);
+	$('#main').append(this.back);
+	this.list.hide();
+	this.back.hide();
 	this.data = [];
 }
 
-UserList.prototype = {
+ElmList.prototype = {
 	set : async function(data) {
+		if ( typeof data === 'string' ) {
+			data = [data];
+		}
+		let data = await this.proc.name(data);
+		this.set2(data);
+	},
+
+	set2 : async function(data) {
 		if (data instanceof Array) {
 			this.data = data;
 		} else if ( typeof data === 'string' ) {
 			this.data = [data];
 		}
 		this.div.empty();
-		let ret = {};
-		try {
-			ret = await Util.name(this.data);
-		} catch (e) {}
 		this.data.forEach(d => {
-			let elm = $('<div>').addClass('userlist').text(ret[d]);
+			const elm = $('<div>').addClass('userlist').text(d.name||d.key).attr('key', d.key);
 			this.div.append(elm);
 		});
 		return;
@@ -596,29 +615,101 @@ UserList.prototype = {
 			inp.remove();
 			return;
 		}
-		inp = $('<input type="text">').addClass('taginp').prop('size', 2);
+		let f = false;
+		inp = $('<input type="text">').addClass('taginp').prop('size', 2)
+			.keyup(() => {
+				const len = inp.val().length;
+				if (f&&(len>0)) this.proc.change({obj:this, input:inp});
+				else if (len===0) {
+					this.list.hide();
+					this.back.hide();
+				}
+			});
 		this.div.append(inp);
-		let blur = async () => {
-			let val = inp.val();
-			if (/^[ ]*$/.exec(val)) return;
-			this.data.push(val);
-			await this.set(this.data);
-		};
-		inp.focus().blur(blur).keydown(v=> {
-			if (v.keyCode===9) {
-				blur().then(() => {
-					window.setTimeout(() => {
-						this.click();
-					}, 50);
-				});
+		inp.focus().keydown(async v=> {
+			f = false;
+			switch (v.keyCode) {
+			case 38 : // up cursor
+				this.changeselect(-1);
 				return false;
-			} else if (v.keyCode===13) {
-				blur();
+			case 40 : // down cursor
+				this.changeselect(1);
+				return false;
+			case 8: // back space
+				if (inp.val().length===0) {
+					this.data.pop();
+					await this.set2(this.data);
+					this.cancelselect();
+					this.click();
+					return false;
+				}
+				break;
+			case 9: // tab
+			case 13: // enter
+				await this.select();
 				return false;
 			}
+			f = true;
 			let val = inp.val();
 			inp.prop('size', val.bytes()+2);
 		});
+		this.inp = inp;
+	},
+	changeselect : function(add) {
+		const sel = this.list.find('.sel');
+		let idx = parseInt(sel.attr('idx')) || 0;
+		idx += add;
+		const next = this.list.find('li[idx="' + idx + '"]');
+		if (next.length===0) return;
+		sel.removeClass('sel').addClass('nosel');
+		next.removeClass('nosel').addClass('sel');
+	},
+	select : async function(idx) {
+		if (idx===undefined) {
+			idx = this.list.find('.sel').attr('idx');
+		}
+		const elms = this.list.find('li[idx="' + idx + '"]');
+		if (elms.length===0) {
+			this.cancelselect();
+		} else {
+			this.data.push({
+				key : elms.attr('key'),
+				name : elms.attr('name')
+			});
+			this.list.hide();
+			this.back.hide();
+			this.inp.remove();
+			await this.set2(this.data);
+		}
+		this.click();
+	},
+	pulldown : function(l) {
+		const list = $('<ul/>');
+		l.forEach((v, idx)=> {
+			list.append(
+				$('<li/>').attr({
+					idx : idx,
+					key : v.key,
+					name : v.name
+				}).text(v.name).addClass(idx===0 ? 'sel' : 'nosel')
+			);
+		});
+		const self = this;
+		list.find('li').click(function() {
+			self.select($(this).attr('idx'));
+		});
+		const offset = this.inp.offset();
+		//this.back.show();
+		this.list.empty().css({
+			'position' : 'absolute',
+			'top' : offset.top + this.inp.height(),
+			'left' : offset.left
+		}).append(list).show();
+	},
+	cancelselect : function() {
+		this.list.hide();
+		this.back.hide();
+		this.inp.remove();
 	}
 };
 
