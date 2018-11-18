@@ -130,11 +130,25 @@ Task.prototype = {
 				change : elm => {
 					Rpc.call('person.listbyname', [elm.input.val()])
 					.then(ret => {
-						elm.obj.pulldown(ret);
+						let l = [];
+						ret.forEach(v => {
+							l.push({
+								key : v.id,
+								name : v.name + '（' + v.id + '）'
+							});
+						});
+						elm.obj.pulldown(l);
 					});
 				},
 				name : async l => {
-					return await Rpc.call('person.getname', [l]);
+					l = await Rpc.call('person.getname', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
 				}
 			},
 			button : btns

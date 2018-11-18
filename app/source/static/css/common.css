@@ -169,6 +169,7 @@ td {
 	box-shadow:2px 2px #eee;
 	z-index:2;
 	overflow:scroll;
+	min-width:100px;
 }
 
 .elmlistpd > ul {

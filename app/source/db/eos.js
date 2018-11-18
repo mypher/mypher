@@ -41,6 +41,7 @@ module.exports = {
 			if (limit) d.limit = limit;
 			else d.limit = 1;
 			d.lower_bound = key;
+			d.upper_bound = key + 1;
 			let ret = await rpc.get_table_rows(d);
 			if (ret.rows.length===0) {
 				return null;

@@ -32,12 +32,12 @@ User.prototype = {
 			'person.get',
 			[{id:this.data.id}]
 		);
-		this.data = info.data;
+		this.data = info.data||{id:this.data.id};
 		this.data.pkey = this.getActiveKey(info.sys);
 		this.data.sysdata = JSON.stringify(info.sys);
 		Rpc.call(
 			'person.get_desc',
-			[info.data]
+			[this.data]
 		).then(d => {
 			for ( let k in d ) {
 				this.data[k] = d[k];

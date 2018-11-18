@@ -99,27 +99,55 @@ module.exports = {
 			throw e;
 		}
 	},
-	listbyname : async d => {
+	name : async d => {
 		try {
-			return [
-				{key:'1',name:'test1'},
-				{key:'2',name:'test2'},
-				{key:'3',name:'test3'},
-				{key:'4',name:'test4'},
-				{key:'5',name:'test5'},
-				{key:'6',name:'test6'},
-				{key:'7',name:'test7'},
-				{key:'8',name:'test8'},
-			];
+			let min='', max = '';
+			d.forEach(v => {
+				min = (min>v) ? v : min;
+				if (max==='') {
+					max = v;
+				} else {
+					max = (max<v) ? v : max;
+				}
+			});
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'person',
+				limit : 0,
+				lower_bound : min,
+				upper_bound : max + 'a',
+			});
+			let ret = [];
+			data.rows.forEach(v => {
+				ret.push({
+					id : v.id,
+					name : v.name,
+				});
+			});
+			return ret;
 		} catch (e) {
 			throw e;
 		}
 	},
-	name : async l => {
+	listbyname : async n => {
 		try {
-			return [
-				{key:'1',name:'test1'},
-			];
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'person',
+				limit : 0,
+			});
+			let ret = [];
+			data.rows.forEach(v => {
+				if (v.id.includes(n) || v.name.includes(n)) {
+					ret.push({
+						id : v.id,
+						name : v.name
+					});
+				}
+			});
+			return ret;
 		} catch (e) {
 			throw e;
 		}

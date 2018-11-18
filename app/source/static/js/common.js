@@ -517,11 +517,7 @@ Tag.prototype = {
 		});
 	},
 	get : function() {
-		let ret = [];
-		this.data.forEach(v => {
-			ret.push(v.key);
-		});
-		return ret;
+		return this.data;
 	},
 	click : function() {
 		let inp = this.div.find('input');
@@ -538,7 +534,14 @@ Tag.prototype = {
 			this.set(this.data);
 		};
 		inp.focus().blur(blur).keydown(v=> {
-			if (v.keyCode===9) {
+			if (v.keyCode===8) {
+				if (inp.val().length===0) {
+					this.data.pop();
+					blur();
+					this.set(this.data);
+					this.click();
+				}
+			} else if (v.keyCode===9) {
 				blur();
 				window.setTimeout(() => {
 					this.click();
@@ -590,12 +593,18 @@ ElmList.prototype = {
 			data = [data];
 		}
 		let data = await this.proc.name(data);
-		this.set2(data);
+		await this.set2(data);
 	},
 
 	set2 : async function(data) {
 		if (data instanceof Array) {
-			this.data = data;
+			let chk = {};
+			this.data = [];
+			data.forEach(v => {
+				if (chk[v.key]!==undefined) return;
+				chk[v.key] = true;
+				this.data.push(v);
+			});
 		} else if ( typeof data === 'string' ) {
 			this.data = [data];
 		}
@@ -604,10 +613,13 @@ ElmList.prototype = {
 			const elm = $('<div>').addClass('userlist').text(d.name||d.key).attr('key', d.key);
 			this.div.append(elm);
 		});
-		return;
 	},
 	get : function() {
-		return this.data;
+		let ret = [];
+		this.data.forEach(v => {
+			ret.push(v.key);
+		});
+		return ret;
 	},
 	click : function() {
 		let inp = this.div.find('input');
