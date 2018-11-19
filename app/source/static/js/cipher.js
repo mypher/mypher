@@ -131,7 +131,40 @@ Cipher.prototype = {
 	},
 
 	refresh : async function() {
-		let btn1 = this.mkBtn1();
+		const btn1 = this.mkBtn1();
+		const person =  {
+			click : key => {
+				let user = new User({
+					div : $('#main'),
+					name : key 
+				});
+				History.run(_L('USER'), user);
+			},
+			change : elm => {
+				Rpc.call('person.list_byname', [elm.input.val()])
+				.then(ret => {
+					let l = [];
+					ret.forEach(v => {
+						l.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					elm.obj.pulldown(l);
+				});
+			},
+			name : async l => {
+				l = await Rpc.call('person.name', [l]);
+				let ret = [];
+				l.forEach(v => {
+					ret.push({
+						key : v.id,
+						name : v.name + '（' + v.id + '）'
+					});
+				});
+				return ret;
+			}
+		};
 		await Util.load(this.div, 'parts/cipher.html', this.mode, {
 			draft : [{
 				click : () => {
@@ -145,21 +178,9 @@ Cipher.prototype = {
 			},
 			button1 : btn1,
 			button2 : [],
-			editors : {
-				click : () => {
-					return true;
-				}
-			},
-			authrors : {
-				click : () => {
-					return true;
-				}
-			},
-			approved : {
-				click : () => {
-					return true;
-				}
-			},
+			editors : person,
+			authors : person,
+			approved : person,
 			token : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'id' },
@@ -167,10 +188,11 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					list.show([
-						{id:1, name:'test1'},
-						{id:2, name:'test2'},
-					]);
+					Rpc.call('token.list_bycipherid', [d])
+					.then(ret => {
+						list.show(ret);
+					}).catch( e=> {
+					});
 				},
 				onselect : (d, list) => {
 					// d.id
@@ -185,10 +207,11 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					list.show([
-						{id:1, name:'test1'},
-						{id:2, name:'test2'},
-					]);
+					Rpc.call('task.list_bycipherid', [d])
+					.then(ret => {
+						list.show(ret);
+					}).catch( e=> {
+					});
 				},
 				onselect : (d, list) => {
 					// d.id
@@ -204,8 +227,6 @@ Cipher.prototype = {
 				key : [],
 				ondata : (d, list) => {
 					list.show([
-						{id:1, name:'test1'},
-						{id:2, name:'test2'},
 					]);
 				},
 				onselect : (d, list) => {

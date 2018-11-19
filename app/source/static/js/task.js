@@ -31,6 +31,11 @@ Task.prototype = {
 
 	set : async function(data) {
 		this.data = data;
+		if (data.owner==='') {
+			this.data.ownertype = '0';
+		} else {
+			this.data.ownertype = '1';
+		}
 		Util.setData(this.div, this.data);
 	},
 
@@ -138,8 +143,13 @@ Task.prototype = {
 				}
 			}],
 			rewardid : {
-				click : () => {
-					return true;
+				click : key => {
+					const token = new Token({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), token);
 				},
 				change : elm => {
 					Rpc.call('token.list_byname', [elm.input.val()])
@@ -167,8 +177,12 @@ Task.prototype = {
 				}
 			},
 			pic : {
-				click : () => {
-					return true;
+				click : key => {
+					let user = new User({
+						div : $('#main'),
+						name : key 
+					});
+					History.run(_L('USER'), user);
 				},
 				change : elm => {
 					Rpc.call('person.list_byname', [elm.input.val()])
@@ -192,6 +206,7 @@ Task.prototype = {
 							name : v.name + '（' + v.id + '）'
 						});
 					});
+					return ret;
 				}
 			},
 			button : btns

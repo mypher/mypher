@@ -191,8 +191,13 @@ Token.prototype = {
 				}
 			}],
 			task : {
-				click : () => {
-					return true;
+				click : key => {
+					const task = new Task({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('TASK'), task);
 				},
 				change : elm => {
 					Rpc.call('task.list_byname', [elm.input.val()])
@@ -220,8 +225,13 @@ Token.prototype = {
 				}
 			},
 			token : {
-				click : () => {
-					return true;
+				click : key => {
+					const token = new Token({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), token);
 				},
 				change : elm => {
 					Rpc.call('token.list_byname', [elm.input.val()])

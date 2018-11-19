@@ -219,6 +219,29 @@ module.exports = {
 			throw e;
 		}
 	},
+	list_bycipherid : async n => {
+		try {
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'token',
+				limit : 0,
+			});
+			let ret = [];
+			n = parseInt(n);
+			data.rows.forEach(v => {
+				if (v.cipherid === n) {
+					ret.push({
+						id : v.id,
+						name : v.name,
+					});
+				}
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
 	name : async d => {
 		try {
 			let min='', max = 0;

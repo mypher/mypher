@@ -62,7 +62,11 @@
                 {
                     "name": "tags",
                     "type": "string[]"
-                }
+                },
+				{
+                    "name": "formal",
+                    "type": "bool"
+				}
             ]
         },
         {

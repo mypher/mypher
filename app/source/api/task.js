@@ -75,6 +75,26 @@ module.exports = {
 			throw e;
 		}
 	},
+	list_bycipherid : async d => {
+		try {
+			const data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'task',
+			}, 10000);
+			let ret = [];
+			d = parseInt(d);
+			// TODO:create index
+			data.rows.forEach( v=> {
+				if (v.cipherid === d) {
+					ret.push(v);
+				}
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
 
 	get : async d=> {
 		try {
@@ -88,9 +108,9 @@ module.exports = {
 				return {code:'NOT_FOUND'};
 			}
 			ret = ret[0];
-			d.cipherid = cmn.id2st(d.cipherid);
-			d.ruleid = cmn.id2st(d.ruleid);
-			d.rewardid = cmn.id2st(d.rewardid);
+			ret.cipherid = cmn.id2st(ret.cipherid);
+			ret.ruleid = cmn.id2st(ret.ruleid);
+			ret.rewardid = cmn.id2st(ret.rewardid);
 			return ret;
 		} catch (e) {
 			throw e;

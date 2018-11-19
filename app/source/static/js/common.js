@@ -569,9 +569,9 @@ function ElmList(div, mode, limit, proc) {
 	};
 	div.click(() => {
 		if (this.mode!==MODE.REF) {
-			if (this.proc.click()===false) {
-				return;
-			}
+	//		if (this.proc.click()===false) {
+	//			return;
+	//		}
 			this.click();
 		}
 	});
@@ -589,7 +589,7 @@ function ElmList(div, mode, limit, proc) {
 
 ElmList.prototype = {
 	set : async function(data) {
-		if ( typeof data === 'string' ) {
+		if (!(data instanceof Array)) {
 			data = [data];
 		}
 		if (data&&data.length>0) {
@@ -612,7 +612,10 @@ ElmList.prototype = {
 		}
 		this.div.empty();
 		this.data.forEach(d => {
-			const elm = $('<div>').addClass('userlist').text(d.name||d.key).attr('key', d.key);
+			const elm = $('<div>').addClass('userlist').text(d.name||d.key)
+						.attr('key', d.key).click(() => {
+							this.proc.click(d.key);
+						});
 			this.div.append(elm);
 		});
 	},
