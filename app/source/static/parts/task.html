@@ -15,17 +15,27 @@
 			<input type="text" class="form-control" disable_on="ref" field="name">
 		</div>
 	</div>
+	<!-- OWNER -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="OWNER"></label>
+		<div class="col-sm-9" ctrl="radio" field="ownertype" proc="ownertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
+	</div>
+	<div class="form-group row">
+		<label class="col-sm-3 name"></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" field="owner" disable_on="ref">
+		</div>
+	</div>
+<!--	<div class="form-group row" name="cp_desc">
+		<label class="col-sm-3 name" ltext="OWNER"></label>
+		<label class="col-sm-9" field="owner"></label>
+	</div>-->
 	<!-- DESCRIPTION -->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="DESC"></label>
 		<div class="col-sm-9">
 			<textarea class="form-control" disable_on="ref" field="description"></textarea>
 		</div>
-	</div>
-	<!-- OWNER -->
-	<div class="form-group row" name="cp_desc">
-		<label class="col-sm-3 name" ltext="OWNER"></label>
-		<label class="col-sm-9" field="owner"></label>
 	</div>
 	<!-- TAGS -->
 	<div class="form-group row" name="cp_desc">
@@ -49,7 +59,11 @@
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="REWARD"></label>
 		<div class="col-sm-9">
-			<div class="input-group form-group">
+			<div class="input-group col-sm-12 rowspace">
+				<label class="col-sm-3 name" ltext="TOKEN"></label>
+				<div class="col-sm-9" ctrl="elm" proc="rewardid" field="rewardid" limit="1"/>
+			</div>
+			<!--<div class="input-group form-group">
 				<div class="input-group-prepend">
 					<span class="input-group-text" ltext="TOKEN_ID"></span>
 				</div>
@@ -58,7 +72,7 @@
 				<div class="input-group-append" ctrl="button" proc="reward">
 					<button class="btn btn-search"></button>
 				</div>
-			</div>
+			</div>-->
 			<div class="input-group form-group">
 				<div class="input-group-prepend">
 					<span class="input-group-text" ltext="QUANTITY"></span>

@@ -16,9 +16,12 @@ function Task(d) {
 Task.prototype = {
 	get : function() {
 		this.data = Util.getData(this.div, {
-			cipherid:this.data.cipherid||'',
 			formal:this.data.foral||true
 		});
+		if (this.data.ownertype==='0') {
+			this.data.cipherid = this.data.owner;
+			this.data.owner = '';
+		} 
 		if (!this.data.cipherid) {
 			this.data.formal = true;
 		}
@@ -108,6 +111,21 @@ Task.prototype = {
 	refresh : async function() {
 		const btns = this.initButtons()
 		await Util.load(this.div, 'parts/task.html', this.mode, {
+			ownertype : {
+				change : v => {
+					const owner = this.div.find('input[field="owner"]');
+					if (parseInt(v)===1) {
+						owner.val(Account.user).prop('disabled', true);
+					} else {
+						owner.val('').prop('disabled', false);
+					}
+				}
+			},
+			owner : {
+				click : () => {
+					return true;
+				}
+			},
 			tags : [{
 				click : () => {
 				}
@@ -119,10 +137,35 @@ Task.prototype = {
 				click : () => {
 				}
 			}],
-			reward : [{
+			rewardid : {
 				click : () => {
+					return true;
+				},
+				change : elm => {
+					Rpc.call('token.list_byname', [elm.input.val()])
+					.then(ret => {
+						let l = [];
+						ret.forEach(v => {
+							l.push({
+								key : v.id,
+								name : v.name + '（' + v.id + '）'
+							});
+						});
+						elm.obj.pulldown(l);
+					});
+				},
+				name : async l => {
+					l = await Rpc.call('token.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					return ret;
 				}
-			}],
+			},
 			pic : {
 				click : () => {
 					return true;
@@ -141,7 +184,7 @@ Task.prototype = {
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('person.getname', [l]);
+					l = await Rpc.call('person.name', [l]);
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
