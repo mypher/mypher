@@ -106,6 +106,43 @@ module.exports = {
 			throw e;
 		}
 	},
+	name : async d => {
+		try {
+			let min='', max = 0;
+			d.forEach(v => {
+				v = parseInt(v);
+				if (isNaN(v)) return;
+				if (min==='') {
+					min = v;
+					max = v;
+				} else {
+					min = (min>v) ? v : min;
+					max = (max<v) ? v : max;
+				}
+			});
+			let ret = [];
+			if (min==='') {
+				return ret;
+			}
+			let data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'ckey',
+				limit : 0,
+				lower_bound : min,
+				upper_bound : max + 1,
+			});
+			data.rows.forEach(v => {
+				ret.push({
+					id : v.id,
+					name : v.name,
+				});
+			});
+			return ret;
+		} catch (e) {
+			throw e;
+		}
+	},
 	copy : async d => {
 		let ret;
 		try {

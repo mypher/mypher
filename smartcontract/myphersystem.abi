@@ -150,6 +150,20 @@
             ]
         },
         {
+            "name": "ccopy",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+			]
+		},
+        {
             "name": "cupdate",
             "base": "",
             "fields": [
@@ -633,6 +647,11 @@
         {
             "name": "cnew",
             "type": "cnew",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "ccopy",
+            "type": "ccopy",
             "ricardian_contract": ""
         },
         {

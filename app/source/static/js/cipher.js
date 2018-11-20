@@ -124,7 +124,10 @@ Cipher.prototype = {
 		} else if (this.mode===MODE.EDIT) {
 			btns.push({
 				text : 'BACK',
-				click : function() { this.cancel(); }
+				click : () => { 
+					this.mode = MODE.REF;
+					this.refresh();
+				}
 			});
 		}
 		Util.initButton(this.div.find('div[name="cp_button2"] button'), btns);
@@ -195,9 +198,20 @@ Cipher.prototype = {
 					});
 				},
 				onselect : (d, list) => {
-					// d.id
+					const token = new Token({
+						div : $('#main'),
+						id : d.id,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), token);
 				},
 				onadd : (d, list) => {
+					const token = new Token({
+						div : $('#main'),
+						cipherid : this.data.id,
+						mode : MODE.ADD
+					});
+					History.run(_L('TOKEN'), token);
 				}	
 			},
 			task : {
@@ -214,9 +228,20 @@ Cipher.prototype = {
 					});
 				},
 				onselect : (d, list) => {
-					// d.id
+					const task = new Task({
+						div : $('#main'),
+						id : d.id,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), task);
 				},
 				onadd : (d, list) => {
+					const task = new Task({
+						div : $('#main'),
+						cipherid : this.data.id,
+						mode : MODE.ADD
+					});
+					History.run(_L('TOKEN'), task);
 				}	
 			},
 			rule : {

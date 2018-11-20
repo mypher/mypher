@@ -8,7 +8,7 @@ function Task(d) {
 	this.mode = d.mode;
 	this.data = {
 		id : d.id,
-		cipherid : d.cipherid,
+		cipherid : d.cipherid||'',
 		owner : Account.user
 	};
 }
@@ -18,10 +18,6 @@ Task.prototype = {
 		this.data = Util.getData(this.div, {
 			formal:this.data.foral||true
 		});
-		if (this.data.ownertype==='0') {
-			this.data.cipherid = this.data.owner;
-			this.data.owner = '';
-		} 
 		if (!this.data.cipherid) {
 			this.data.formal = true;
 		}
@@ -31,10 +27,12 @@ Task.prototype = {
 
 	set : async function(data) {
 		this.data = data;
-		if (data.owner==='') {
-			this.data.ownertype = '0';
+		if (data.cipherid==='') {
+			$('div[name="cipherid"]').hide();
+			$('div[name="owner"]').show();
 		} else {
-			this.data.ownertype = '1';
+			$('div[name="cipherid"]').show();
+			$('div[name="owner"]').hide();
 		}
 		Util.setData(this.div, this.data);
 	},
@@ -116,19 +114,40 @@ Task.prototype = {
 	refresh : async function() {
 		const btns = this.initButtons()
 		await Util.load(this.div, 'parts/task.html', this.mode, {
-			ownertype : {
-				change : v => {
-					const owner = this.div.find('input[field="owner"]');
-					if (parseInt(v)===1) {
-						owner.val(Account.user).prop('disabled', true);
-					} else {
-						owner.val('').prop('disabled', false);
-					}
+			cipherid : {
+				click : key => {
+					return true;
+				},
+				change : elm => {
+				},
+				name : async l => {
+					l = await Rpc.call('cipher.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					return ret;
 				}
 			},
 			owner : {
-				click : () => {
+				click : key => {
 					return true;
+				},
+				change : elm => {
+				},
+				name : async l => {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					return ret;
 				}
 			},
 			tags : [{

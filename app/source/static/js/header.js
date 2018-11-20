@@ -80,9 +80,10 @@ Header = {
 				Account.ref();
 			});
 		}
-			addItem(_L('CREATE_TASK'), function() {
+			addItem('CIPHERタスク', function() {
 				const task = new Task({
 					mode : MODE.NEW,
+					cipherid : 1,
 					div : $('#main')
 				});
 				History.run(_L('TASK'), task);
