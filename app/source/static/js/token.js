@@ -6,7 +6,11 @@
 function Token(d) {
 	this.div = d.div;
 	this.mode = d.mode;
-	this.data = {id:d.id};
+	this.data = {
+		id : d.id,
+		issuer2 : d.cipherid||'',
+		issuer : d.cipherid ? '' : Account.user
+	};
 }
 
 Token.prototype = {
@@ -17,8 +21,19 @@ Token.prototype = {
 
 	set : async function(data) {
 		this.data = data;
+		const cipher = $('div[name="issuer2"]');
+		const owner = $('div[name="issuer"]');
+		if (data.issuer2==='') {
+			cipher.hide();
+			owner.show();
+		} else {
+			cipher.show();
+			owner.hide();
+		}
 		Util.setData(this.div, this.data);
 		this.grayAttr(this.data.type, this.data.when);
+		cipher.find('div[field]').get(0).obj.allowedit(false);
+		owner.find('div[field]').get(0).obj.allowedit(false);
 	},
 
 	save : async function() {
@@ -155,20 +170,51 @@ Token.prototype = {
 		const btn = this.mkButton();
 		let init = true;
 		await Util.load(this.div, 'parts/token.html', this.mode, {
-			issuertype : {
-				change : v => {
-					const issuer = this.div.find('input[field="issuer"]');
-					if (parseInt(v)===1) {
-						issuer.val(Account.user).prop('disabled', true);
-					} else {
-						issuer.val('').prop('disabled', false);
-					}
+			button : btn,
+			issuer2 : {
+				click : key => {
+					const cipher = new Cipher({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('CIPHER'), cipher);
+				},
+				change : elm => {
+				},
+				name : async l => {
+					l = await Rpc.call('cipher.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					return ret;
 				}
 			},
-			button : btn,
 			issuer : {
-				click : () => {
-					return true;
+				click : key => {
+					const task = new Task({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('TASK'), task);
+				},
+				change : elm => {
+				},
+				name : async l => {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					return ret;
 				}
 			},
 			type : {
@@ -293,7 +339,7 @@ Token.prototype = {
 	},
 
 	canedit : function() {
-		if (Number(this.data.issuertype)===0) { // cipher
+		if (this.data.issuer2) { // cipher
 			return false;
 		} else { // individual
 			return (Account.user===this.data.issuer);

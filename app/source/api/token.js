@@ -9,27 +9,8 @@ const log = require('../cmn/logger')('api.token');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
 
-
-const ISSUER_CIPHER = '0';
-const ISSUER_INDIVIDUAL = '1';
-
 module.exports = {
 	formdata : function(d) {
-		if (d.issuertype===ISSUER_CIPHER) {
-			const issuer = parseInt(d.issuer);
-			if (isNaN(issuer)) {
-				return {code:'INVALID_PARAM'};
-			}
-			d.issuer = '';
-			d.issuer2 = issuer;
-		} else if (d.issuertype===ISSUER_INDIVIDUAL) {
-			if (!cmn.isEosID(d.issuer)) {
-				return {code:'INVALID_PARAM'};
-			}
-			d.issuer2 = cmn.NUMBER_NULL; 
-		} else {
-			return {code:'INVALID_PARAM'};
-		}
 		d.limit = parseInt(d.limit)||0;
 		d.when = parseInt(d.when)||0;
 		d.disposal = parseInt(d.disposal)||0;
@@ -41,6 +22,8 @@ module.exports = {
 		d.reftoken = parseInt(d.reftoken)||0;
 		d.rcalctype = parseInt(d.rcalctype)||0;
 		d.nofdevtoken = parseInt(d.nofdevtoken)||0;
+		d.issuer2 = parseInt(d.issuer2);
+		d.issuer2 = isNaN(d.issuer2) ? cmn.NUMBER_NULL : d.issuer2;
 		return d;
 	},
 
@@ -104,12 +87,6 @@ module.exports = {
 			let ret = [];
 			data.rows.forEach( v=> {
 				if (v.name.includes(d.name)) {
-					if (v.issuer==='') {
-						v.issuer = v.issuer2;
-						v.issuertype = ISSUER_CIPHER;
-					} else {
-						v.issuertype = ISSUER_INDIVIDUAL;
-					}
 					ret.push(v);
 				}
 			});
@@ -183,14 +160,9 @@ module.exports = {
 				return {code:'NOT_FOUND'};
 			}
 			ret = ret[0];
-			if (ret.issuer==='') {
-				ret.issuer = ret.issuer2;
-				ret.issuertype = ISSUER_CIPHER;
-			} else {
-				ret.issuertype = ISSUER_INDIVIDUAL;
-			}
 			ret.taskid = cmn.id2st(ret.taskid);
 			ret.tokenid = cmn.id2st(ret.tokenid);
+			ret.issuer2 = cmn.id2st(ret.issuer2);
 			return ret;
 		} catch (e) {
 			throw e;
@@ -230,7 +202,7 @@ module.exports = {
 			let ret = [];
 			n = parseInt(n);
 			data.rows.forEach(v => {
-				if (v.cipherid === n) {
+				if (v.issuer2 === n) {
 					ret.push({
 						id : v.id,
 						name : v.name,

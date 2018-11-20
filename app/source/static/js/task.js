@@ -9,14 +9,14 @@ function Task(d) {
 	this.data = {
 		id : d.id,
 		cipherid : d.cipherid||'',
-		owner : Account.user
+		owner : d.cipherid ? '' : Account.user
 	};
 }
 
 Task.prototype = {
 	get : function() {
 		this.data = Util.getData(this.div, {
-			formal:this.data.foral||true
+			formal:this.data.formal||true
 		});
 		if (!this.data.cipherid) {
 			this.data.formal = true;
@@ -27,14 +27,18 @@ Task.prototype = {
 
 	set : async function(data) {
 		this.data = data;
+		const cipher = $('div[name="cipherid"]');
+		const owner = $('div[name="owner"]');
 		if (data.cipherid==='') {
-			$('div[name="cipherid"]').hide();
-			$('div[name="owner"]').show();
+			cipher.hide();
+			owner.show();
 		} else {
-			$('div[name="cipherid"]').show();
-			$('div[name="owner"]').hide();
+			cipher.show();
+			owner.hide();
 		}
 		Util.setData(this.div, this.data);
+		cipher.find('div[field]').get(0).obj.allowedit(false);
+		owner.find('div[field]').get(0).obj.allowedit(false);
 	},
 
 	draw : async function() {
@@ -116,7 +120,12 @@ Task.prototype = {
 		await Util.load(this.div, 'parts/task.html', this.mode, {
 			cipherid : {
 				click : key => {
-					return true;
+					const cipher = new Cipher({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('CIPHER'), cipher);
 				},
 				change : elm => {
 				},
@@ -134,7 +143,12 @@ Task.prototype = {
 			},
 			owner : {
 				click : key => {
-					return true;
+					const task = new Task({
+						div : $('#main'),
+						id : key,
+						mode : MODE.REF
+					});
+					History.run(_L('TASK'), task);
 				},
 				change : elm => {
 				},

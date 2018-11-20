@@ -122,6 +122,7 @@ var $L = {
 		'LOADING' : 'loading...',
 		'REQCIPHER' : '依頼元サイファー',
 		'REQPERSON' : '依頼者',
+		'ISSUECIPHER' : '発行元サイファー',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

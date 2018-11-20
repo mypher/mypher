@@ -191,7 +191,7 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('token.list_bycipherid', [d])
+					Rpc.call('token.list_bycipherid', [this.data.id])
 					.then(ret => {
 						list.show(ret);
 					}).catch( e=> {
@@ -209,7 +209,7 @@ Cipher.prototype = {
 					const token = new Token({
 						div : $('#main'),
 						cipherid : this.data.id,
-						mode : MODE.ADD
+						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), token);
 				}	
@@ -221,7 +221,7 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('task.list_bycipherid', [d])
+					Rpc.call('task.list_bycipherid', [this.data.id])
 					.then(ret => {
 						list.show(ret);
 					}).catch( e=> {
@@ -239,7 +239,7 @@ Cipher.prototype = {
 					const task = new Task({
 						div : $('#main'),
 						cipherid : this.data.id,
-						mode : MODE.ADD
+						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), task);
 				}	

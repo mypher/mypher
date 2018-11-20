@@ -18,7 +18,16 @@
 			<input type="text" class="form-control" field="name" disable_on="ref">
 		</div>
 	</div>
-	<div class="form-group row">
+	<!-- OWNER -->
+	<div class="form-group row" name="issuer2">
+		<label class="col-sm-3 name" ltext="ISSUECIPHER"></label>
+		<div class="col-sm-9" ctrl="elm" proc="issuer2" field="issuer2" limit="1"/>
+	</div>
+	<div class="form-group row" name="issuer">
+		<label class="col-sm-3 name" ltext="ISSUER"></label>
+		<div class="col-sm-9" ctrl="elm" proc="issuer" field="issuer" limit="1"/>
+	</div>
+<!--	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ISSUER"></label>
 		<div class="col-sm-9" ctrl="radio" field="issuertype" proc="issuertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
 	</div>
@@ -27,7 +36,7 @@
 		<div class="col-sm-9">
 			<input type="text" class="form-control" field="issuer" disable_on="ref">
 		</div>
-	</div>
+	</div>-->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ISSUE_LIMIT"></label>
 		<div class="col-sm-9">

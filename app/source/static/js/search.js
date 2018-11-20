@@ -20,7 +20,8 @@ Search.prototype = {
 		await Util.load(this.div, 'parts/search.html', this.mode, {
 			search :[{
 				click : () => {
-					let data = Util.getData(this.div, {});
+					const data = Util.getData(this.div, {});
+					this.data = data;
 					if (!data.type2) return;
 					switch (data.type) {
 					case '0':
