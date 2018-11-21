@@ -290,6 +290,35 @@ module.exports = {
 			throw e;
 		}
 	},
+	approve : async d => {
+		try {
+			if (!cmn.chkTypes([
+				{p:d.cipherid, f:cmn.isNumber},
+				{p:d.version, f:cmn.isUint16},
+				{p:d.draftno, f:cmn.isUint16},
+				{p:d.user, f:cmn.isEosID},
+			])) {
+				return {code:'INVALID_PARAM'};
+			}
+			if (d.approve!==true && d.approve!==false) {
+				return {code:'INVALID_PARAM'};
+			}
+			d.sender = d.user;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : d.approve ? 'capprove' : 'crevapprove',
+					authorization: [{
+						actor: d.user,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			throw e;
+		}
+	},
 
 	hist : async d => {
 		try {

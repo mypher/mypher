@@ -80,14 +80,6 @@ Header = {
 				Account.ref();
 			});
 		}
-			addItem('CIPHERタスク', function() {
-				const task = new Task({
-					mode : MODE.NEW,
-					cipherid : 1,
-					div : $('#main')
-				});
-				History.run(_L('TASK'), task);
-			});
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();
 		});

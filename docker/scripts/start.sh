@@ -134,6 +134,7 @@ if [ -n "$GENESIS" ]; then
 	nodeos --producer-name eosio \
 		   --config-dir /mnt/dev/config \
 		   --max-transaction-time=1000 \
+		   --verbose-http-errors \
 		   -d /mnt/dev/data &
 	sleep 8
 	create_account eosio.msig
@@ -180,6 +181,7 @@ else
 		   --enable-stale-production \
 		   --private-key '[ "${AC_PUB}","${AC_PRI}" ]' \
 		   --config-dir /mnt/dev/config \
+		   --verbose-http-errors \
 		   -d /mnt/dev/data &
 
 fi 

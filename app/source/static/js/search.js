@@ -20,23 +20,8 @@ Search.prototype = {
 		await Util.load(this.div, 'parts/search.html', this.mode, {
 			search :[{
 				click : () => {
-					const data = Util.getData(this.div, {});
-					this.data = data;
-					if (!data.type2) return;
-					switch (data.type) {
-					case '0':
-						this.searchUser(data, data.type2);
-						break;
-					case '1':
-						this.searchCipher(data, data.type2);
-						break;
-					case '2':
-						this.searchTask(data, data.type2);
-						break;
-					case '3':
-						this.searchToken(data, data.type2);
-						break;
-					}
+					this.data = Util.getData(this.div, {});
+					this.search();
 				}
 			}]
 		});
@@ -47,8 +32,27 @@ Search.prototype = {
 	},
 
 	draw : async function() {
-		await this.get();
+		await this.search();
 		await this.refresh();
+	},
+
+	search : async function() {
+		const data = this.data;
+		if (!data.type2) return;
+		switch (data.type) {
+		case '0':
+			this.searchUser(data, data.type2);
+			break;
+		case '1':
+			this.searchCipher(data, data.type2);
+			break;
+		case '2':
+			this.searchTask(data, data.type2);
+			break;
+		case '3':
+			this.searchToken(data, data.type2);
+			break;
+		}
 	},
 
 	searchUser : async function(d, f) {

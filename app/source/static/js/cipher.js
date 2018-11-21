@@ -71,6 +71,24 @@ Cipher.prototype = {
 		await this.draw();
 	},
 
+	approve : async function(f) {
+		const newid = await Rpc.call(
+			'cipher.approve',
+			[{
+				user : Account.loginUser(),
+				cipherid : this.data.cipherid,
+				version : this.data.version,
+				draftno : this.data.draftno,
+				approve : f
+			}]
+		);
+		if (newid===-1) {
+			UI.alert(_L('FAILED_TO_GET_DATA'));
+			return;
+		}
+		await this.draw();
+	},
+
 	mkBtn1 : function() {
 		switch (this.mode) {
 		case MODE.EDIT:
