@@ -45,12 +45,12 @@ void Token::tkupdate(const account_name sender, const uint64_t id,
 	data d(self, self);
 	auto rec = d.find(id);
 	// check if data exists
-	eosio_assert(rec!=d.end(), "DATA_NOT_FOUND");
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if data can edit
 	if (rec->issuer==N("")) { // cipher
-		eosio_assert(false, "NOT IMPLEMENTS YET");
+		eosio_assert_code(false, NOT_IMPLEMENT_YET);
 	} else { // individual
-		eosio_assert(rec->issuer==sender, "NOT_EDITABLE");	
+		eosio_assert_code(rec->issuer==sender, NOT_EDITABLE);	
 	}
 	// TODO:reject if token already issued
 	d.modify(rec, sender, [&](auto& dd){

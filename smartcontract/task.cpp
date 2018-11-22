@@ -44,14 +44,14 @@ void Task::taupdate( const account_name sender, const uint64_t id, const uint64_
 	data d(self, self);
 	auto rec = d.find(id);
 	// check if data exists
-	eosio_assert(rec!=d.end(), "DATA_NOT_FOUND");
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if data can edit
 	if (rec->owner==N("")) { // cipher
-		eosio_assert(false, "NOT IMPLEMENTS YET");
+		eosio_assert_code(false, NOT_IMPLEMENT_YET);
 	} else { // individual
-		eosio_assert(rec->owner==sender, "NOT_EDITABLE");	
+		eosio_assert_code(rec->owner==sender, NOT_EDITABLE);	
 	}
-	eosio_assert(rec->pic.size()==0, "PIC_IS_ASSIGNED");
+	eosio_assert_code(rec->pic.size()==0, PIC_IS_ASSIGNED);
 	d.modify(rec, sender, [&](auto& dd){
 		dd.cipherid = cipherid;
 		dd.owner = owner;

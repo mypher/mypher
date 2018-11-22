@@ -394,7 +394,7 @@ Cipher.prototype.Validator = {
 
 		try {
 			// check if person already approved
-			if (data.approved.include(user)) {
+			if (data.approved.includes(user)) {
 				return false;
 			}
 		} catch (e) {

@@ -29,7 +29,7 @@ module.exports = {
 			}
 			return ret;
 		} catch (e) {
-			throw e;	
+			return cmn.parseEosError(e);	
 		}
 	},
 
@@ -50,7 +50,7 @@ module.exports = {
 			ret.sys = await eos.getEosData(d.id);
 			return ret;
 		} catch (e) {
-			throw e;	
+			return cmn.parseEosError(e);	
 		}
 	},
 	get_desc : async d => {
@@ -63,7 +63,7 @@ module.exports = {
 			}
 			return await ipfs.get(d.info);
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	list : async d => {
@@ -74,7 +74,7 @@ module.exports = {
 				table : 'person',
 			}, d.id, 20 );
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	list_bytag : async d => {
@@ -96,7 +96,7 @@ module.exports = {
 			}
 			return [];
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	name : async d => {
@@ -127,7 +127,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	list_byname : async n => {
@@ -150,7 +150,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	update : async d => {
@@ -186,7 +186,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	}
 };

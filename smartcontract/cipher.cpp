@@ -35,7 +35,7 @@ uint16_t Cipher::getNewVersion(const data& d, const uint32_t cipherid) {
 	auto idx = d.get_index<N(secondary_key)>();
 	auto lower = idx.lower_bound(gen_secondary_key(cipherid, 1, 1));
 	auto upper = idx.upper_bound(gen_secondary_key(cipherid+1, 1, 1));
-	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
+	eosio_assert_code(lower!=idx.end(), NOT_FOUND);
 	auto pre = lower;
 	bool formaled = false;
 	for (auto it=lower; it!=upper; ++it ) {
@@ -54,7 +54,7 @@ bool Cipher::isVersionFormal(const data& d, const uint32_t cipherid, const uint1
 	auto idx = d.get_index<N(secondary_key)>();
 	auto lower = idx.lower_bound(gen_secondary_key(cipherid, ver, 1));
 	auto upper = idx.upper_bound(gen_secondary_key(cipherid, ver+1, 1));
-	eosio_assert(lower!=idx.end(), "SYSTEM_ERROR");
+	eosio_assert_code(lower!=idx.end(), NOT_FOUND);
 	for (auto it=lower; it!=upper; ++it ) {
 		if (it->formal) return true;
 	}
@@ -84,7 +84,6 @@ void Cipher::cnew(const account_name sender,
 	uint64_t id = d.available_primary_key();
 	auto cipherid = getNewCipherId(d);
 	// insert new cipher
-	eosio::print("###", sender, ":", cipherid);
 	d.emplace(sender, [&](auto& dd) {
 		dd.id = id;
 		dd.cipherid = cipherid;
@@ -115,8 +114,6 @@ void Cipher::ccopy(const account_name sender, const uint64_t id) {
 	auto draftno = getNewDraftNo(d, rec->cipherid, version);
 	std::vector<account_name> editors;
 
-	eosio::print("##Ciher.copy:", rec->cipherid, (uint64_t)version, (uint64_t)draftno);
-	
 	editors.push_back(sender);
 	// insert new draft
 	d.emplace(sender, [&](auto& dd) {
@@ -156,11 +153,11 @@ void Cipher::cdraft(const account_name sender,
 	// check if data is registered
 	auto key = Cipher::gen_secondary_key(cipherid, version, draftno);
 	auto rec = idx.find(key);
-	eosio_assert(rec!=idx.end(), "ALREADY_REGISTERED");
+	eosio_assert_code(rec!=idx.end(), ALREADY_REGISTERED);
 	// check if pervious version is formal
-	eosio_assert(!isVersionFormal(d, cipherid, version), "NOT_VALID_VERSION");
-	// check id current version is not formal
-	eosio_assert(isVersionFormal(d, cipherid, version), "NOT_VALID_VERSION");
+	eosio_assert_code(isVersionFormal(d, cipherid, version-1), INVALID_VERSION);
+	// check if current version is not formal
+	eosio_assert_code(!isVersionFormal(d, cipherid, version), ALREADY_FORMAL);
 	uint64_t id = d.available_primary_key();
 	// insert new draft
 	d.emplace(sender, [&](auto& dd) {
@@ -195,15 +192,15 @@ void Cipher::cupdate(const account_name sender,
 	require_auth(sender);
 	// check if version is already formal
 	data d(self, self);
-	eosio_assert(!isVersionFormal(d, cipherid, version), "ALREADY_FORMAL");
+	eosio_assert_code(!isVersionFormal(d, cipherid, version), ALREADY_FORMAL);
 	auto rec = d.find(id);
 	if (rec!=d.end()) {
-		eosio_assert((
+		eosio_assert_code((
 			cipherid==rec->cipherid &&
 			version==rec->version && 
-			draftno==rec->draftno ), "INVALID_PARAM");
+			draftno==rec->draftno ), NOT_FOUND);
 		// check if sender can edit this draft
-		eosio_assert(canEdit(sender, rec->editors), "SENDER_CANT_EDIT");
+		eosio_assert_code(canEdit(sender, rec->editors), SENDER_CANT_EDIT);
 		// update data
 		d.modify(rec, sender, [&](auto& dd) {
 			dd.editors = editors;
@@ -222,7 +219,6 @@ void Cipher::cupdate(const account_name sender,
 			dd.formal = false;
 		});
 	}
-	eosio_assert(false, "DATA_NOT_FOUND");
 }
 
 void Cipher::capprove(const account_name sender, 
@@ -236,15 +232,15 @@ void Cipher::capprove(const account_name sender,
 	auto rec = idx.find(key);
 	auto target = d.find(rec->id);
 	// check if the draft is exists
-	eosio_assert(rec==idx.end(), "NOT_FOUND");
+	eosio_assert_code(rec!=idx.end(), NOT_FOUND);
 	// check if the version is formal
-	eosio_assert(isVersionFormal(d,cipherid, version), "ALREADY_BEEN_FORMAL");
+	eosio_assert_code(!isVersionFormal(d,cipherid, version), ALREADY_FORMAL);
 	// check if sender is contained in approver
 	auto found = std::find(std::begin(rec->drule_auth), std::end(rec->drule_auth), sender);
-	eosio_assert(found==std::end(rec->drule_auth), "SENDER_IS_NOT_APPROVER");
+	eosio_assert_code(found!=std::end(rec->drule_auth), SENDER_NOT_APPROVER);
 	// check if sender already approved
 	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
-	eosio_assert(found!=std::end(rec->approved), "SENDER_ALREADY_APPROVED"); 
+	eosio_assert_code(found==std::end(rec->approved), SENDER_ALREADY_APPROVED); 
 	// update data
 	bool formal = false;
 	d.modify(target, sender, [&](auto& dd) {
@@ -276,17 +272,19 @@ void Cipher::crevapprove(const account_name sender,
 	auto rec = idx.find(key);
 	auto target = d.find(rec->id);
 	// check if the draft is exists
-	eosio_assert(rec==idx.end(), "NOT_FOUND");
+	eosio_assert_code(rec!=idx.end(), NOT_FOUND);
 	// check if the version is formal
-	eosio_assert(isVersionFormal(d,cipherid, version), "ALREADY_BEEN_FORMAL");
+	eosio_assert_code(!isVersionFormal(d,cipherid, version), ALREADY_FORMAL);
 	// check if sender is contained in approver
 	auto found = std::find(std::begin(rec->drule_auth), std::end(rec->drule_auth), sender);
-	eosio_assert(found==std::end(rec->drule_auth), "SENDER_IS_NOT_APPROVER");
+	eosio_assert_code(found!=std::end(rec->drule_auth), SENDER_NOT_APPROVER);
 	// check if sender doesn't approve yet
 	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
-	eosio_assert(found==std::end(rec->approved), "SENDER_NOT_APPROVE_YET"); 
+	eosio_assert_code(found!=std::end(rec->approved), SENDER_NOT_APPROVE_YET); 
 	// update data
+	eosio::print(target->id);
 	d.modify(target, sender, [&](auto& dd) {
+		eosio::print(sender);
 		std::remove(dd.approved.begin(), dd.approved.end(), sender);
 	});
 }

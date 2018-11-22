@@ -39,7 +39,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	list_bytag : async d => {
@@ -58,7 +58,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	get : async d=> {
@@ -103,7 +103,7 @@ module.exports = {
 			}
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	name : async d => {
@@ -140,7 +140,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	copy : async d => {
@@ -165,7 +165,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 		await cmn.sleep(500);
 		for ( let i=0; i<5; i++) {
@@ -204,7 +204,7 @@ module.exports = {
 			}
 			return -1;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	get_desc : async d => {
@@ -217,7 +217,7 @@ module.exports = {
 			}
 			return await ipfs.get(d.hash);
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	add : async d => {
@@ -250,7 +250,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	edit : async d => {
@@ -287,7 +287,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	approve : async d => {
@@ -316,7 +316,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 
@@ -347,7 +347,7 @@ module.exports = {
 				return [];
 			}
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	}
 };

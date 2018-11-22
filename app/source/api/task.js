@@ -49,7 +49,7 @@ module.exports = {
 			});
 
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 
@@ -72,7 +72,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	list_bycipherid : async d => {
@@ -92,7 +92,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 
@@ -113,7 +113,7 @@ module.exports = {
 			ret.rewardid = cmn.id2st(ret.rewardid);
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 
@@ -148,7 +148,7 @@ module.exports = {
 			});
 
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 
@@ -172,7 +172,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 	name : async d => {
@@ -209,7 +209,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			throw e;
+			return cmn.parseEosError(e);
 		}
 	},
 };
