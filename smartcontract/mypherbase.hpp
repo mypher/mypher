@@ -10,6 +10,10 @@
 
 namespace mypher {
 
+#define NUMBER_NULL 0xffffffff
+
+#define SELF N("myphersystem")
+
 class MypherBase {
 protected:
 	account_name self;

@@ -25,8 +25,7 @@ Task.prototype = {
 		return this.data;
 	},
 
-	set : async function(data) {
-		this.data = data;
+	setenablestate : async function() {
 		const cipher = $('div[name="cipherid"]');
 		const owner = $('div[name="owner"]');
 		if (data.cipherid==='') {
@@ -36,9 +35,18 @@ Task.prototype = {
 			cipher.show();
 			owner.hide();
 		}
-		Util.setData(this.div, this.data);
 		cipher.find('div[field]').get(0).obj.allowedit(false);
 		owner.find('div[field]').get(0).obj.allowedit(false);
+		const vali = this.Validator;
+		if (this.mode !== MODE.REF) {
+			$('div[field="pic"]').get(0).obj.allowedit(vali.cansetpic(this.data));
+		}
+	},
+
+	set : async function(data) {
+		this.data = data;
+		Util.setData(this.div, this.data);
+		await this.setenablestate();
 	},
 
 	draw : async function() {
@@ -116,6 +124,39 @@ Task.prototype = {
 	},
 
 	refresh : async function() {
+		const userevt = {
+			click : key => {
+				let user = new User({
+					div : $('#main'),
+					name : key 
+				});
+				History.run(_L('USER'), user);
+			},
+			change : elm => {
+				Rpc.call('person.list_byname', [elm.input.val()])
+				.then(ret => {
+					let l = [];
+					ret.forEach(v => {
+						l.push({
+							key : v.id,
+							name : v.name + '（' + v.id + '）'
+						});
+					});
+					elm.obj.pulldown(l);
+				});
+			},
+			name : async l => {
+				l = await Rpc.call('person.name', [l]);
+				let ret = [];
+				l.forEach(v => {
+					ret.push({
+						key : v.id,
+						name : v.name + '（' + v.id + '）'
+					});
+				});
+				return ret;
+			}
+		};
 		const btns = this.initButtons()
 		await Util.load(this.div, 'parts/task.html', this.mode, {
 			cipherid : {
@@ -141,37 +182,8 @@ Task.prototype = {
 					return ret;
 				}
 			},
-			owner : {
-				click : key => {
-					const task = new Task({
-						div : $('#main'),
-						id : key,
-						mode : MODE.REF
-					});
-					History.run(_L('TASK'), task);
-				},
-				change : elm => {
-				},
-				name : async l => {
-					l = await Rpc.call('person.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
-						});
-					});
-					return ret;
-				}
-			},
+			owner : userevt,
 			tags : [{
-				click : () => {
-				}
-			}],
-			rule : [{
-				click : () => {
-				}
-			},{
 				click : () => {
 				}
 			}],
@@ -209,39 +221,11 @@ Task.prototype = {
 					return ret;
 				}
 			},
-			pic : {
-				click : key => {
-					let user = new User({
-						div : $('#main'),
-						name : key 
-					});
-					History.run(_L('USER'), user);
-				},
-				change : elm => {
-					Rpc.call('person.list_byname', [elm.input.val()])
-					.then(ret => {
-						let l = [];
-						ret.forEach(v => {
-							l.push({
-								key : v.id,
-								name : v.name + '（' + v.id + '）'
-							});
-						});
-						elm.obj.pulldown(l);
-					});
-				},
-				name : async l => {
-					l = await Rpc.call('person.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
-						});
-					});
-					return ret;
-				}
-			},
+			authorizors : userevt,
+			pic : userevt,
+			auth_task : userevt,
+			auth_pic : userevt,
+			auth_results : userevt,
 			button : btns
 		});
 		this.set(this.data);
@@ -276,7 +260,48 @@ Task.prototype = {
 		this.refresh();
 	},
 
+};
 
+Task.prototype.Validator = {
+	NOT_AUTH_TASK = 0,
+	NOT_SET_PIC = 1,
+	NOT_AUTH_PIC = 2,
+	NOT_AUTH_RESULTS = 3,
+	DONE = 4,
+	getstate : async function(data) {
+		const isfulfill = l => {
+			if (data.authorizors.length===0) return false;z
+			const nofauth = data.authorizors.filter(function (x, i, self) {
+				return self.indexOf(x) === i;
+			});
+			let req = data.nofauth;
+			nofauth.forEach(v => {
+				if (l.includes(v)) req--;
+			});
+			return (req=<0);
+		};
+		// check if task is authorized
+		if (data.ciphreid) {
+			const cipher = await Rpc.call(
+				'cipher.get',
+				[data.cipherid]
+			);
+			if (!cipher.data.formal) return this.NOT_AUTH_TASK;
+		} else {
+			if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_TASK;
+		}
+		// check if pic is set
+		if (data.pic.length===0) return this.NOT_SET_PIC;
+		// check if pic is not authorized
+		if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_PIC;
+		// check if results is not authorized
+		if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_RESULTS;
+		return this.DONE;
+	},
+	cansetpic : function(data) {
+		const state = this.getstate(data);
+		return (data.auth_task.includes(Account.user)&&(state<this.NOT_AUTH_PIC));
+	}
 };
 
 //# sourceURL=task.js

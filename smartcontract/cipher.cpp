@@ -14,7 +14,6 @@ using namespace eosio;
 
 uint64_t Cipher::gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver, const uint16_t& draftno) {
 	uint64_t ret = (uint64_t{cipherid} << 24) | (uint64_t{ver} << 12) | draftno;
-	eosio::print("###cipherid:", cipherid, " version:", uint64_t{ver}, " draftno:", uint64_t{draftno}, "=>", ret, "\n");
 	return ret;
 }
 
@@ -223,6 +222,8 @@ void Cipher::cupdate(const account_name sender,
 
 void Cipher::capprove(const account_name sender, 
 				uint32_t cipherid, uint16_t version, uint16_t draftno) {
+	auto n = name{self};
+	eosio::print("\n###\n", n, "\n###\n");
 	// check if sender is logined user
 	require_auth(sender);
 	data d(self, self);
@@ -282,10 +283,9 @@ void Cipher::crevapprove(const account_name sender,
 	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
 	eosio_assert_code(found!=std::end(rec->approved), SENDER_NOT_APPROVE_YET); 
 	// update data
-	eosio::print(target->id);
 	d.modify(target, sender, [&](auto& dd) {
-		eosio::print(sender);
-		std::remove(dd.approved.begin(), dd.approved.end(), sender);
+		auto result = std::remove(dd.approved.begin(), dd.approved.end(), sender);
+		dd.approved.erase(result, dd.approved.end());
 	});
 }
 
@@ -296,5 +296,13 @@ bool Cipher::canEdit(const account_name& sender, const std::vector<account_name>
 	}
 	return false;	
 }
+
+
+bool Cipher::isCipherExists(const uint64_t id) {
+	data d(SELF, SELF);
+	auto rec = d.find(id);
+	return (rec!=d.end());
+}
+
 
 }

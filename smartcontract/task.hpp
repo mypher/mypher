@@ -15,6 +15,9 @@ using namespace eosio;
 
 namespace mypher {
 
+#define NAME_MINLEN 6 // minimum length of name
+
+
 /**
  * @defgroup mypher
  * @class cipher
@@ -31,18 +34,23 @@ public:
 		uint64_t cipherid;
 		account_name owner;
 		string name;
-		string description;
-		uint64_t ruleid;
 		uint64_t rewardid;
 		uint64_t rquantity;
+		uint8_t nofauth;
+		vector<account_name> authorizors;
+		vector<account_name> auth_task;
+		vector<account_name> auth_pic;
+		vector<account_name> auth_results;
 		vector<account_name> pic;
 		bool formal;
 		vector<string> tags;
 
 		auto primary_key() const { return id; }
 
-		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)(description)
-									(ruleid)(rewardid)(rquantity)(pic)(formal)(tags))
+		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
+							(rewardid)(rquantity)
+							(nofauth)(authorizors)(auth_task)(auth_pic)(auth_results)
+							(pic)(formal)(tags))
 	};
 	/**
 	 * @brief the definition of the table for "task"
@@ -56,19 +64,22 @@ public:
 	 * @brief create new task
 	 */
 	[[eosio::action]]
-	void tanew(	const account_name sender, const uint64_t cipherid, const account_name owner,
-				const string& name, const string& description, const uint64_t ruleid, 
-				const uint64_t rewardid, const uint64_t rquantity, const vector<account_name>& pic, 
-				const bool formal, const vector<string>& tags);
+	void tanew(	const account_name sender, const uint64_t cipherid, 
+				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
+				const uint8_t nofauth, 
+				const vector<account_name>& authorizors, 
+				const vector<account_name>& pic, 
+				const vector<string>& tags);
 
 	/**
 	 * @brief update task data
 	 */
 	[[eosio::action]]
-	void taupdate( const account_name sender, const uint64_t id, const uint64_t cipherid, 
-				const account_name owner, const string& name, const string& description, 
-				const uint64_t ruleid, const uint64_t rewardid, const uint64_t rquantity, 
-				const vector<account_name>& pic, const bool formal, const vector<string>& tags);
+	void taupdate( const account_name sender, const uint64_t id, const string& name,  
+				const uint64_t rewardid, const uint64_t rquantity, 
+				const uint8_t nofauth, 
+				const vector<account_name>& authorizors, 
+				const vector<account_name>& pic, const vector<string>& tags);
 };
 
 } // mypher

@@ -117,6 +117,11 @@ private:
 	uint16_t getNewVersion(const data& d,const uint32_t cipherid);
 	uint16_t getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver);
 	bool isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver);
+
+
+// common
+public:
+	static bool isCipherExists(const uint64_t id); 
 };
 
 } // mypher

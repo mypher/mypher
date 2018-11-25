@@ -37,18 +37,6 @@
 		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
 		</div>
 	</div>
-	<!-- RULE -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="RULE"></label>
-		<div class="col-sm-9">
-			<div class="input-group" ctrl="button" proc="rule">
-				<input type="text" class="form-control" disabled 
-				field="rname" subfield="rid=ruleid">
-				<div class="input-group-append"><button class="btn btn-search"></button></div>
-				<div class="input-group-append"><button class="btn btn-detail"></button></div>
-			</div>
-		</div>
-	</div>
 	<!-- REWARD -->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="REWARD"></label>
@@ -65,23 +53,42 @@
 			</div>
 		</div>
 	</div>
+	<!-- RULE -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="RULE"></label>
+		<div class="col-sm-9">
+			<div class="input-group form-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" ltext="REQ_NUM_AUTHORIZORS"></span>
+				</div>
+				<input type="text" class="form-control" disable_on="ref" field="nofauth">
+			</div>
+			<div class="input-group col-sm-12 rowspace">
+				<label class="col-sm-3 name" ltext="AUTHORIZORS"></label>
+				<div class="col-sm-9" ctrl="elm" proc="authorizors" field="authorizors" limit="1"/>
+			</div>
+		</div>
+	</div>
+	<!-- AUTH_OF_TASK -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="AUTH_OF_TASK"></label>
+		<div class="col-sm-9" ctrl="elm" proc="auth_task" field="auth_task" limit="1"/>
+	</div>
 	<hr>
 	<!-- PIC -->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="PIC"></label>
 		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="pic" field="pic"/>
 	</div>
-	<!-- PICAPPROVE -->
-	<div class="form-group row" hide_on="add,edit">
-		<label class="col-sm-3 name" ltext="PIC_APPROVE_STATE"></label>
-		<div class="col-sm-9 votestate">
-		</div>
+	<!-- AUTH_OF_PIC -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="AUTH_OF_PIC"></label>
+		<div class="col-sm-9" ctrl="elm" proc="auth_pic" field="auth_pic" limit="1"/>
 	</div>
-	<!-- REVIEW -->
-	<div class="form-group row" hide_on="add,edit">
-		<label class="col-sm-3 name" ltext="REVIEW_STATE"></label>
-		<div class="col-sm-9 votestate">
-		</div>
+	<!-- AUTH_OF_RESULTS -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="AUTH_OF_RESULTS"></label>
+		<div class="col-sm-9" ctrl="elm" proc="auth_results" field="auth_results" limit="1"/>
 	</div>
 	<!-- BUTTON -->
 	<div class="form-group row">

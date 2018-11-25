@@ -49,6 +49,10 @@ public:
 	[[eosio::action]]
 	void pupdate(const account_name id, const std::string& name, const std::vector<std::string>& tags, const std::string& info);
 
+// common
+public:
+	static bool checkList(const vector<account_name>& list);
+
 };
 
 } // mypher

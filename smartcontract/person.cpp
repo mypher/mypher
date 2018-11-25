@@ -36,4 +36,23 @@ void Person::pupdate(const account_name id, const string& name, const std::vecto
 	}
 }
 
+bool Person::checkList(const vector<account_name>& list) {
+	data d(SELF, SELF);
+
+	vector<account_name> sort;
+	for (auto it = list.begin(); it != list.end(); ++it ) {
+		sort.push_back(*it);
+	}
+	std::sort(sort.begin(), sort.end());
+
+	account_name prev = N("");
+	for (auto it = list.begin(); it != list.end(); ++it ) {
+		if (*it==prev) return false; // if there is duplicate data, invalid
+		auto elm = d.find(*it);
+		if (elm == d.end()) return false; // if there is unregistered account, invalid
+		prev = *it;
+	}
+	return true;
+}
+
 } // mypher
