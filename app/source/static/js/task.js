@@ -221,7 +221,7 @@ Task.prototype = {
 					return ret;
 				}
 			},
-			authorizors : userevt,
+			approvers : userevt,
 			pic : userevt,
 			auth_task : userevt,
 			auth_pic : userevt,
@@ -270,8 +270,8 @@ Task.prototype.Validator = {
 	DONE = 4,
 	getstate : async function(data) {
 		const isfulfill = l => {
-			if (data.authorizors.length===0) return false;z
-			const nofauth = data.authorizors.filter(function (x, i, self) {
+			if (data.approvers.length===0) return false;z
+			const nofauth = data.approvers.filter(function (x, i, self) {
 				return self.indexOf(x) === i;
 			});
 			let req = data.nofauth;

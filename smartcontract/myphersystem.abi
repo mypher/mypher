@@ -508,20 +508,32 @@
                     "type": "string"
                 },
                 {
-                    "name": "description",
-                    "type": "string"
-                },
-                {
-                    "name": "ruleid",
-                    "type": "uint64"
-                },
-                {
                     "name": "rewardid",
                     "type": "uint64"
                 },
                 {
                     "name": "rquantity",
                     "type": "uint64"
+                },
+                {
+                    "name": "nofauth",
+                    "type": "uint8"
+                },
+                {
+                    "name": "approvers",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approve_task",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approve_pic",
+                    "type": "name[]"
+                },
+                {
+                    "name": "approve_results",
+                    "type": "name[]"
                 },
                 {
                     "name": "pic",
@@ -550,20 +562,8 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
                     "name": "name",
                     "type": "string"
-                },
-                {
-                    "name": "description",
-                    "type": "string"
-                },
-                {
-                    "name": "ruleid",
-                    "type": "uint64"
                 },
                 {
                     "name": "rewardid",
@@ -574,12 +574,16 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "pic",
+                    "name": "nofauth",
+                    "type": "uint8"
+                },
+                {
+                    "name": "approvers",
                     "type": "name[]"
                 },
                 {
-                    "name": "formal",
-                    "type": "bool"
+                    "name": "pic",
+                    "type": "name[]"
                 },
                 {
                     "name": "tags",
@@ -600,24 +604,8 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "cipherid",
-                    "type": "uint64"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
                     "name": "name",
                     "type": "string"
-                },
-                {
-                    "name": "description",
-                    "type": "string"
-                },
-                {
-                    "name": "ruleid",
-                    "type": "uint64"
                 },
                 {
                     "name": "rewardid",
@@ -628,17 +616,93 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "pic",
+                    "name": "nofauth",
+                    "type": "uint8"
+                },
+                {
+                    "name": "approvers",
                     "type": "name[]"
                 },
                 {
-                    "name": "formal",
-                    "type": "bool"
+                    "name": "pic",
+                    "type": "name[]"
                 },
                 {
                     "name": "tags",
                     "type": "string[]"
                 }
+			]
+		},
+        {
+            "name": "taaprvtask",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vec",
+                    "type": "bool"
+                },
+			]
+		},
+        {
+            "name": "taaprvpic",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vec",
+                    "type": "bool"
+                },
+			]
+		},
+        {
+            "name": "taaprvrslt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vec",
+                    "type": "bool"
+                },
+			]
+		},
+        {
+            "name": "applyforpic",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "vec",
+                    "type": "bool"
+                },
 			]
 		}
     ],

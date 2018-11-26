@@ -37,10 +37,10 @@ public:
 		uint64_t rewardid;
 		uint64_t rquantity;
 		uint8_t nofauth;
-		vector<account_name> authorizors;
-		vector<account_name> auth_task;
-		vector<account_name> auth_pic;
-		vector<account_name> auth_results;
+		vector<account_name> approvers;
+		vector<account_name> approve_task;
+		vector<account_name> approve_pic;
+		vector<account_name> approve_results;
 		vector<account_name> pic;
 		bool formal;
 		vector<string> tags;
@@ -49,7 +49,7 @@ public:
 
 		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
 							(rewardid)(rquantity)
-							(nofauth)(authorizors)(auth_task)(auth_pic)(auth_results)
+							(nofauth)(approvers)(approve_task)(approve_pic)(approve_results)
 							(pic)(formal)(tags))
 	};
 	/**
@@ -67,7 +67,7 @@ public:
 	void tanew(	const account_name sender, const uint64_t cipherid, 
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
-				const vector<account_name>& authorizors, 
+				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const vector<string>& tags);
 
@@ -78,8 +78,36 @@ public:
 	void taupdate( const account_name sender, const uint64_t id, const string& name,  
 				const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
-				const vector<account_name>& authorizors, 
+				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const vector<string>& tags);
+	
+	/**
+	 * @brief approve a task 
+	 */
+	[[eosio::action]]
+	void taaprvtask( const account_name sender, const uint64_t id, const bool vec);
+
+	/**
+	 * @brief approve a pic 
+	 */
+	[[eosio::action]]
+	void taaprvpic( const account_name sender, const uint64_t id, const bool vec);
+
+	/**
+	 * @brief approve results
+	 */
+	[[eosio::action]]
+	void taaprvrslt( const account_name sender, const uint64_t id, const bool vec);
+
+	/**
+	 * @brief apply for pic of a task
+	 */
+	[[eosio::action]]
+	void applyforpic( const account_name sender, const uint64_t id, const bool vec);
+
+public:
+	bool ispicapproved(const task& d);
+
 };
 
 } // mypher
