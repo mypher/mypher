@@ -65,14 +65,14 @@
 			</div>
 			<div class="input-group col-sm-12 rowspace">
 				<label class="col-sm-3 name" ltext="APPROVERS"></label>
-				<div class="col-sm-9" ctrl="elm" proc="approvers" field="approvers" limit="1"/>
+				<div class="col-sm-9" ctrl="elm" proc="approvers" field="approvers"/>
 			</div>
 		</div>
 	</div>
-	<!-- AUTH_OF_TASK -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="AUTH_OF_TASK"></label>
-		<div class="col-sm-9" ctrl="elm" proc="auth_task" field="auth_task" limit="1"/>
+	<!-- APPROVE_OF_TASK -->
+	<div class="form-group row" hide_on="add">
+		<label class="col-sm-3 name" ltext="APPROVE_OF_TASK"></label>
+		<div class="col-sm-9" ctrl="elm" proc="approve_task" field="approve_task"/>
 	</div>
 	<hr>
 	<!-- PIC -->
@@ -80,15 +80,15 @@
 		<label class="col-sm-3 name" ltext="PIC"></label>
 		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="pic" field="pic"/>
 	</div>
-	<!-- AUTH_OF_PIC -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="AUTH_OF_PIC"></label>
-		<div class="col-sm-9" ctrl="elm" proc="auth_pic" field="auth_pic" limit="1"/>
+	<!-- APPROVE_OF_PIC -->
+	<div class="form-group row" hide_on="add">
+		<label class="col-sm-3 name" ltext="APPROVE_OF_PIC"></label>
+		<div class="col-sm-9" ctrl="elm" proc="approve_pic" field="approve_pic"/>
 	</div>
-	<!-- AUTH_OF_RESULTS -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="AUTH_OF_RESULTS"></label>
-		<div class="col-sm-9" ctrl="elm" proc="auth_results" field="auth_results" limit="1"/>
+	<!-- APPROVE_OF_RESULTS -->
+	<div class="form-group row" hide_on="add">
+		<label class="col-sm-3 name" ltext="APPROVE_OF_RESULTS"></label>
+		<div class="col-sm-9" ctrl="elm" proc="approve_results" field="approve_results"/>
 	</div>
 	<!-- BUTTON -->
 	<div class="form-group row">

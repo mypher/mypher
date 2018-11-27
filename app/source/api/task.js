@@ -23,7 +23,6 @@ module.exports = {
 			if (!cmn.chkTypes([
 				{p:d.name, f:cmn.isEmpty, r:true},
 				{p:d.description, f:cmn.isString},
-				{p:d.ruleid, f:cmn.isStrNumber},
 				{p:d.rewardid, f:cmn.isStrNumber},
 				{p:d.rquantity, f:cmn.isStrNumber},
 				{p:d.pic, f:cmn.isArray},

@@ -362,9 +362,9 @@ module.exports = {
 	parseEosError : e => {
 		const err = /^assertion failure with error code: ([0-9]+)$/.exec(e.message);
 		if (err!==null&&err.length===1) {
-			return {code:err[1]};
+			return {code:e.toString()};
 		}
-		return {code:e.toString()};
+		return {code:'E' + err[1]};
 	}
 };
 

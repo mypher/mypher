@@ -28,7 +28,7 @@ Task.prototype = {
 	setenablestate : async function() {
 		const cipher = $('div[name="cipherid"]');
 		const owner = $('div[name="owner"]');
-		if (data.cipherid==='') {
+		if (this.data.cipherid==='') {
 			cipher.hide();
 			owner.show();
 		} else {
@@ -41,6 +41,9 @@ Task.prototype = {
 		if (this.mode !== MODE.REF) {
 			$('div[field="pic"]').get(0).obj.allowedit(vali.cansetpic(this.data));
 		}
+		$('div[field="approve_task"]').get(0).obj.allowedit(false);
+		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
+		$('div[field="approve_results"]').get(0).obj.allowedit(false);
 	},
 
 	set : async function(data) {
@@ -223,9 +226,9 @@ Task.prototype = {
 			},
 			approvers : userevt,
 			pic : userevt,
-			auth_task : userevt,
-			auth_pic : userevt,
-			auth_results : userevt,
+			approve_task : userevt,
+			approve_pic : userevt,
+			approve_results : userevt,
 			button : btns
 		});
 		this.set(this.data);
@@ -263,14 +266,14 @@ Task.prototype = {
 };
 
 Task.prototype.Validator = {
-	NOT_AUTH_TASK = 0,
-	NOT_SET_PIC = 1,
-	NOT_AUTH_PIC = 2,
-	NOT_AUTH_RESULTS = 3,
-	DONE = 4,
+	NOT_AUTH_TASK : 0,
+	NOT_SET_PIC : 1,
+	NOT_AUTH_PIC : 2,
+	NOT_AUTH_RESULTS : 3,
+	DONE : 4,
 	getstate : async function(data) {
 		const isfulfill = l => {
-			if (data.approvers.length===0) return false;z
+			if (!data.approvers||data.approvers.length===0) return false;z
 			const nofauth = data.approvers.filter(function (x, i, self) {
 				return self.indexOf(x) === i;
 			});
@@ -278,7 +281,7 @@ Task.prototype.Validator = {
 			nofauth.forEach(v => {
 				if (l.includes(v)) req--;
 			});
-			return (req=<0);
+			return (req<=0);
 		};
 		// check if task is authorized
 		if (data.ciphreid) {
@@ -288,19 +291,20 @@ Task.prototype.Validator = {
 			);
 			if (!cipher.data.formal) return this.NOT_AUTH_TASK;
 		} else {
-			if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_TASK;
+			if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_TASK;
 		}
 		// check if pic is set
 		if (data.pic.length===0) return this.NOT_SET_PIC;
 		// check if pic is not authorized
-		if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_PIC;
+		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_PIC;
 		// check if results is not authorized
-		if (!isfulfill(data.auth_pic)) return this.NOT_AUTH_RESULTS;
+		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
 		return this.DONE;
 	},
 	cansetpic : function(data) {
+		if (!data.approve_task) return false;
 		const state = this.getstate(data);
-		return (data.auth_task.includes(Account.user)&&(state<this.NOT_AUTH_PIC));
+		return (data.approve_task.includes(Account.user)&&(state<this.NOT_AUTH_PIC));
 	}
 };
 
