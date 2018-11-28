@@ -39,7 +39,7 @@ Task.prototype = {
 		owner.find('div[field]').get(0).obj.allowedit(false);
 		const vali = this.Validator;
 		if (this.mode !== MODE.REF) {
-			$('div[field="pic"]').get(0).obj.allowedit(vali.cansetpic(this.data));
+			$('div[field="pic"]').get(0).obj.allowedit(vali.canSetPIC(this.data));
 		}
 		$('div[field="approve_task"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
@@ -76,6 +76,7 @@ Task.prototype = {
 
 	initButtons : function() {
 		let btns = [];
+		const vali = this.Validator;
 		switch (this.mode) {
 		case MODE.NEW:
 			btns.push({
@@ -106,6 +107,54 @@ Task.prototype = {
 			});
 			break;
 		case MODE.REF:
+			if (vali.canApproveTask(this.data)) {
+				btns.push({
+					text : 'APPROVE_TASK',
+					click : () => {
+						this.approve_task();
+					}
+				});
+			}
+			if (vali.canCancelApproveTask(this.data)) {
+				btns.push({
+					text : 'CANCEL_APPROVE_TASK',
+					click : () => {
+						this.cancel_approve_task();
+					}
+				});
+			}
+			if (vali.canApprovePIC(this.data)) {
+				btns.push({
+					text : 'APPROVE_PIC',
+					click : () => {
+						this.approve_pic();
+					}
+				});
+			}
+			if (vali.canCancelApprovePIC(this.data)) {
+				btns.push({
+					text : 'CANCEL_APPROVE_PIC',
+					click : () => {
+						this.cancel_approve_pic();
+					}
+				});
+			}
+			if (vali.canApproveResults(this.data)) {
+				btns.push({
+					text : 'APPROVE_RESULTS',
+					click : () => {
+						this.approve_results();
+					}
+				});
+			}
+			if (vali.canCancelApproveResults(this.data)) {
+				btns.push({
+					text : 'CANCEL_APPROVE_TASK',
+					click : () => {
+						this.cancel_approve_task();
+					}
+				});
+			}
 			if (this.data.owner===Account.user) {
 				btns.push({
 					text : 'EDIT',
@@ -263,6 +312,90 @@ Task.prototype = {
 		this.refresh();
 	},
 
+	approve_task : async function() {
+		const ret = await Rpc.call(
+			'task.approve_task',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
+	cancel_approve_task : async function() {
+		const ret = await Rpc.call(
+			'task.cancel_approve_task',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
+	approve_pic : async function() {
+		const ret = await Rpc.call(
+			'task.approve_pic',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
+	cancel_approve_pic : async function() {
+		const ret = await Rpc.call(
+			'task.cancel_approve_pic',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
+	approve_results : async function() {
+		const ret = await Rpc.call(
+			'task.approve_results',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
+	cancel_approve_results : async function() {
+		const ret = await Rpc.call(
+			'task.cancel_approve_results',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.refresh();
+	},
 };
 
 Task.prototype.Validator = {
@@ -301,11 +434,29 @@ Task.prototype.Validator = {
 		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
 		return this.DONE;
 	},
-	cansetpic : function(data) {
+	canSetPIC : function(data) {
 		if (!data.approve_task) return false;
 		const state = this.getstate(data);
 		return (data.approve_task.includes(Account.user)&&(state<this.NOT_AUTH_PIC));
-	}
+	},
+	canApproveTask : function(data) {
+		return true;
+	},
+	canCancelApproveTask : function(data) {
+		return true;
+	},
+	canApprovePIC : function(data) {
+		return true;
+	},
+	canCancelApprovePIC : function(data) {
+		return true;
+	},
+	canApproveResults : function(data) {
+		return true;
+	},
+	canCancelApproveResults : function(data) {
+		return true;
+	},
 };
 
 //# sourceURL=task.js

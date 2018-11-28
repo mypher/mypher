@@ -19,6 +19,7 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
+				const string& hash,
 				const vector<string>& tags) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
@@ -43,6 +44,8 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 	// check if pic is invalid
 	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
 
+	// TODO:check if hash is correct
+
 	data d(self, self);
 	uint64_t id = d.available_primary_key();
 	eosio::print("#tanew#", sender, ":", id);
@@ -56,6 +59,7 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 		dd.nofauth = nofauth;
 		dd.approvers = approvers;
 		dd.pic = pic;
+		dd.hash = hash;
 		dd.tags = tags;
 	});
 }
@@ -64,7 +68,9 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 				const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const vector<string>& tags) {
+				const vector<account_name>& pic, 
+				const string& hash,
+				const vector<string>& tags) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
@@ -93,6 +99,9 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 	}
 	// check if pic is approved
 	eosio_assert_code(!ispicapproved(*rec), PIC_ALREADY_APPROVED);
+
+	// TODO: check if hash is correct
+
 	d.modify(rec, sender, [&](auto& dd){
 		dd.name = name;
 		dd.rewardid = rewardid;
@@ -100,6 +109,7 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 		dd.nofauth = nofauth;
 		dd.approvers = approvers;
 		dd.pic = pic;
+		dd.hash = hash;
 		dd.tags = tags;
 		dd.approve_task = vector<account_name>{};
 		// remove pic from approve_pic

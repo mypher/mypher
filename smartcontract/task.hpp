@@ -42,6 +42,7 @@ public:
 		vector<account_name> approve_pic;
 		vector<account_name> approve_results;
 		vector<account_name> pic;
+		string hash;
 		bool formal;
 		vector<string> tags;
 
@@ -50,7 +51,7 @@ public:
 		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
 							(rewardid)(rquantity)
 							(nofauth)(approvers)(approve_task)(approve_pic)(approve_results)
-							(pic)(formal)(tags))
+							(pic)(hash)(formal)(tags))
 	};
 	/**
 	 * @brief the definition of the table for "task"
@@ -69,6 +70,7 @@ public:
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
+				const string& hash,
 				const vector<string>& tags);
 
 	/**
@@ -79,7 +81,8 @@ public:
 				const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const vector<string>& tags);
+				const vector<account_name>& pic, const string& hash, 
+				const vector<string>& tags);
 	
 	/**
 	 * @brief approve a task 

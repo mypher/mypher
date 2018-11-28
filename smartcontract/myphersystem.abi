@@ -540,6 +540,10 @@
                     "type": "name[]"
                 },
                 {
+                    "name": "hash",
+                    "type": "string"
+                },
+                {
                     "name": "formal",
                     "type": "bool"
                 },
@@ -586,6 +590,10 @@
                     "type": "name[]"
                 },
                 {
+                    "name": "hash",
+                    "type": "string"
+                },
+                {
                     "name": "tags",
                     "type": "string[]"
                 }
@@ -626,6 +634,10 @@
                 {
                     "name": "pic",
                     "type": "name[]"
+                },
+                {
+                    "name": "hash",
+                    "type": "string"
                 },
                 {
                     "name": "tags",

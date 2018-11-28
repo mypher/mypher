@@ -127,6 +127,12 @@ var $L = {
 		'REQCIPHER' : '依頼元サイファー',
 		'REQPERSON' : '依頼者',
 		'ISSUECIPHER' : '発行元サイファー',
+		'APPROVE_TASK' : 'タスク承認',
+		'CANCEL_APPROVE_TASK' : 'タスク承認取消',
+		'APPROVE_PIC' : '担当者承認',
+		'CANCEL_APPROVE_PIC' : '担当者承認取消',
+		'APPROVE_RESULTS' : '成果物承認',
+		'CANCEL_APPROVE_RESULTS' : '成果物承認取消',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

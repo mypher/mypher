@@ -211,4 +211,113 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
+
+	approve_task : async function(d) {
+		try {
+			d.vec = true;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvtask',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	cancel_approve_task : async function(d) {
+		try {
+			d.vec = false;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvtask',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	approve_pic : async function(d) {
+		try {
+			d.vec = true;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvpic',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	cancel_approve_pic : async function(d) {
+		try {
+			d.vec = false;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvpic',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	approve_results : async function(d) {
+		try {
+			d.vec = true;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvrslt',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	cancel_approve_results : async function(d) {
+		try {
+			d.vec = false;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taaprvrslt',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
 };
