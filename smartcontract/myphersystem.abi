@@ -771,10 +771,30 @@
             "ricardian_contract": ""
         },
         {
+            "name": "taaprvtask",
+            "type": "taaprvtask",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "taaprvpic",
+            "type": "taaprvpic",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "taaprvrslt",
+            "type": "taaprvrslt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "applyforpic",
+            "type": "applyforpic",
+            "ricardian_contract": ""
+        },
+        {
             "name": "taupdate",
             "type": "taupdate",
             "ricardian_contract": ""
-        }
+        },
     ],
     "tables": [
         {

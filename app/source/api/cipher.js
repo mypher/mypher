@@ -233,10 +233,19 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
+		} catch (e) {
+			throw {code:'INVALID_PARAM'};
+		}
+
+		try {
 			let ret = await ipfs.add({
 				purpose : d.purpose
 			});
 			d.hash = ret[0].path;
+		} catch (e) {
+			return {code:e};
+		}
+		try {
 			d.sender = d.user;
 			return await eos.pushAction({
 				actions :[{

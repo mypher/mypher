@@ -8,6 +8,7 @@
 const log = require('../cmn/logger')('api.task');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
+const ipfs = require('../db/ipfs');
 
 module.exports = {
 	formdata : function(d) {
@@ -34,6 +35,14 @@ module.exports = {
 			throw {code:'INVALID_PARAM'};
 		}
 
+		try {
+			const ret = await ipfs.add({
+				description : d.description
+			});
+			d.hash = ret[0].path;
+		} catch (e) {
+			return {code:e};
+		}
 		try {
 			return await eos.pushAction({
 				actions :[{
@@ -133,6 +142,14 @@ module.exports = {
 			throw {code:'INVALID_PARAM'};
 		}
 
+		try {
+			const ret = await ipfs.add({
+				description : d.description
+			});
+			d.hash = ret[0].path;
+		} catch (e) {
+			throw {code:e}
+		}
 		try {
 			return await eos.pushAction({
 				actions :[{
@@ -309,6 +326,42 @@ module.exports = {
 				actions :[{
 					account : 'myphersystem',
 					name : 'taaprvrslt',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	apply_for_pic : async function(d) {
+		try {
+			d.vec = true;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'applyforpic',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+	cancel_apply_for_pic : async function(d) {
+		try {
+			d.vec = false;
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'applyforpic',
 					authorization: [{
 						actor: d.sender,
 						permission: 'active',

@@ -103,7 +103,11 @@ module.exports = {
 		try {
 			let min='', max = '';
 			d.forEach(v => {
-				min = (min>v) ? v : min;
+				if (min==='') {
+					min = v;
+				} else {
+					min = (min>v) ? v : min;
+				}
 				if (max==='') {
 					max = v;
 				} else {

@@ -108,9 +108,11 @@ public:
 	[[eosio::action]]
 	void applyforpic( const account_name sender, const uint64_t id, const bool vec);
 
-public:
-	bool ispicapproved(const task& d);
 
+private:
+	bool is_pic_approved(const task& d);
+	bool is_task_approved(const task& d);
+	bool is_results_approved(const task& d);
 };
 
 } // mypher

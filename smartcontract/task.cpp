@@ -98,7 +98,7 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 		eosio_assert_code(!rec2->formal, ALREADY_FORMAL);
 	}
 	// check if pic is approved
-	eosio_assert_code(!ispicapproved(*rec), PIC_ALREADY_APPROVED);
+	eosio_assert_code(!is_pic_approved(*rec), PIC_ALREADY_APPROVED);
 
 	// TODO: check if hash is correct
 
@@ -130,16 +130,16 @@ void Task::taaprvtask( const account_name sender, const uint64_t id, const bool 
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if sender is approver
 	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	eosio_assert_code(result != rec->approvers.end(), NOT_FOUND);
+	eosio_assert_code(result != rec->approvers.end(), SENDER_NOT_APPROVER);
 	// check if task is owned by person
 	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// chkck if task is already approved
 	auto result2 = std::find(rec->approve_task.begin(), rec->approve_task.end(), sender);
 
 	if (vec) { // approve
-		eosio_assert_code(result == rec->approve_task.end(), SENDER_ALREADY_APPROVED);
+		eosio_assert_code(result2 == rec->approve_task.end(), SENDER_ALREADY_APPROVED);
 	} else { //cancel approval 
-		eosio_assert_code(result != rec->approve_task.end(), SENDER_NOT_APPROVE_YET);
+		eosio_assert_code(result2 != rec->approve_task.end(), SENDER_NOT_APPROVE_YET);
 	}
 	d.modify(rec, sender, [&](auto& dd){
 		if (vec) { // approve
@@ -161,16 +161,18 @@ void Task::taaprvpic( const account_name sender, const uint64_t id, const bool v
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if sender is approver or pic
 	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	eosio_assert_code((result != rec->approvers.end()) || (sender == rec->owner), NOT_FOUND);
+	eosio_assert_code((result != rec->approvers.end()) || (sender == rec->owner), SENDER_NOT_APPROVER);
 	// check if task is owned by person
 	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// chkck if pic is already approved
 	auto result2 = std::find(rec->approve_pic.begin(), rec->approve_pic.end(), sender);
 
 	if (vec) { // approve
-		eosio_assert_code(result == rec->approve_pic.end(), SENDER_ALREADY_APPROVED);
+		// check if pic is not set yet
+		eosio_assert_code(rec->pic.size()>0, PIC_NOT_ASSIGNED);
+		eosio_assert_code(result2 == rec->approve_pic.end(), SENDER_ALREADY_APPROVED);
 	} else { //cancel approval 
-		eosio_assert_code(result != rec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
+		eosio_assert_code(result2 != rec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
 	}
 	d.modify(rec, sender, [&](auto& dd){
 		if (vec) { // approve
@@ -192,16 +194,18 @@ void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool 
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if sender is approver
 	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	eosio_assert_code(result != rec->approvers.end(), NOT_FOUND);
+	eosio_assert_code(result != rec->approvers.end(), SENDER_NOT_APPROVER);
 	// check if task is owned by person
 	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// chkck if results is already approved
 	auto result2 = std::find(rec->approve_results.begin(), rec->approve_results.end(), sender);
 
 	if (vec) { // approve
-		eosio_assert_code(result == rec->approve_results.end(), SENDER_ALREADY_APPROVED);
+		// check if pic is not set yet
+		eosio_assert_code(rec->pic.size()>0, PIC_NOT_ASSIGNED);
+		eosio_assert_code(result2 == rec->approve_results.end(), SENDER_ALREADY_APPROVED);
 	} else { //cancel approval 
-		eosio_assert_code(result != rec->approve_results.end(), SENDER_NOT_APPROVE_YET);
+		eosio_assert_code(result2 != rec->approve_results.end(), SENDER_NOT_APPROVE_YET);
 	}
 	d.modify(rec, sender, [&](auto& dd){
 		if (vec) { // approve
@@ -224,7 +228,7 @@ void Task::applyforpic( const account_name sender, const uint64_t id, const bool
 
 	if (vec) { // apply
 		//check if pic is set
-		eosio_assert_code(rec->pic.size()>0, PIC_IS_ASSIGNED);
+		eosio_assert_code(rec->pic.size()==0, PIC_IS_ASSIGNED);
 	} else { // cancel application
 		// check if pic is sender
 		auto result = std::find(rec->pic.begin(), rec->pic.end(), sender);
@@ -242,22 +246,36 @@ void Task::applyforpic( const account_name sender, const uint64_t id, const bool
 	});
 }
 
-bool Task::ispicapproved(const task& d) {
-	// check if required number of approvers is fulfilled
-	int req = (int)d.nofauth;
+bool Task::is_pic_approved(const task& d) {
 	for (auto it = d.approvers.begin(); it != d.approvers.end(); ++it) {
-		auto found = std::find(d.approve_pic.begin(), d.approve_pic.end(), *it);
-		if (found!=d.approve_pic.end()) req--;
-	}
-	if (req>0) return false;
-	// check if all pic appprove
-	for (auto it = d.pic.begin(); it != d.pic.end(); ++it) {
+		// check if each approver approved the pic 
 		auto found = std::find(d.approve_pic.begin(), d.approve_pic.end(), *it);
 		if (found==d.approve_pic.end()) return false;
 	}
 	return true;
 }
 
+bool Task::is_task_approved(const task& d) {
+	int nofapprover = 0, nofpic = 0;
+	for (auto it = d.approve_task.begin(); it != d.approve_task.end(); ++it) {
+		// count a person who is approver 
+		auto found = std::find(d.approvers.begin(), d.approvers.end(), *it);
+		if (found!=d.approvers.end()) nofapprover++;
+		// count a person who is in charge of this task 
+		auto found2 = std::find(d.pic.begin(), d.pic.end(), *it);
+		if (found2!=d.pic.end()) nofpic++;
+	}
+	return (nofapprover>=d.nofauth) && (nofpic==d.pic.size());
+}
+
+bool Task::is_results_approved(const task& d) {
+	for (auto it = d.approvers.begin(); it != d.approvers.end(); ++it) {
+		// check if each approver approved the pic 
+		auto found = std::find(d.approve_results.begin(), d.approve_results.end(), *it);
+		if (found==d.approve_pic.end()) return false;
+	}
+	return true;
+}
 
 
 } // mypher

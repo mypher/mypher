@@ -107,7 +107,7 @@ Task.prototype = {
 			});
 			break;
 		case MODE.REF:
-			if (vali.canApproveTask(this.data)) {
+			/*if (vali.canApproveTask(this.data)) {
 				btns.push({
 					text : 'APPROVE_TASK',
 					click : () => {
@@ -122,7 +122,7 @@ Task.prototype = {
 						this.cancel_approve_task();
 					}
 				});
-			}
+			}*/
 			if (vali.canApprovePIC(this.data)) {
 				btns.push({
 					text : 'APPROVE_PIC',
@@ -149,9 +149,25 @@ Task.prototype = {
 			}
 			if (vali.canCancelApproveResults(this.data)) {
 				btns.push({
-					text : 'CANCEL_APPROVE_TASK',
+					text : 'CANCEL_APPROVE_RESULTS',
 					click : () => {
-						this.cancel_approve_task();
+						this.cancel_approve_results();
+					}
+				});
+			}
+			if (vali.canApplyForPIC(this.data)) {
+				btns.push({
+					text : 'APPLY_FOR_PIC',
+					click : () => {
+						this.apply_for_pic();
+					}
+				});
+			}
+			if (vali.canCancelApplyForPIC(this.data)) {
+				btns.push({
+					text : 'CANCEL_APPLY_FOR_PIC',
+					click : () => {
+						this.cancel_apply_for_pic();
 					}
 				});
 			}
@@ -324,7 +340,7 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
 	},
 	cancel_approve_task : async function() {
 		const ret = await Rpc.call(
@@ -338,7 +354,7 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
 	},
 	approve_pic : async function() {
 		const ret = await Rpc.call(
@@ -352,7 +368,7 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
 	},
 	cancel_approve_pic : async function() {
 		const ret = await Rpc.call(
@@ -366,7 +382,7 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
 	},
 	approve_results : async function() {
 		const ret = await Rpc.call(
@@ -380,7 +396,7 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
 	},
 	cancel_approve_results : async function() {
 		const ret = await Rpc.call(
@@ -394,7 +410,35 @@ Task.prototype = {
 			UI.alert(ret.code);
 			return;
 		}
-		this.refresh();
+		this.draw();
+	},
+	apply_for_pic : async function() {
+		const ret = await Rpc.call(
+			'task.apply_for_pic',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.draw();
+	},
+	cancel_apply_for_pic : async function() {
+		const ret = await Rpc.call(
+			'task.cancel_apply_for_pic',
+			[{
+				sender : Account.user,
+				id : this.data.id,
+			}]
+		);
+		if (ret.code!==undefined) {
+			UI.alert(ret.code);
+			return;
+		}
+		this.draw();
 	},
 };
 
@@ -455,6 +499,12 @@ Task.prototype.Validator = {
 		return true;
 	},
 	canCancelApproveResults : function(data) {
+		return true;
+	},
+	canApplyForPIC : function(data) {
+		return true;
+	},
+	canCancelApplyForPIC : function(data) {
 		return true;
 	},
 };
