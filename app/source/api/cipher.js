@@ -217,7 +217,7 @@ module.exports = {
 			}
 			return await ipfs.get(d.hash);
 		} catch (e) {
-			return cmn.parseEosError(e);
+			return {code:e};
 		}
 	},
 	add : async d => {

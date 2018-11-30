@@ -124,13 +124,25 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
+	get_desc : async d => {
+		try {
+			if (cmn.isEmpty(d.hash)) {
+				return {};
+			}
+			if (!cmn.isIpfsKey(d.hash)) {
+				return {code:'INVALID_PARAM'};
+			}
+			return await ipfs.get(d.hash);
+		} catch (e) {
+			return {code:e};
+		}
+	},
 
 	update : async function(d) {
 		try {
 			if (!cmn.chkTypes([
 				{p:d.name, f:cmn.isEmpty, r:true},
 				{p:d.description, f:cmn.isString},
-				{p:d.ruleid, f:cmn.isStrNumber},
 				{p:d.rewardid, f:cmn.isStrNumber},
 				{p:d.rquantity, f:cmn.isStrNumber},
 				{p:d.pic, f:cmn.isArray},

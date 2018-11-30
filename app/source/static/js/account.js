@@ -65,7 +65,9 @@ Account = {
 	loginout : async () => {
 		if (Account.logined) {
 			Account.logined = false;
+			Account.user = null;
 			Header.refresh();
+			History.rerun();
 		} else {
 			let KEY = 'account';
 			let ini = localStorage.getItem(KEY);

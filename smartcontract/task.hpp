@@ -114,6 +114,7 @@ private:
 	bool is_task_approved(const task& d);
 	bool is_results_approved(const task& d);
 	bool is_results_approved_some(const task& d);
+	void check_rewardid_owned_by_sender(const account_name sender, const uint64_t id);
 };
 
 } // mypher

@@ -48,6 +48,21 @@ Task.prototype = {
 		this.data = data;
 		Util.setData(this.div, this.data);
 		await this.setenablestate();
+		const drawDesc = o => {
+			v = {
+				description : o.description
+			};
+			Object.assign(this.data, v);
+			Util.setData(this.div, v);
+		};
+		Rpc.call(
+			'task.get_desc',
+			[{hash:this.data.hash}]
+		).then(info => {
+			drawDesc(info);
+		}).catch(e => {
+			drawDesc({});
+		});
 	},
 
 	draw : async function() {
@@ -105,7 +120,7 @@ Task.prototype = {
 			});
 			break;
 		case MODE.REF:
-			/*if (vali.canApproveTask(this.data)) {
+			if (vali.canApproveTask(this.data)) {
 				btns.push({
 					text : 'APPROVE_TASK',
 					click : () => {
@@ -120,7 +135,7 @@ Task.prototype = {
 						this.cancel_approve_task();
 					}
 				});
-			}*/
+			}
 			if (vali.canApprovePIC(this.data)) {
 				btns.push({
 					text : 'APPROVE_PIC',
@@ -169,7 +184,7 @@ Task.prototype = {
 					}
 				});
 			}
-			if (this.data.owner===Account.user) {
+			if (vali.canEdit(this.data)) {
 				btns.push({
 					text : 'EDIT',
 					click : () => {
@@ -476,16 +491,34 @@ Task.prototype.Validator = {
 		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
 		return this.DONE;
 	},
+	canEdit : function(data) {
+		if (data.owner!==Account.user) {
+			return false;
+		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (this.isFulfillApprovalReqForResults(data)) {
+			return false;
+		}
+		return true;
+	},
 	canApproveTask : function(data) {
 		// check if user is approver or pic
 		if (!data.approvers.includes(Account.user)) {
-			if (!data.pic.includes(Account.user))) {
+			if (!data.pic.includes(Account.user)) {
 				return false;
 			}
 			// only approved pic can approves the task
-			if (!this.isFullfillApprovalReqForPIC(data)) {
+			if (!this.isFulfillApprovalReqForPIC(data)) {
 				return false;
 			}
+		}
+		// check if user approved the task
+		if (data.approve_task.includes(Account.user)) {
+			return false;
+		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (this.isFulfillApprovalReqForResults(data)) {
+			return false;
 		}
 		return true;
 	},
@@ -500,6 +533,10 @@ Task.prototype.Validator = {
 				return false;
 			}
 		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (this.isFulfillApprovalReqForResults(data)) {
+			return false;
+		}
 		return true;
 	},
 	canApprovePIC : function(data) {
@@ -511,15 +548,27 @@ Task.prototype.Validator = {
 		if (data.pic.length===0) {
 			return false;
 		}
+		// check if user approved pic
+		if (data.approve_pic.includes(Account.user)) {
+			return false;
+		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (this.isFulfillApprovalReqForResults(data)) {
+			return false;
+		}
 		return true;
 	},
 	canCancelApprovePIC : function(data) {
-		// check if user is pic
-		if (!data.pic.includes(Account.user)) {
+		// check if user approved pic
+		if (!data.approve_pic.includes(Account.user)) {
 			return false;
 		}
 		// check if results is approved
 		if (!data.approve_results>0) {
+			return false;
+		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (this.isFulfillApprovalReqForResults(data)) {
 			return false;
 		}
 		return true;
@@ -529,8 +578,16 @@ Task.prototype.Validator = {
 		if (!data.approvers.includes(Account.user)) {
 			return false;
 		}
-		// if task doesn't fulfill approval requiments
+		// if task doesn't fulfill approval requiments, results can't be approved
 		if (!this.isFulfillApprovalReqForTask(data)) {
+			return false;
+		}
+		// if pic doesn't fulfill approval resuiments, results can't be approved
+		if (!this.isFulfillApprovalReqForPIC(data)) {
+			return false;
+		}
+		// if user already approved results, user can't approve results
+		if (data.approve_results.includes(Account.user)) {
 			return false;
 		}
 		return true;
@@ -541,15 +598,25 @@ Task.prototype.Validator = {
 			return false;
 		}
 		// if results already fulfill approval requiments, approval can't be canceled
-		if (!this.isFulfillApprovalReqForResults(data)) {
+		if (this.isFulfillApprovalReqForResults(data)) {
+			return false;
+		}
+		// if user doesn't approve results, user can't cancel approval for results
+		if (!data.approve_results.includes(Account.user)) {
 			return false;
 		}
 		return true;
 	},
 	canApplyForPIC : function(data) {
+		// if pic is already set, user can't apply for pic
+		if (data.pic.length>0) return false;
 		return true;
 	},
 	canCancelApplyForPIC : function(data) {
+		// if user isn't pic, user can't cancel
+		if (!data.pic.includes(Account.user)) return false;
+		// if results is on review process, user can't cancel
+		if (data.approve_results.length>0) return false;
 		return true;
 	},
 	isFulfillApprovalReqForTask : function(data) {
