@@ -38,9 +38,7 @@ Task.prototype = {
 		cipher.find('div[field]').get(0).obj.allowedit(false);
 		owner.find('div[field]').get(0).obj.allowedit(false);
 		const vali = this.Validator;
-		if (this.mode !== MODE.REF) {
-			$('div[field="pic"]').get(0).obj.allowedit(vali.canSetPIC(this.data));
-		}
+		$('div[field="pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_task"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_results"]').get(0).obj.allowedit(false);
@@ -478,27 +476,74 @@ Task.prototype.Validator = {
 		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
 		return this.DONE;
 	},
-	canSetPIC : function(data) {
-		if (!data.approve_task) return false;
-		const state = this.getstate(data);
-		return (data.approve_task.includes(Account.user)&&(state<this.NOT_AUTH_PIC));
-	},
 	canApproveTask : function(data) {
+		// check if user is approver or pic
+		if (!data.approvers.includes(Account.user)) {
+			if (!data.pic.includes(Account.user))) {
+				return false;
+			}
+			// only approved pic can approves the task
+			if (!this.isFullfillApprovalReqForPIC(data)) {
+				return false;
+			}
+		}
 		return true;
 	},
 	canCancelApproveTask : function(data) {
+		// check if user approved the task
+		if (!data.approve_task.includes(Account.user)) {
+			return false;
+		}
+		// if task already fulfills approval requiments, only pic can cancels
+		if (this.isFulfillApprovalReqForTask(data)) {
+			if (!data.pic.includes(Account.user)) {
+				return false;
+			}
+		}
 		return true;
 	},
 	canApprovePIC : function(data) {
+		// check if user is approver
+		if (!data.approvers.includes(Account.user)) {
+			return false;
+		}
+		// check if pic is set
+		if (data.pic.length===0) {
+			return false;
+		}
 		return true;
 	},
 	canCancelApprovePIC : function(data) {
+		// check if user is pic
+		if (!data.pic.includes(Account.user)) {
+			return false;
+		}
+		// check if results is approved
+		if (!data.approve_results>0) {
+			return false;
+		}
 		return true;
 	},
 	canApproveResults : function(data) {
+		// check if user is approver
+		if (!data.approvers.includes(Account.user)) {
+			return false;
+		}
+		// if task doesn't fulfill approval requiments
+		if (!this.isFulfillApprovalReqForTask(data)) {
+			return false;
+		}
 		return true;
 	},
 	canCancelApproveResults : function(data) {
+		// check if user approved results
+		if (!data.approve_results.includes(Account.user)) {
+			return false;
+		}
+		// if results already fulfill approval requiments, approval can't be canceled
+		if (!this.isFulfillApprovalReqForResults(data)) {
+			return false;
+		}
 		return true;
 	},
 	canApplyForPIC : function(data) {
@@ -506,6 +551,33 @@ Task.prototype.Validator = {
 	},
 	canCancelApplyForPIC : function(data) {
 		return true;
+	},
+	isFulfillApprovalReqForTask : function(data) {
+		// check if task fulfills own approval requirements and all pic approved it
+		let nofapprove = 0, nofpic = 0;
+		data.approvers.forEach(v => {
+			if (data.approve_task.includes(v)) nofapprove++;
+		});
+		data.pic.forEach(v => {
+			if (data.approve_task.includes(v)) nofpic++;
+		});
+		return ((nofapprove>=data.nofauth) && (data.pic.length===nofpic));
+	},
+	isFulfillApprovalReqForPIC : function(data) {
+		// check if task fulfills approval requirements for pic
+		let nofapprove = 0;
+		data.approvers.forEach(v => {
+			if (data.approve_pic.includes(v)) nofapprove++;
+		});
+		return (nofapprove>=data.nofauth);
+	},
+	isFulfillApprovalReqForResults : function(data) {
+		// check if task fulfills approval requirements for results
+		let nofapprove = 0;
+		data.approvers.forEach(v => {
+			if (data.approve_results.includes(v)) nofapprove++;
+		});
+		return (nofapprove>=data.nofauth);
 	},
 };
 

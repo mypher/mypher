@@ -113,6 +113,7 @@ private:
 	bool is_pic_approved(const task& d);
 	bool is_task_approved(const task& d);
 	bool is_results_approved(const task& d);
+	bool is_results_approved_some(const task& d);
 };
 
 } // mypher

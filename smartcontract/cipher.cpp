@@ -241,7 +241,7 @@ void Cipher::capprove(const account_name sender,
 	eosio_assert_code(found!=std::end(rec->drule_auth), SENDER_NOT_APPROVER);
 	// check if sender already approved
 	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
-	eosio_assert_code(found==std::end(rec->approved), SENDER_ALREADY_APPROVED); 
+	eosio_assert_code(found==std::end(rec->approved), SENDER_ALREADY_APPROVE); 
 	// update data
 	bool formal = false;
 	d.modify(target, sender, [&](auto& dd) {
