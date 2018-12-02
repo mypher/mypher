@@ -8,8 +8,7 @@
 #include "task.hpp"
 #include "cipher.hpp"
 #include "person.hpp"
-#include "token.hpp"
-
+#include "common/validator.hpp"
 using namespace eosio;
 using namespace std;
 
@@ -22,8 +21,8 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 				const vector<account_name>& pic, 
 				const string& hash,
 				const vector<string>& tags) {
-	// check if sender is fulfill the required auth
-	require_auth(sender);
+	// check data
+	checkdata(sender, sender, cipherid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
 
 	// check if cipherid is exists
 	account_name owner = N("");
@@ -32,21 +31,6 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 	} else {
 		owner = sender;
 	}
-	
-	// check if name is set
-	eosio_assert_code(name.length()>=NAME_MINLEN, NAME_TOO_SHORT);
-
-	// check if approver data is comformable
-	eosio_assert_code((size_t)nofauth<=approvers.size(), INVALID_APPROVER);
-
-	// check if approvers is invalid
-	eosio_assert_code(Person::checkList(approvers), INVALID_APPROVER);
-
-	// check if pic is invalid
-	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
-
-	// check rewardid
-	check_rewardid_owned_by_sender(sender, rewardid);
 
 	// TODO:check if hash is correct
 
@@ -75,20 +59,6 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 				const vector<account_name>& pic, 
 				const string& hash,
 				const vector<string>& tags) {
-	// check if sender is fulfill the required auth
-	require_auth(sender);
-
-	// check if name is set
-	eosio_assert_code(name.length()>=NAME_MINLEN, NAME_TOO_SHORT);
-	
-	// check if approver data is comformable
-	eosio_assert_code((size_t)nofauth<=approvers.size(), INVALID_APPROVER);
-
-	// check if approvers is invalid
-	eosio_assert_code(Person::checkList(approvers), INVALID_APPROVER);
-
-	// check if pic is invalid
-	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
 
 	data d(self, self);
 	auto rec = d.find(id);
@@ -96,8 +66,9 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// if results is already approved, task can't change
 	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
-	// check rewardid
-	check_rewardid_owned_by_sender(sender, rec->rewardid);
+	
+	// check data
+	checkdata(sender, rec->owner, rec->cipherid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
 
 	// check if task is already formal
 	if (rec->cipherid!=NUMBER_NULL) {
@@ -335,17 +306,41 @@ bool Task::is_results_approved_some(const task& d) {
 	return false;
 }
 
-void Task::check_rewardid_owned_by_sender(const account_name sender, const uint64_t id) {
-	Token::data d(SELF, SELF);
-	// is tokenid is not set, validation is not needed
-	if (id==NUMBER_NULL) return;
+void Task::checkdata( const account_name sender,
+				const account_name owner, const uint64_t cipherid,
+				const string& name, const uint64_t rewardid, 
+				const uint64_t rquantity, const uint8_t nofauth, 
+				const vector<account_name>& approvers, 
+				const vector<account_name>& pic, const string& hash, 
+				const vector<string>& tags) {
 
-	auto rec = d.find(id);
-	// check if data exists
-	eosio_assert_code(rec!=d.end(), INVALID_TOKENID);
-	// check id token is owned by sender
-	eosio_assert_code(rec->issuer==sender, TOKEN_NOT_OWNED_BY_SENDER);
-	// TODO:need to deal with cipher
+	// check if sender is fulfill the required auth
+	require_auth(sender);
+
+	// check if name is set
+	eosio_assert_code(name.length()>=NAME_MINLEN, NAME_TOO_SHORT);
+	
+	// check if approver data is comformable
+	eosio_assert_code((size_t)nofauth<=approvers.size(), INVALID_APPROVER);
+
+	// check if approvers is invalid
+	eosio_assert_code(Person::checkList(approvers), INVALID_APPROVER);
+	
+	// check if pic is invalid
+	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
+	
+	// check rewardid
+	Validator::check_tokenowner(rewardid, owner, cipherid);
+
+	// check cipherid
+	Validator::check_cipher(cipherid);
+	
+	// check if rquantity is set only in case that rquantity is set
+	eosio_assert_code(rewardid == NUMBER_NULL && rquantity != NUMBER_NULL, INVALID_REWARD);
+	eosio_assert_code(rewardid != NUMBER_NULL && rquantity == NUMBER_NULL, INVALID_REWARD);
+	
+	// check hash
+	Validator::check_hash(hash);
 }
 
 } // mypher

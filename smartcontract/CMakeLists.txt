@@ -9,7 +9,7 @@ include(EosioWasmToolchain)
 
 configure_file(${CMAKE_SOURCE_DIR}/myphersystem.abi myphersystem.abi COPYONLY)
 set(CMAKE_MODULE_PATH "${EOSIO_CDT_ROOT}/lib")
-add_executable( myphersystem.wasm mypherbase.cpp mypher.cpp person.cpp cipher.cpp token.cpp task.cpp common/prim.cpp)
+add_executable( myphersystem.wasm mypherbase.cpp mypher.cpp person.cpp cipher.cpp token.cpp task.cpp common/prim.cpp common/validator.cpp)
 
 #add_custom_command(
 #	OUTPUT

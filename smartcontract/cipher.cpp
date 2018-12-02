@@ -7,6 +7,7 @@
 #include <boost/range/iterator_range.hpp>
 #include "mypher.hpp"
 #include "common/prim.hpp"
+#include "common/validator.hpp"
 
 namespace mypher {
 
@@ -78,7 +79,9 @@ void Cipher::cnew(const account_name sender,
 				const std::string& name, const std::vector<account_name>& editors,
 				const std::vector<std::string>& tags, const std::string& hash,
 				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
-	require_auth(sender);
+	
+	check_data(sender, name, editors, tags, hash, drule_req, drule_auth);
+
 	data d(self, self);
 	uint64_t id = d.available_primary_key();
 	auto cipherid = getNewCipherId(d);
@@ -178,6 +181,7 @@ void Cipher::cdraft(const account_name sender,
 		dd.tags = tags;
 		dd.formal = false;
 	});
+
 }
 
 void Cipher::cupdate(const account_name sender, 
@@ -187,8 +191,7 @@ void Cipher::cupdate(const account_name sender,
 				const std::vector<std::string>& tags, const std::string& hash,
 				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
 
-	// check if sender is logined user
-	require_auth(sender);
+	check_data(sender, name, editors, tags, hash, drule_req, drule_auth);
 	// check if version is already formal
 	data d(self, self);
 	eosio_assert_code(!isVersionFormal(d, cipherid, version), ALREADY_FORMAL);
@@ -304,5 +307,15 @@ bool Cipher::isCipherExists(const uint64_t id) {
 	return (rec!=d.end());
 }
 
+void Cipher::check_data(const account_name sender, 
+				const std::string& name, const std::vector<account_name>& editors,
+				const std::vector<std::string>& tags, const std::string& hash,
+				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
+	// check if sender is logined user
+	require_auth(sender);
 
+	// check hash
+	Validator::check_hash(hash);
 }
+
+} // mypher

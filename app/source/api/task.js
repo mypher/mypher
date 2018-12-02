@@ -12,10 +12,10 @@ const ipfs = require('../db/ipfs');
 
 module.exports = {
 	formdata : function(d) {
-		d.cipherid = parseInt(d.cipherid)||cmn.NUMBER_NULL;
-		d.ruleid = parseInt(d.ruleid)||cmn.NUMBER_NULL;
-		d.rewardid = parseInt(d.rewardid)||cmn.NUMBER_NULL;
-		d.rquantity = parseInt(d.rquantity)||0;
+		d.cipherid = cmn.st2id(d.cipherid);
+		d.ruleid = cmn.st2id(d.ruleid);
+		d.rewardid = cmn.st2id(d.rewardid);
+		d.rquantity = cmn.st2id(d.rquantity);
 		return d;		
 	},
 
@@ -32,6 +32,7 @@ module.exports = {
 			}
 			d = this.formdata(d);
 		} catch (e) {
+			log.error(e);
 			throw {code:'INVALID_PARAM'};
 		}
 
@@ -41,6 +42,7 @@ module.exports = {
 			});
 			d.hash = ret[0].path;
 		} catch (e) {
+			log.error(e);
 			return {code:e};
 		}
 		try {
@@ -57,6 +59,7 @@ module.exports = {
 			});
 
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -80,6 +83,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -100,6 +104,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -121,6 +126,7 @@ module.exports = {
 			ret.rewardid = cmn.id2st(ret.rewardid);
 			return ret;
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -134,6 +140,7 @@ module.exports = {
 			}
 			return await ipfs.get(d.hash);
 		} catch (e) {
+			log.error(e);
 			return {code:e};
 		}
 	},
@@ -151,6 +158,7 @@ module.exports = {
 			}
 			d = this.formdata(d);
 		} catch (e) {
+			log.error(e);
 			throw {code:'INVALID_PARAM'};
 		}
 
@@ -160,6 +168,7 @@ module.exports = {
 			});
 			d.hash = ret[0].path;
 		} catch (e) {
+			log.error(e);
 			throw {code:e}
 		}
 		try {
@@ -176,6 +185,7 @@ module.exports = {
 			});
 
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -200,6 +210,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -237,6 +248,7 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -256,6 +268,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -274,6 +287,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -292,6 +306,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -310,6 +325,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -328,6 +344,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -346,6 +363,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -364,6 +382,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
@@ -382,6 +401,7 @@ module.exports = {
 				}]
 			});
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},

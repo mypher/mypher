@@ -251,7 +251,7 @@ Cipher.prototype = {
 						id : d.id,
 						mode : MODE.REF
 					});
-					History.run(_L('TOKEN'), task);
+					History.run(_L('TASK'), task);
 				},
 				onadd : (d, list) => {
 					const task = new Task({

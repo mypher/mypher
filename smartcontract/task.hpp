@@ -114,7 +114,14 @@ private:
 	bool is_task_approved(const task& d);
 	bool is_results_approved(const task& d);
 	bool is_results_approved_some(const task& d);
-	void check_rewardid_owned_by_sender(const account_name sender, const uint64_t id);
+	void checkdata( 
+				const account_name sender,
+				const account_name owner, const uint64_t cipherid,
+				const string& name, const uint64_t rewardid, 
+				const uint64_t rquantity, const uint8_t nofauth, 
+				const vector<account_name>& approvers, 
+				const vector<account_name>& pic, const string& hash, 
+				const vector<string>& tags);
 };
 
 } // mypher

@@ -108,8 +108,6 @@ public:
 				uint32_t cipherid, uint16_t version, uint16_t draftno);
 
 private:
-	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
-									 const uint16_t& ver, const uint16_t& draftno);
 	static std::string gen_third_key(const bool& formal, const std::string& name);
 
 	bool canEdit(const account_name& sender, const std::vector<account_name>& editors);
@@ -117,11 +115,17 @@ private:
 	uint16_t getNewVersion(const data& d,const uint32_t cipherid);
 	uint16_t getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver);
 	bool isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver);
+	void check_data(const account_name sender, 
+				const std::string& name, const std::vector<account_name>& editors,
+				const std::vector<std::string>& tags, const std::string& hash,
+				uint16_t drule_req, const std::vector<account_name>& drule_auth);
 
 
 // common
 public:
 	static bool isCipherExists(const uint64_t id); 
+	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
+									 const uint16_t& ver, const uint16_t& draftno);
 };
 
 } // mypher

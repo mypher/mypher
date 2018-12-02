@@ -359,6 +359,11 @@ module.exports = {
 		return String(v);
 	},
 
+	st2id : v => {
+		const id = parseInt(v);
+		return isNaN(id) ? apicmn.NUMBER_NULL : id;
+	},
+
 	parseEosError : e => {
 		const err = /^assertion failure with error code: ([0-9]+)$/.exec(e.message);
 		if (err===null||err.length===1) {
