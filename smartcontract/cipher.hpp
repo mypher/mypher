@@ -31,11 +31,13 @@ public:
 		uint16_t version;
 		uint16_t draftno;
 		bool formal;
-		std::vector<account_name> editors;
-		std::string hash;
+		vector<account_name> editors;
+		string hash;
 		uint16_t drule_req;
-		std::vector<account_name> drule_auth;
-		std::vector<account_name> approved;
+		vector<account_name> drule_auth;
+		vector<account_name> approved;
+		vector<uint64_t> tasklist;
+		vector<uint64_t> tokenlist;
 
 		uint64_t primary_key() const { return id; }
 		uint64_t secondary_key() const {
@@ -44,15 +46,15 @@ public:
 		
 		EOSLIB_SERIALIZE(cipher, 
 			(id)(cipherid)(version)(draftno)(formal)(editors)(hash)
-			(drule_req)(drule_auth)(approved))
+			(drule_req)(drule_auth)(approved)(tasklist)(tokenlist))
 	};
 	/**
 	 * @brief keydata of cipher
 	 */
 	struct [[eosio::table]] ckey {
 		uint64_t id;
-		std::string name;
-		std::vector<std::string> tags;
+		string name;
+		vector<string> tags;
 		bool formal;
 
 		uint64_t primary_key() const { return id; }
@@ -82,24 +84,25 @@ public:
 	 */
 	[[eosio::action]]
 	void cnew(const account_name sender, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth);
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth);
 	[[eosio::action]]
 	void ccopy(const account_name sender, uint64_t id);
-	[[eosio::action]]
+	/*[[eosio::action]]
 	void cdraft(const account_name sender, 
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth);
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth);*/
 	[[eosio::action]]
 	void cupdate(const account_name sender,
 				uint64_t id,
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth);
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth,
+				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
 	[[eosio::action]]
 	void capprove(const account_name sender, 
 				uint32_t cipherid, uint16_t version, uint16_t draftno);
@@ -108,18 +111,19 @@ public:
 				uint32_t cipherid, uint16_t version, uint16_t draftno);
 
 private:
-	static std::string gen_third_key(const bool& formal, const std::string& name);
+	static string gen_third_key(const bool& formal, const string& name);
 
-	bool canEdit(const account_name& sender, const std::vector<account_name>& editors);
+	bool canEdit(const account_name& sender, const vector<account_name>& editors);
 	uint32_t getNewCipherId(const data& d);
 	uint16_t getNewVersion(const data& d,const uint32_t cipherid);
 	uint16_t getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver);
 	bool isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver);
 	void check_data(const account_name sender, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth);
-
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth);
+	void checkTaskList(const vector<uint64_t>& list);
+	void checkTokenList(const vector<uint64_t>& list);
 
 // common
 public:

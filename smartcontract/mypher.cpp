@@ -7,7 +7,7 @@
 
 EOSIO_ABI( Mypher, 
 	(pupdate)
-	(ccopy)(cnew)(cdraft)(cupdate)(capprove)(crevapprove)
+	(ccopy)(cnew)(cupdate)(capprove)(crevapprove)
 	(tknew)(tkupdate)
 	(tanew)(taupdate)(taaprvtask)(taaprvpic)(taaprvrslt)(applyforpic)
 )

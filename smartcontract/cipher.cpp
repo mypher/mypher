@@ -8,6 +8,8 @@
 #include "mypher.hpp"
 #include "common/prim.hpp"
 #include "common/validator.hpp"
+#include "token.hpp"
+#include "task.hpp"
 
 namespace mypher {
 
@@ -18,7 +20,7 @@ uint64_t Cipher::gen_secondary_key(const uint32_t& cipherid, const uint16_t& ver
 	return ret;
 }
 
-std::string Cipher::gen_third_key(const bool& formal, const std::string& name) {
+string Cipher::gen_third_key(const bool& formal, const string& name) {
 	return (formal ? "0" : "1") + name;
 }
 
@@ -76,9 +78,9 @@ uint16_t Cipher::getNewDraftNo(const data& d, const uint32_t cipherid, const uin
 }
 
 void Cipher::cnew(const account_name sender, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth) {
 	
 	check_data(sender, name, editors, tags, hash, drule_req, drule_auth);
 
@@ -114,7 +116,7 @@ void Cipher::ccopy(const account_name sender, const uint64_t id) {
 	auto rec = d.find(id);
 	auto version = getNewVersion(d, rec->cipherid);
 	auto draftno = getNewDraftNo(d, rec->cipherid, version);
-	std::vector<account_name> editors;
+	vector<account_name> editors;
 
 	editors.push_back(sender);
 	// insert new draft
@@ -140,12 +142,12 @@ void Cipher::ccopy(const account_name sender, const uint64_t id) {
 	});
 	
 }
-
+/*
 void Cipher::cdraft(const account_name sender, 
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth) {
 
 	// check if sender is logined user
 	require_auth(sender);
@@ -182,45 +184,51 @@ void Cipher::cdraft(const account_name sender,
 		dd.formal = false;
 	});
 
-}
+}*/
 
 void Cipher::cupdate(const account_name sender, 
 				uint64_t id,
 				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth,
+				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist) {
 
 	check_data(sender, name, editors, tags, hash, drule_req, drule_auth);
 	// check if version is already formal
 	data d(self, self);
 	eosio_assert_code(!isVersionFormal(d, cipherid, version), ALREADY_FORMAL);
+	// check if task list is valid
+	checkTaskList(tasklist);
+	// check if token list is valid
+	checkTokenList(tokenlist);
+
 	auto rec = d.find(id);
-	if (rec!=d.end()) {
-		eosio_assert_code((
-			cipherid==rec->cipherid &&
-			version==rec->version && 
-			draftno==rec->draftno ), NOT_FOUND);
-		// check if sender can edit this draft
-		eosio_assert_code(canEdit(sender, rec->editors), SENDER_CANT_EDIT);
-		// update data
-		d.modify(rec, sender, [&](auto& dd) {
-			dd.editors = editors;
-			dd.hash = hash;
-			dd.drule_req = drule_req;
-			dd.drule_auth = drule_auth;
-			dd.formal = false;
-			dd.approved.clear();
-		});
-		// update tag data
-		keydata d2(self, self);
-		auto target2 = d2.find(id);
-		d2.modify(target2, sender, [&](auto& dd) {
-			dd.name = name;
-			dd.tags = tags;
-			dd.formal = false;
-		});
-	}
+	// check if cipher is exists
+	eosio_assert_code(rec==d.end(), CIPHER_NOT_FOUND);
+	eosio_assert_code((
+		cipherid==rec->cipherid &&
+		version==rec->version && 
+		draftno==rec->draftno ), CIPHER_NOT_FOUND);
+	// check if sender can edit this draft
+	eosio_assert_code(canEdit(sender, rec->editors), SENDER_CANT_EDIT);
+	// update data
+	d.modify(rec, sender, [&](auto& dd) {
+		dd.editors = editors;
+		dd.hash = hash;
+		dd.drule_req = drule_req;
+		dd.drule_auth = drule_auth;
+		dd.formal = false;
+		dd.approved.clear();
+	});
+	// update tag data
+	keydata d2(self, self);
+	auto target2 = d2.find(id);
+	d2.modify(target2, sender, [&](auto& dd) {
+		dd.name = name;
+		dd.tags = tags;
+		dd.formal = false;
+	});
 }
 
 void Cipher::capprove(const account_name sender, 
@@ -240,11 +248,11 @@ void Cipher::capprove(const account_name sender,
 	// check if the version is formal
 	eosio_assert_code(!isVersionFormal(d,cipherid, version), ALREADY_FORMAL);
 	// check if sender is contained in approver
-	auto found = std::find(std::begin(rec->drule_auth), std::end(rec->drule_auth), sender);
-	eosio_assert_code(found!=std::end(rec->drule_auth), SENDER_NOT_APPROVER);
+	auto found = find(begin(rec->drule_auth), end(rec->drule_auth), sender);
+	eosio_assert_code(found!=end(rec->drule_auth), SENDER_NOT_APPROVER);
 	// check if sender already approved
-	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
-	eosio_assert_code(found==std::end(rec->approved), SENDER_ALREADY_APPROVE); 
+	found = find(begin(rec->approved), end(rec->approved), sender);
+	eosio_assert_code(found==end(rec->approved), SENDER_ALREADY_APPROVE); 
 	// update data
 	bool formal = false;
 	d.modify(target, sender, [&](auto& dd) {
@@ -280,19 +288,19 @@ void Cipher::crevapprove(const account_name sender,
 	// check if the version is formal
 	eosio_assert_code(!isVersionFormal(d,cipherid, version), ALREADY_FORMAL);
 	// check if sender is contained in approver
-	auto found = std::find(std::begin(rec->drule_auth), std::end(rec->drule_auth), sender);
-	eosio_assert_code(found!=std::end(rec->drule_auth), SENDER_NOT_APPROVER);
+	auto found = find(begin(rec->drule_auth), end(rec->drule_auth), sender);
+	eosio_assert_code(found!=end(rec->drule_auth), SENDER_NOT_APPROVER);
 	// check if sender doesn't approve yet
-	found = std::find(std::begin(rec->approved), std::end(rec->approved), sender);
-	eosio_assert_code(found!=std::end(rec->approved), SENDER_NOT_APPROVE_YET); 
+	found = find(begin(rec->approved), end(rec->approved), sender);
+	eosio_assert_code(found!=end(rec->approved), SENDER_NOT_APPROVE_YET); 
 	// update data
 	d.modify(target, sender, [&](auto& dd) {
-		auto result = std::remove(dd.approved.begin(), dd.approved.end(), sender);
+		auto result = remove(dd.approved.begin(), dd.approved.end(), sender);
 		dd.approved.erase(result, dd.approved.end());
 	});
 }
 
-bool Cipher::canEdit(const account_name& sender, const std::vector<account_name>& editors) {
+bool Cipher::canEdit(const account_name& sender, const vector<account_name>& editors) {
 
 	for (auto it = editors.begin(); it != editors.end(); ++it ) {
 		if (sender==*it) return true;
@@ -308,14 +316,31 @@ bool Cipher::isCipherExists(const uint64_t id) {
 }
 
 void Cipher::check_data(const account_name sender, 
-				const std::string& name, const std::vector<account_name>& editors,
-				const std::vector<std::string>& tags, const std::string& hash,
-				uint16_t drule_req, const std::vector<account_name>& drule_auth) {
+				const string& name, const vector<account_name>& editors,
+				const vector<string>& tags, const string& hash,
+				uint16_t drule_req, const vector<account_name>& drule_auth) {
 	// check if sender is logined user
 	require_auth(sender);
 
 	// check hash
 	Validator::check_hash(hash);
 }
+
+void Cipher::checkTaskList(const vector<uint64_t>& list) {
+	Task::data d(SELF, SELF);
+	for (auto it = list.begin(); it!=list.end(); ++it ) {
+		auto rec = d.find(*it);
+		eosio_assert_code(rec!=d.end(), INVALID_TASK);
+	}
+}
+
+void Cipher::checkTokenList(const vector<uint64_t>& list) {
+	Token::data d(SELF, SELF);
+	for (auto it = list.begin(); it!=list.end(); ++it ) {
+		auto rec = d.find(*it);
+		eosio_assert_code(rec!=d.end(), INVALID_TOKEN);
+	}
+}
+
 
 } // mypher

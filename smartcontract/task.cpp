@@ -14,7 +14,7 @@ using namespace std;
 
 namespace mypher {
 
-void Task::tanew(const account_name sender, const uint64_t cipherid, 
+void Task::tanew(const account_name sender, const uint32_t cipherid, 
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
@@ -52,7 +52,9 @@ void Task::tanew(const account_name sender, const uint64_t cipherid,
 	});
 }
 
-void Task::taupdate( const account_name sender, const uint64_t id, const string& name,  
+void Task::taupdate( const account_name sender, 
+				const uint64_t cid, const uint64_t id, 
+				const string& name,  
 				const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
@@ -80,8 +82,41 @@ void Task::taupdate( const account_name sender, const uint64_t id, const string&
 	// check if task is approved
 	eosio_assert_code(!is_task_approved(*rec), TASK_ALREADY_APPROVED);
 
-	// TODO: check if hash is correct
+	// check if hash is valid
+	Validator::check_hash(hash);
 
+	// if task is shared between some drafts, generates copy
+	if (is_shared(id, cid)) {
+		uint64_t id = d.available_primary_key();
+		d.emplace(sender, [&](auto& dd) {
+			dd.id = id;
+			dd.cipherid = rec->cipherid;
+			dd.owner = sender;
+			dd.name = name;
+			dd.rewardid = rewardid;
+			dd.rquantity = rquantity;
+			dd.nofauth = nofauth;
+			dd.pic = pic;
+			dd.hash = hash;
+			dd.tags = tags;
+		});
+	} else {
+		d.modify(rec, sender, [&](auto& dd){
+			dd.name = name;
+			dd.rewardid = rewardid;
+			dd.rquantity = rquantity;
+			dd.nofauth = nofauth;
+			dd.approvers = approvers;
+			dd.hash = hash;
+			dd.tags = tags;
+			dd.approve_task = vector<account_name>{};
+			if (dd.pic!=pic) {
+				dd.approve_pic = vector<account_name>{};
+			}
+			dd.pic = pic;
+		});
+	}
+	
 	d.modify(rec, sender, [&](auto& dd){
 		dd.name = name;
 		dd.rewardid = rewardid;
@@ -307,7 +342,7 @@ bool Task::is_results_approved_some(const task& d) {
 }
 
 void Task::checkdata( const account_name sender,
-				const account_name owner, const uint64_t cipherid,
+				const account_name owner, const uint32_t cipherid,
 				const string& name, const uint64_t rewardid, 
 				const uint64_t rquantity, const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
@@ -341,6 +376,18 @@ void Task::checkdata( const account_name sender,
 	
 	// check hash
 	Validator::check_hash(hash);
+}
+
+bool Task::is_shared(const uint64_t taskid, const uint64_t cid) {
+	Cipher::data d(SELF, SELF);
+	auto rec = d.find(cid);
+	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
+	for (auto it=d.begin(); it!=d.end(); ++it) {
+		if (it->id==cid) continue;
+		auto found = std::find(it->tasklist.begin(), it->tasklist.end(), taskid);
+		if (found!=it->tasklist.end()) return true;
+	}
+	return false;
 }
 
 } // mypher

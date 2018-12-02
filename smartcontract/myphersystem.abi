@@ -44,6 +44,14 @@
                 {
                     "name": "approved",
                     "type": "name[]"
+                },
+                {
+                    "name": "tasklist",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "tokenlist",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -76,52 +84,6 @@
                 {
                     "name": "sender",
                     "type": "name"
-                },
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "editors",
-                    "type": "name[]"
-                },
-                {
-                    "name": "tags",
-                    "type": "string[]"
-                },
-                {
-                    "name": "hash",
-                    "type": "string"
-                },
-                {
-                    "name": "drule_req",
-                    "type": "uint16"
-                },
-                {
-                    "name": "drule_auth",
-                    "type": "name[]"
-                }
-            ]
-        },
-        {
-            "name": "cdraft",
-            "base": "",
-            "fields": [
-                {
-                    "name": "sender",
-                    "type": "name"
-                },
-                {
-                    "name": "cipherid",
-                    "type": "uint32"
-                },
-                {
-                    "name": "version",
-                    "type": "uint16"
-                },
-                {
-                    "name": "draftno",
-                    "type": "uint16"
                 },
                 {
                     "name": "name",
@@ -206,6 +168,14 @@
                 {
                     "name": "drule_auth",
                     "type": "name[]"
+                },
+                {
+                    "name": "tasklist",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "tokenlist",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -315,7 +285,7 @@
                 },
                 {
                     "name": "issuer2",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "limit",
@@ -377,7 +347,7 @@
                 },
                 {
                     "name": "issuer2",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "limit",
@@ -443,7 +413,7 @@
                 },
                 {
                     "name": "issuer2",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "limit",
@@ -497,7 +467,7 @@
                 },
                 {
                     "name": "cipherid",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "owner",
@@ -563,7 +533,7 @@
                 },
                 {
                     "name": "cipherid",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
                     "name": "name",
@@ -606,6 +576,10 @@
                 {
                     "name": "sender",
                     "type": "name"
+                },
+                {
+                    "name": "cid",
+                    "type": "uint64"
                 },
                 {
                     "name": "id",

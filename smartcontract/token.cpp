@@ -9,7 +9,7 @@
 namespace mypher {
 
 void Token::tknew(const account_name sender, const string& name, const account_name issuer, 
-			   const uint64_t issuer2, const uint32_t limit, const uint8_t when,
+			   const uint32_t issuer2, const uint32_t limit, const uint8_t when,
 			   const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
 			   const uint8_t rcalctype, const uint32_t nofdevtoken ) {
@@ -36,7 +36,7 @@ void Token::tknew(const account_name sender, const string& name, const account_n
 }
 void Token::tkupdate(const account_name sender, const uint64_t id,
 			   const string& name, const account_name issuer, 
-			   const uint64_t issuer2, const uint32_t limit, const uint8_t when, 
+			   const uint32_t issuer2, const uint32_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
 			   const uint8_t rcalctype, const uint32_t nofdevtoken ) {

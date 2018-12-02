@@ -31,7 +31,7 @@ public:
 	 */
 	struct [[eosio::table]] task {
 		uint64_t id;
-		uint64_t cipherid;
+		uint32_t cipherid;
 		account_name owner;
 		string name;
 		uint64_t rewardid;
@@ -65,7 +65,7 @@ public:
 	 * @brief create new task
 	 */
 	[[eosio::action]]
-	void tanew(	const account_name sender, const uint64_t cipherid, 
+	void tanew(	const account_name sender, const uint32_t cipherid, 
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
@@ -77,7 +77,9 @@ public:
 	 * @brief update task data
 	 */
 	[[eosio::action]]
-	void taupdate( const account_name sender, const uint64_t id, const string& name,  
+	void taupdate( const account_name sender, 
+				const uint64_t cid, const uint64_t id, 
+				const string& name,  
 				const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
@@ -116,12 +118,13 @@ private:
 	bool is_results_approved_some(const task& d);
 	void checkdata( 
 				const account_name sender,
-				const account_name owner, const uint64_t cipherid,
+				const account_name owner, const uint32_t cipherid,
 				const string& name, const uint64_t rewardid, 
 				const uint64_t rquantity, const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);
+	bool is_shared(const uint64_t taskid, const uint64_t cid);
 };
 
 } // mypher
