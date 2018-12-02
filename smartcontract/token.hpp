@@ -41,6 +41,7 @@ public:
 			uint8_t rcalctype;
 			uint32_t nofdevtoken;
 		auto primary_key() const { return id; }
+		auto secondary_key() const { return issuer2; }
 
 		EOSLIB_SERIALIZE( token, 
 			(id)(name)(issuer)(issuer2)(limit)(when)(disposal)(type)(taskid)(tokenid)

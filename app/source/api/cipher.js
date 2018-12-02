@@ -273,6 +273,8 @@ module.exports = {
 				{p:d.editors, f:cmn.isArray},
 				{p:d.drule_req, f:cmn.isUint16},
 				{p:d.drule_auth, f:cmn.isArray},
+				{p:d.tasklist, f:cmn.isArray},
+				{p:d.tokenlist, f:cmn.isArray},
 				{p:d.name, f:cmn.isEmpty, r:true},
 				{p:d.tags, f:cmn.isArray},
 				{p:d.purpose, f:cmn.isString}

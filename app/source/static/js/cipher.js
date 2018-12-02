@@ -209,7 +209,7 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('token.list_bycipherid', [this.data.id])
+					Rpc.call('token.list_for_cipher', [this.data.id])
 					.then(ret => {
 						list.show(ret);
 					}).catch( e=> {
@@ -239,7 +239,7 @@ Cipher.prototype = {
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('task.list_bycipherid', [this.data.id])
+					Rpc.call('task.list_for_cipher', [this.data.id])
 					.then(ret => {
 						list.show(ret);
 					}).catch( e=> {
@@ -262,22 +262,6 @@ Cipher.prototype = {
 					History.run(_L('TOKEN'), task);
 				}	
 			},
-			rule : {
-				col : [
-					{ width : 6, label : _L('ID'), name : 'id' },
-					{ width : 6, label : _L('NAME2'), name : 'name' }
-				],
-				key : [],
-				ondata : (d, list) => {
-					list.show([
-					]);
-				},
-				onselect : (d, list) => {
-					// d.id
-				},
-				onadd : (d, list) => {
-				}	
-			}
 		});
 		this.set(this.data);
 	},

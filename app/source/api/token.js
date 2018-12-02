@@ -100,6 +100,27 @@ module.exports = {
 		}
 	},
 
+	list_for_cipher : async d => {
+		try {
+			const data = await eos.getDataWithSubKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'task',
+				limit : 65535
+			}, 2, 'i32', d.cipherid, d.cipherid+1);
+			let ret =[];
+			data.rows.forEach(v => {
+				if (d.list.includes(v.id)) {
+					ret.push(v);
+				}
+			});
+			return ret;
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+
 	update : async function(d) {
 		try {
 			if (!cmn.chkTypes([

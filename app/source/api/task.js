@@ -16,6 +16,7 @@ module.exports = {
 		d.ruleid = cmn.st2id(d.ruleid);
 		d.rewardid = cmn.st2id(d.rewardid);
 		d.rquantity = cmn.st2id(d.rquantity);
+		d.cid = cmn.st2id(d.cid);
 		return d;		
 	},
 
@@ -162,8 +163,10 @@ module.exports = {
 			throw {code:'INVALID_PARAM'};
 		}
 
+		let ret;
+
 		try {
-			const ret = await ipfs.add({
+			ret = await ipfs.add({
 				description : d.description
 			});
 			d.hash = ret[0].path;
@@ -172,7 +175,7 @@ module.exports = {
 			throw {code:e}
 		}
 		try {
-			return await eos.pushAction({
+			ret = await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
 					name : 'taupdate',
@@ -188,6 +191,18 @@ module.exports = {
 			log.error(e);
 			return cmn.parseEosError(e);
 		}
+		await cmn.sleep(500);
+		for ( let i=0; i<5; i++) {
+			try {
+				await cmn.sleep(300);
+				ret = await eos.getTransaction(ret.transaction_id, ret.processed.block_num);
+				break;
+			} catch (e) {
+				// not sent yet
+			}
+		}
+		log.debug(JSON.stringify(ret));
+		return ret;
 	},
 
 	list_byname : async n => {
@@ -214,6 +229,32 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
+
+	list_for_cipher : async d => {
+		try {
+			const data = await eos.getDataWithSubKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'task',
+				limit : 65535
+			}, 2, 'i32', d.cipherid, d.cipherid+1);
+			let ret =[];
+			data.rows.forEach(v => {
+				if (d.list.includes(v.id)) {
+					ret.push({
+						id : v.id,
+						name : v.name,
+						tags : v.tags
+					});
+				}
+			});
+			return ret;
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+
 	name : async d => {
 		try {
 			let min='', max = 0;

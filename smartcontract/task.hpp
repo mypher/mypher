@@ -47,6 +47,7 @@ public:
 		vector<string> tags;
 
 		auto primary_key() const { return id; }
+		auto secondary_key() const { return cipherid; }
 
 		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
 							(rewardid)(rquantity)

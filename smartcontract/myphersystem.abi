@@ -705,11 +705,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "cdraft",
-            "type": "cdraft",
-            "ricardian_contract": ""
-        },
-        {
             "name": "cupdate",
             "type": "cupdate",
             "ricardian_contract": ""
@@ -796,15 +791,15 @@
             "name": "token",
             "type": "token",
             "index_type": "i64",
-            "key_names": [],
-            "key_types": []
+            "key_names": ["secondary_key"],
+            "key_types": ["uint32"]
         },
         {
             "name": "task",
             "type": "task",
             "index_type": "i64",
-            "key_names": [],
-            "key_types": []
+            "key_names": ["secondary_key"],
+            "key_types": ["uint32"]
         }
     ],
     "ricardian_clauses": [],
