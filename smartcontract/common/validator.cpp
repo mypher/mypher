@@ -16,7 +16,7 @@ using namespace std;
 namespace mypher {
 
 void Validator::check_tokenowner(
-	const uint64_t id, const account_name owner, const uint64_t cipherid) {
+	const uint64_t id, const account_name owner, const uint32_t cipherid) {
 	// is tokenid is not set, validation is not needed
 	if (id==NUMBER_NULL) return;
 

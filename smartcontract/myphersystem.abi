@@ -338,16 +338,16 @@
                     "type": "name"
                 },
                 {
+                    "name": "cid",
+                    "type": "uint64"
+                },
+                {
                     "name": "name",
                     "type": "string"
                 },
                 {
                     "name": "issuer",
                     "type": "name"
-                },
-                {
-                    "name": "issuer2",
-                    "type": "uint32"
                 },
                 {
                     "name": "limit",
@@ -400,6 +400,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "cid",
+                    "type": "uint64"
+                },
+                {
                     "name": "id",
                     "type": "uint64"
                 },
@@ -410,10 +414,6 @@
                 {
                     "name": "issuer",
                     "type": "name"
-                },
-                {
-                    "name": "issuer2",
-                    "type": "uint32"
                 },
                 {
                     "name": "limit",

@@ -120,7 +120,7 @@ private:
 	bool is_results_approved_some(const task& d);
 	void checkdata( 
 				const account_name sender,
-				const account_name owner, const uint32_t cipherid,
+				const account_name owner, const uint64_t cid,
 				const string& name, const uint64_t rewardid, 
 				const uint64_t rquantity, const uint8_t nofauth, 
 				const vector<account_name>& approvers, 

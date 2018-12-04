@@ -16,7 +16,7 @@ namespace mypher {
 
 class Validator {
 public:
-	static void check_tokenowner(const uint64_t id, const account_name owner, const uint64_t cipherid);
+	static void check_tokenowner(const uint64_t id, const account_name owner, const uint32_t cipherid);
 	static void check_hash(const string& hash);
 	static void check_cipher(const uint64_t id);
 };
