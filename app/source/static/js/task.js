@@ -6,6 +6,7 @@
 function Task(d) {
 	this.div = d.div;
 	this.mode = d.mode;
+	this.cid = d.cid;
 	this.data = {
 		id : d.id,
 		cipherid : d.cipherid||'',
@@ -16,7 +17,7 @@ function Task(d) {
 Task.prototype = {
 	get : function() {
 		this.data = Util.getData(this.div, {
-			formal:this.data.formal||true
+			formal:this.data.formal||true,
 		});
 		if (!this.data.cipherid) {
 			this.data.formal = true;
@@ -315,6 +316,7 @@ Task.prototype = {
 	create : async function() {
 		const data = this.get();
 		data.sender = Account.user;
+		data.cid = this.cid;
 		const ret = await Rpc.call(
 			'task.add',
 			[data]
@@ -329,6 +331,7 @@ Task.prototype = {
 	commit : async function() {
 		const data = this.get();
 		data.sender = Account.user;
+		data.cid = this.cid;
 		let ret = await Rpc.call(
 			'task.update',
 			[data]
@@ -338,7 +341,8 @@ Task.prototype = {
 			return;
 		}
 		this.mode = MODE.REF;
-		this.refresh();
+		this.data.id = ret;
+		this.draw();
 	},
 
 	approve_task : async function() {

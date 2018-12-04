@@ -28,7 +28,11 @@ Cipher.prototype = {
 	},
 
 	get : function() {
-		return Util.getData(this.div, {});
+		return Util.getData(this.div, {
+			id : this.data.id,
+			tasklist : this.data.tasklist, 
+			tokenlist : this.data.tokenlist
+		});
 	},
 
 	set : async function(data) {
@@ -202,15 +206,17 @@ Cipher.prototype = {
 			editors : person,
 			authors : person,
 			approved : person,
-			token : {
+			tokenlist : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'id' },
 					{ width : 6, label : _L('NAME2'), name : 'name' }
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('token.list_for_cipher', [this.data.id])
-					.then(ret => {
+					Rpc.call('token.list_for_cipher', [{
+						cipherid: this.data.cipherid,
+						list : this.data.tokenlist,
+					}]).then(ret => {
 						list.show(ret);
 					}).catch( e=> {
 					});
@@ -226,21 +232,24 @@ Cipher.prototype = {
 				onadd : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						cipherid : this.data.id,
+						cid : this.data.id,
+						cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), token);
 				}	
 			},
-			task : {
+			tasklist : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'id' },
 					{ width : 6, label : _L('NAME2'), name : 'name' }
 				],
 				key : [],
 				ondata : (d, list) => {
-					Rpc.call('task.list_for_cipher', [this.data.id])
-					.then(ret => {
+					Rpc.call('task.list_for_cipher', [{
+						cipherid : this.data.cipherid,
+						list : this.data.tasklist,
+					}]).then(ret => {
 						list.show(ret);
 					}).catch( e=> {
 					});
@@ -249,6 +258,7 @@ Cipher.prototype = {
 					const task = new Task({
 						div : $('#main'),
 						id : d.id,
+						cid : this.data.id,
 						mode : MODE.REF
 					});
 					History.run(_L('TASK'), task);
@@ -256,7 +266,8 @@ Cipher.prototype = {
 				onadd : (d, list) => {
 					const task = new Task({
 						div : $('#main'),
-						cipherid : this.data.id,
+						cid : this.data.id,
+						cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), task);

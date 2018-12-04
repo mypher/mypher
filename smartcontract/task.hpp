@@ -46,8 +46,8 @@ public:
 		bool formal;
 		vector<string> tags;
 
-		auto primary_key() const { return id; }
-		auto secondary_key() const { return cipherid; }
+		uint64_t primary_key() const { return id; }
+		uint64_t secondary_key() const { return (uint64_t)cipherid; }
 
 		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
 							(rewardid)(rquantity)
@@ -59,14 +59,15 @@ public:
 	 */
 	typedef eosio::multi_index<
 			N(task), 
-			task
+			task,
+			indexed_by<N(secondary_key), const_mem_fun<task, uint64_t, &task::secondary_key>>
 	> data;
 
 	/**
 	 * @brief create new task
 	 */
 	[[eosio::action]]
-	void tanew(	const account_name sender, const uint32_t cipherid, 
+	void tanew(	const account_name sender, const uint64_t cid, 
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 

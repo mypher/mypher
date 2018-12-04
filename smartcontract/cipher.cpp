@@ -129,6 +129,8 @@ void Cipher::ccopy(const account_name sender, const uint64_t id) {
 		dd.hash = rec->hash;
 		dd.drule_req = rec->drule_req;
 		dd.drule_auth = rec->drule_auth;
+		dd.tasklist = rec->tasklist;
+		dd.tokenlist = rec->tokenlist;
 		dd.formal = false;
 	});
 	// insert key data

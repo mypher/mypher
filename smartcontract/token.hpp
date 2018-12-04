@@ -40,8 +40,9 @@ public:
 			string term;
 			uint8_t rcalctype;
 			uint32_t nofdevtoken;
-		auto primary_key() const { return id; }
-		auto secondary_key() const { return issuer2; }
+
+			uint64_t primary_key() const { return id; }
+			uint64_t  secondary_key() const { return (uint64_t)issuer2; }
 
 		EOSLIB_SERIALIZE( token, 
 			(id)(name)(issuer)(issuer2)(limit)(when)(disposal)(type)(taskid)(tokenid)
@@ -50,7 +51,11 @@ public:
 	/**
 	 * @brief the definition of the table for "token"
 	 */
-	typedef eosio::multi_index<N(token), token> data;
+	typedef eosio::multi_index<
+			N(token), 
+			token,
+			indexed_by<N(secondary_key), const_mem_fun<token, uint64_t, &token::secondary_key>>
+	> data;
 
 	/**
 	 * @brief create new token

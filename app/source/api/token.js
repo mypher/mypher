@@ -107,9 +107,9 @@ module.exports = {
 				scope : 'myphersystem',
 				table : 'task',
 				limit : 65535
-			}, 2, 'i32', d.cipherid, d.cipherid+1);
+			}, 2, 'i64', d.cipherid, d.cipherid+1);
 			let ret =[];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (d.list.includes(v.id)) {
 					ret.push(v);
 				}

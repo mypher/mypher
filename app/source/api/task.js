@@ -11,13 +11,34 @@ const eos = require('../db/eos');
 const ipfs = require('../db/ipfs');
 
 module.exports = {
-	formdata : function(d) {
+	conv4store : function(d) {
 		d.cipherid = cmn.st2id(d.cipherid);
 		d.ruleid = cmn.st2id(d.ruleid);
 		d.rewardid = cmn.st2id(d.rewardid);
 		d.rquantity = cmn.st2id(d.rquantity);
 		d.cid = cmn.st2id(d.cid);
 		return d;		
+	},
+	conv4disp : function(d) {
+		d.cipherid = cmn.id2st(d.cipherid);
+		d.ruleid = cmn.id2st(d.ruleid);
+		d.rewardid = cmn.id2st(d.rewardid);
+		d.rquantity = cmn.id2st(d.rquantity);
+		d.cid = cmn.id2st(d.cid);
+		return d;		
+	},
+
+	waitcommit : async function(info) {
+		await cmn.sleep(500);
+		for ( let i=0; i<5; i++) {
+			try {
+				await cmn.sleep(300);
+				const result = await eos.getTransaction(info.transaction_id, info.processed.block_num);
+				break;
+			} catch (e) {
+				// not sent yet
+			}
+		}
 	},
 
 	add : async function(d) {
@@ -31,14 +52,14 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			d = this.formdata(d);
+			d = this.conv4store(d);
 		} catch (e) {
 			log.error(e);
 			throw {code:'INVALID_PARAM'};
 		}
-
+		let ret;
 		try {
-			const ret = await ipfs.add({
+			ret = await ipfs.add({
 				description : d.description
 			});
 			d.hash = ret[0].path;
@@ -47,7 +68,7 @@ module.exports = {
 			return {code:e};
 		}
 		try {
-			return await eos.pushAction({
+			ret = await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
 					name : 'tanew',
@@ -58,7 +79,8 @@ module.exports = {
 					data:d,
 				}]
 			});
-
+			await this.waitcommit(ret);
+			return {};
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
@@ -110,7 +132,7 @@ module.exports = {
 		}
 	},
 
-	get : async d=> {
+	get : async function(d) {
 		try {
 			let ret = {};
 			ret = await eos.getDataWithPKey({
@@ -121,10 +143,7 @@ module.exports = {
 			if (ret===null||ret.length===0) {
 				return {code:'NOT_FOUND'};
 			}
-			ret = ret[0];
-			ret.cipherid = cmn.id2st(ret.cipherid);
-			ret.ruleid = cmn.id2st(ret.ruleid);
-			ret.rewardid = cmn.id2st(ret.rewardid);
+			ret = this.conv4disp(ret[0]);
 			return ret;
 		} catch (e) {
 			log.error(e);
@@ -157,7 +176,7 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			d = this.formdata(d);
+			d = this.conv4store(d);
 		} catch (e) {
 			log.error(e);
 			throw {code:'INVALID_PARAM'};
@@ -186,23 +205,31 @@ module.exports = {
 					data:d,
 				}]
 			});
-
+			await this.waitcommit(ret);
+			// if the task is owned by any cipher, check if that task was copied because of unsharing
+			if (d.cid!=cmn.NUMBER_NULL) {
+				const cdata = await eos.getDataWithPKey({
+					code : 'myphersystem',
+					scope : 'myphersystem',
+					table : 'cipher',
+				}, d.cid);
+				let ret = -1;
+				cdata[0].tasklist.some(v=> {
+					if (v===parseInt(d.id)) {
+						ret = d.id;
+						return true;
+					}
+					// search the latest id
+					ret = (ret>v) ? ret : v;
+				});
+				return ret;
+			} else {
+				return d.id;
+			}
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
 		}
-		await cmn.sleep(500);
-		for ( let i=0; i<5; i++) {
-			try {
-				await cmn.sleep(300);
-				ret = await eos.getTransaction(ret.transaction_id, ret.processed.block_num);
-				break;
-			} catch (e) {
-				// not sent yet
-			}
-		}
-		log.debug(JSON.stringify(ret));
-		return ret;
 	},
 
 	list_byname : async n => {
@@ -237,9 +264,9 @@ module.exports = {
 				scope : 'myphersystem',
 				table : 'task',
 				limit : 65535
-			}, 2, 'i32', d.cipherid, d.cipherid+1);
+			}, 2, 'i64', d.cipherid, d.cipherid+1);
 			let ret =[];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (d.list.includes(v.id)) {
 					ret.push({
 						id : v.id,

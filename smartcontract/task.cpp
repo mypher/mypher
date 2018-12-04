@@ -14,42 +14,54 @@ using namespace std;
 
 namespace mypher {
 
-void Task::tanew(const account_name sender, const uint32_t cipherid, 
+void Task::tanew(const account_name sender, const uint64_t cid, 
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
 				const vector<string>& tags) {
-	// check data
-	checkdata(sender, sender, cipherid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
-
-	// check if cipherid is exists
-	account_name owner = N("");
-	if (cipherid!=NUMBER_NULL) {
-		eosio_assert_code(Cipher::isCipherExists(cipherid), CIPHER_NOT_FOUND);
-	} else {
-		owner = sender;
-	}
-
-	// TODO:check if hash is correct
 
 	data d(self, self);
+	Cipher::data cd(self, self);
+	uint64_t cipherid = NUMBER_NULL;
 	uint64_t id = d.available_primary_key();
-	eosio::print("#tanew#", sender, ":", id);
-	d.emplace(sender, [&](auto& dd) {
-		dd.id = id;
-		dd.cipherid = cipherid;
-		dd.owner = owner;
-		dd.name = name;
-		dd.rewardid = rewardid;
-		dd.rquantity = rquantity;
-		dd.nofauth = nofauth;
-		dd.approvers = approvers;
-		dd.pic = pic;
-		dd.hash = hash;
-		dd.tags = tags;
-	});
+	auto update = [&]() {
+		// check data
+		checkdata(sender, sender, cipherid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
+		eosio::print("#tanew#", sender, ":", id);
+		d.emplace(sender, [&](auto& dd) {
+			dd.id = id;
+			dd.cipherid = cipherid;
+			dd.owner = sender;
+			dd.name = name;
+			dd.rewardid = rewardid;
+			dd.rquantity = rquantity;
+			dd.nofauth = nofauth;
+			dd.approvers = approvers;
+			dd.pic = pic;
+			dd.hash = hash;
+			dd.tags = tags;
+		});
+	};
+
+	// check if specified hash is valid
+	Validator::check_hash(hash);
+
+	// if a task will be created owned by any cipher, check and update that cipher
+	if (cid!=NUMBER_NULL) {
+		// check if specified cipher is exists
+		auto crec = cd.find(cid);
+		eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
+		cipherid = crec->cipherid;
+		update();
+		// append the task to the cipher
+		cd.modify(crec, sender, [&](auto& dd){
+			dd.tasklist.push_back(id);	
+		});
+	} else {
+		update();
+	}
 }
 
 void Task::taupdate( const account_name sender, 
@@ -66,6 +78,7 @@ void Task::taupdate( const account_name sender,
 	auto rec = d.find(id);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+
 	// if results is already approved, task can't change
 	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
 	
@@ -100,6 +113,12 @@ void Task::taupdate( const account_name sender,
 			dd.hash = hash;
 			dd.tags = tags;
 		});
+		// update the id registered in cipher to new one
+		Cipher::data cd(self, self);
+		auto crec = cd.find(cid);
+		cd.modify(crec, sender, [&](auto& dd){
+			std::replace(dd.tasklist.begin(), dd.tasklist.end(), rec->id, id);
+		});
 	} else {
 		d.modify(rec, sender, [&](auto& dd){
 			dd.name = name;
@@ -116,21 +135,6 @@ void Task::taupdate( const account_name sender,
 			dd.pic = pic;
 		});
 	}
-	
-	d.modify(rec, sender, [&](auto& dd){
-		dd.name = name;
-		dd.rewardid = rewardid;
-		dd.rquantity = rquantity;
-		dd.nofauth = nofauth;
-		dd.approvers = approvers;
-		dd.hash = hash;
-		dd.tags = tags;
-		dd.approve_task = vector<account_name>{};
-		if (dd.pic!=pic) {
-			dd.approve_pic = vector<account_name>{};
-		}
-		dd.pic = pic;
-	});
 }
 
 void Task::taaprvtask( const account_name sender, const uint64_t id, const bool vec) {
@@ -370,9 +374,15 @@ void Task::checkdata( const account_name sender,
 	// check cipherid
 	Validator::check_cipher(cipherid);
 	
+	// check if approver is set
+	eosio_assert_code(approvers.size()>0, APPROVER_NOT_SET);
+
 	// check if rquantity is set only in case that rquantity is set
-	eosio_assert_code(rewardid == NUMBER_NULL && rquantity != NUMBER_NULL, INVALID_REWARD);
-	eosio_assert_code(rewardid != NUMBER_NULL && rquantity == NUMBER_NULL, INVALID_REWARD);
+	eosio::print("##", rewardid, "::", rquantity);
+	eosio_assert_code(
+		(rewardid != NUMBER_NULL && rquantity != NUMBER_NULL) ||
+		(rewardid == NUMBER_NULL && rquantity == NUMBER_NULL)
+		, INVALID_REWARD);
 	
 	// check hash
 	Validator::check_hash(hash);
@@ -380,6 +390,7 @@ void Task::checkdata( const account_name sender,
 
 bool Task::is_shared(const uint64_t taskid, const uint64_t cid) {
 	Cipher::data d(SELF, SELF);
+	eosio::print("#####", cid, "\n");
 	auto rec = d.find(cid);
 	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
 	for (auto it=d.begin(); it!=d.end(); ++it) {

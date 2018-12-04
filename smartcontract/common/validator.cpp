@@ -42,7 +42,7 @@ void Validator::check_cipher(const uint64_t id) {
 	Cipher::data d(SELF, SELF);
 	auto rec = d.find(id);
 	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
-	eosio_assert_code(rec->formal, CIPHER_NOT_DRAFT);
+	eosio_assert_code(!rec->formal, CIPHER_NOT_DRAFT);
 	auto idx = d.get_index<N(secondary_key)>();
 	auto lower = idx.lower_bound(Cipher::gen_secondary_key(rec->cipherid, rec->version, 0));
 	uint64_t perversion = lower->version;

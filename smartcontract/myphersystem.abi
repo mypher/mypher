@@ -532,8 +532,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "cipherid",
-                    "type": "uint32"
+                    "name": "cid",
+                    "type": "uint64"
                 },
                 {
                     "name": "name",
@@ -792,14 +792,14 @@
             "type": "token",
             "index_type": "i64",
             "key_names": ["secondary_key"],
-            "key_types": ["uint32"]
+            "key_types": ["uint64"]
         },
         {
             "name": "task",
             "type": "task",
             "index_type": "i64",
             "key_names": ["secondary_key"],
-            "key_types": ["uint32"]
+            "key_types": ["uint64"]
         }
     ],
     "ricardian_clauses": [],
