@@ -43,6 +43,7 @@ void Token::tknew(const account_name sender, const uint64_t cid,
 		});
 	};
 
+	eosio::print("##cid#", cid, "\n");
 	// if this token is issued by any cipher, check and update that cipher 
 	if (cid!=NUMBER_NULL) {
 		Cipher::data cd(self, self);
@@ -139,7 +140,7 @@ void Token::checkdata( const account_name sender, const uint64_t cid,
 	Validator::check_cipher(cid);
 
 	// check if issuer is valid
-	if (issuer!=NUMBER_NULL) {
+	if (issuer!=N("")) {
 		Person::data pd(SELF, SELF);
 		auto prec = pd.find(issuer);
 		eosio_assert_code(prec!=pd.end(), INVALID_ISSUER);

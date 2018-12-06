@@ -3,19 +3,19 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-function Task(d) {
-	this.div = d.div;
-	this.mode = d.mode;
-	this.cid = d.cid;
-	this.data = {
-		id : d.id,
-		cipherid : d.cipherid||'',
-		owner : d.cipherid ? '' : Account.user
-	};
-}
+class Task {
+	constructor(d) {
+		this.div = d.div;
+		this.mode = d.mode;
+		this.cid = d.cid;
+		this.data = {
+			id : d.id,
+			cipherid : d.cipherid||'',
+			owner : d.cipherid ? '' : Account.user
+		};
+	}
 
-Task.prototype = {
-	get : function() {
+	get() {
 		this.data = Util.getData(this.div, {
 			formal:this.data.formal||true,
 		});
@@ -24,9 +24,9 @@ Task.prototype = {
 		}
 		// TODO:if data is owned by cipher, property:formal is set to cipher's state.
 		return this.data;
-	},
+	}
 
-	setenablestate : async function() {
+	async setenablestate() {
 		const cipher = $('div[name="cipherid"]');
 		const owner = $('div[name="owner"]');
 		if (this.data.cipherid==='') {
@@ -43,9 +43,9 @@ Task.prototype = {
 		$('div[field="approve_task"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_results"]').get(0).obj.allowedit(false);
-	},
+	}
 
-	set : async function(data) {
+	async set(data) {
 		this.data = data;
 		Util.setData(this.div, this.data);
 		await this.setenablestate();
@@ -64,19 +64,19 @@ Task.prototype = {
 		}).catch(e => {
 			drawDesc({});
 		});
-	},
+	}
 
-	draw : async function() {
+	async draw() {
 		if (this.mode!==MODE.NEW) {
 			await this.current();
 		}
 		await this.refresh();
-	},
+	}
 
-	save : async function() {
-	},
+	async save() {
+	}
 
-	current : async function() {
+	async current() {
 		const info = await Rpc.call(
 			'task.get',
 			[{id:this.data.id}]
@@ -86,9 +86,9 @@ Task.prototype = {
 			return;
 		}
 		this.data = info;
-	},
+	}
 
-	initButtons : function() {
+	initButtons() {
 		let btns = [];
 		const vali = this.Validator;
 		switch (this.mode) {
@@ -203,9 +203,9 @@ Task.prototype = {
 			break;
 		}
 		return btns;
-	},
+	}
 
-	refresh : async function() {
+	async refresh() {
 		const userevt = {
 			click : key => {
 				let user = new User({
@@ -311,9 +311,9 @@ Task.prototype = {
 			button : btns
 		});
 		this.set(this.data);
-	},
+	}
 
-	create : async function() {
+	async create() {
 		const data = this.get();
 		data.sender = Account.user;
 		data.cid = this.cid;
@@ -326,9 +326,9 @@ Task.prototype = {
 			return;
 		}
 		History.back();
-	},
+	}
 
-	commit : async function() {
+	async commit() {
 		const data = this.get();
 		data.sender = Account.user;
 		data.cid = this.cid;
@@ -343,9 +343,9 @@ Task.prototype = {
 		this.mode = MODE.REF;
 		this.data.id = ret;
 		this.draw();
-	},
+	}
 
-	approve_task : async function() {
+	async approve_task() {
 		const ret = await Rpc.call(
 			'task.approve_task',
 			[{
@@ -358,8 +358,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	cancel_approve_task : async function() {
+	}
+
+	async cancel_approve_task() {
 		const ret = await Rpc.call(
 			'task.cancel_approve_task',
 			[{
@@ -372,8 +373,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	approve_pic : async function() {
+	}
+
+	async approve_pic() {
 		const ret = await Rpc.call(
 			'task.approve_pic',
 			[{
@@ -386,8 +388,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	cancel_approve_pic : async function() {
+	}
+
+	async cancel_approve_pic() {
 		const ret = await Rpc.call(
 			'task.cancel_approve_pic',
 			[{
@@ -400,8 +403,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	approve_results : async function() {
+	}
+
+	async approve_results() {
 		const ret = await Rpc.call(
 			'task.approve_results',
 			[{
@@ -414,8 +418,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	cancel_approve_results : async function() {
+	}
+
+	async cancel_approve_results() {
 		const ret = await Rpc.call(
 			'task.cancel_approve_results',
 			[{
@@ -428,8 +433,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	apply_for_pic : async function() {
+	}
+
+	async apply_for_pic() {
 		const ret = await Rpc.call(
 			'task.apply_for_pic',
 			[{
@@ -442,8 +448,9 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
-	cancel_apply_for_pic : async function() {
+	}
+
+	async cancel_apply_for_pic() {
 		const ret = await Rpc.call(
 			'task.cancel_apply_for_pic',
 			[{
@@ -456,7 +463,7 @@ Task.prototype = {
 			return;
 		}
 		this.draw();
-	},
+	}
 };
 
 Task.prototype.Validator = {

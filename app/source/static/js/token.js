@@ -3,23 +3,25 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-function Token(d) {
-	this.div = d.div;
-	this.mode = d.mode;
-	this.data = {
-		id : d.id,
-		issuer2 : d.cipherid||'',
-		issuer : d.cipherid ? '' : Account.user
-	};
-}
+class Token {
 
-Token.prototype = {
-	get : function() {
+	constructor(d) {
+		this.div = d.div;
+		this.mode = d.mode;
+		this.cid = d.cid;
+		this.data = {
+			id : d.id,
+			issuer2 : d.cipherid||'',
+			issuer : d.cipherid ? '' : Account.user
+		}
+	}
+
+	get() {
 		this.data = Util.getData(this.div, {});
 		return this.data;
-	},
+	}
 
-	set : async function(data) {
+	async set(data) {
 		this.data = data;
 		const cipher = $('div[name="issuer2"]');
 		const owner = $('div[name="issuer"]');
@@ -34,12 +36,12 @@ Token.prototype = {
 		this.grayAttr(this.data.type, this.data.when);
 		cipher.find('div[field]').get(0).obj.allowedit(false);
 		owner.find('div[field]').get(0).obj.allowedit(false);
-	},
+	}
 
-	save : async function() {
-	},
+	async save() {
+	}
 
-	draw : async function() {
+	async draw() {
 		if (this.mode!==MODE.NEW) {
 			await this.current();
 		} else {
@@ -47,9 +49,9 @@ Token.prototype = {
 			this.data.when = 0;
 		}
 		await this.refresh();
-	},
+	}
 
-	current : async function() {
+	async current() {
 		const info = await Rpc.call(
 			'token.get',
 			[{id:this.data.id}]
@@ -59,9 +61,9 @@ Token.prototype = {
 			return;
 		}
 		this.data = info;
-	},
+	}
 
-	mkButton : function() {
+	initButton() {
 		const btns = [];
 		switch (this.mode) {
 		case MODE.NEW:
@@ -93,7 +95,7 @@ Token.prototype = {
 			});
 			break;
 		case MODE.REF:
-			if (this.canedit()) {
+			if (this.Validator.canEdit(this.data)) {
 				btns.push({
 					text : 'EDIT',
 					click : () => {
@@ -111,9 +113,9 @@ Token.prototype = {
 			break;
 		}
 		return btns;
-	},
+	}
 
-	grayAttr : async function(type, when) {
+	async grayAttr(type, when) {
 		let tokenname = true;
 		let taskname = true;
 		let reftoken = true;
@@ -164,10 +166,10 @@ Token.prototype = {
 			elm.get(0).obj.enable(!nofdevtoken);
 			this.div.find('input[field="nofdevtoken"]').prop('disabled', nofdevtoken);
 		}
-	},
+	}
 
-	refresh : async function() {
-		const btn = this.mkButton();
+	async refresh() {
+		const btn = this.initButton();
 		let init = true;
 		await Util.load(this.div, 'parts/token.html', this.mode, {
 			button : btn,
@@ -307,11 +309,12 @@ Token.prototype = {
 		});
 		init = false;
 		this.set(this.data);
-	},
+	}
 
-	create : async function() {
+	async create() {
 		const data = this.get();
 		data.sender = Account.user;
+		data.cid = this.cid;
 		const ret = await Rpc.call(
 			'token.add',
 			[data]
@@ -321,11 +324,12 @@ Token.prototype = {
 			return;
 		}
 		History.back();
-	},
+	}
 
-	commit : async function() {
+	async commit() {
 		const data = this.get();
 		data.sender = Account.user;
+		data.cid = this.cid;
 		let ret = await Rpc.call(
 			'token.update',
 			[data]
@@ -336,16 +340,18 @@ Token.prototype = {
 		}
 		this.mode = MODE.REF;
 		this.refresh();
-	},
-
-	canedit : function() {
-		if (this.data.issuer2) { // cipher
-			return false;
-		} else { // individual
-			return (Account.user===this.data.issuer);
-		}
 	}
 
 };
+
+Token.prototype = {
+	canEdit : function(data) {
+		if (data.issuer2) { // cipher
+			return false;
+		} else { // individual
+			return (Account.user===data.issuer);
+		}
+	}
+}
 
 //# sourceURL=token.js

@@ -12,19 +12,19 @@ const ipfs = require('../db/ipfs');
 
 module.exports = {
 	conv4store : function(d) {
-		d.cipherid = cmn.st2id(d.cipherid);
-		d.ruleid = cmn.st2id(d.ruleid);
-		d.rewardid = cmn.st2id(d.rewardid);
-		d.rquantity = cmn.st2id(d.rquantity);
-		d.cid = cmn.st2id(d.cid);
+		d.cipherid = cmn.st2num(d.cipherid);
+		d.ruleid = cmn.st2num(d.ruleid);
+		d.rewardid = cmn.st2num(d.rewardid);
+		d.rquantity = cmn.st2num(d.rquantity);
+		d.cid = cmn.st2num(d.cid);
 		return d;		
 	},
 	conv4disp : function(d) {
-		d.cipherid = cmn.id2st(d.cipherid);
-		d.ruleid = cmn.id2st(d.ruleid);
-		d.rewardid = cmn.id2st(d.rewardid);
-		d.rquantity = cmn.id2st(d.rquantity);
-		d.cid = cmn.id2st(d.cid);
+		d.cipherid = cmn.num2st(d.cipherid);
+		d.ruleid = cmn.num2st(d.ruleid);
+		d.rewardid = cmn.num2st(d.rewardid);
+		d.rquantity = cmn.num2st(d.rquantity);
+		d.cid = cmn.num2st(d.cid);
 		return d;		
 	},
 

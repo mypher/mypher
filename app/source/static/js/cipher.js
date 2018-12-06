@@ -2,20 +2,19 @@
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
+class Cipher {
+	constructor(d) {
+		this.mode = d.mode ? d.mode : MODE.REF;
+		this.data = {
+			id : d.id
+		};
+		this.div = d.div;
+	}
 
-function Cipher(d) {
-	this.mode = d.mode ? d.mode : MODE.REF;
-	this.data = {
-		id : d.id
-	};
-	this.div = d.div;
-}
-
-Cipher.prototype = {
-	save : function() {
-	},
+	save() {
+	}
 	
-	current : async function() {
+	async current() {
 		let info = await Rpc.call(
 			'cipher.get',
 			[{id:this.data.id}]
@@ -25,17 +24,17 @@ Cipher.prototype = {
 			return;
 		}
 		this.data = info.data;
-	},
+	}
 
-	get : function() {
+	get() {
 		return Util.getData(this.div, {
 			id : this.data.id,
 			tasklist : this.data.tasklist, 
 			tokenlist : this.data.tokenlist
 		});
-	},
+	}
 
-	set : async function(data) {
+	async set(data) {
 		data.purpose = _L('LOADING');
 		this.data = data;
 		Util.setData(this.div, this.data);
@@ -55,9 +54,9 @@ Cipher.prototype = {
 		}).catch(e => {
 			drawDesc({});
 		});
-	},
+	}
 
-	newDraft : async function() {
+	async newDraft() {
 		const newid = await Rpc.call(
 			'cipher.copy',
 			[{
@@ -73,9 +72,9 @@ Cipher.prototype = {
 		this.data.id = newid;
 		this.mode = MODE.REF;
 		await this.draw();
-	},
+	}
 
-	approve : async function(f) {
+	async approve(f) {
 		const newid = await Rpc.call(
 			'cipher.approve',
 			[{
@@ -91,9 +90,9 @@ Cipher.prototype = {
 			return;
 		}
 		await this.draw();
-	},
+	}
 
-	mkBtn1 : function() {
+	mkBtn1() {
 		switch (this.mode) {
 		case MODE.EDIT:
 			return [{
@@ -113,9 +112,9 @@ Cipher.prototype = {
 			}];
 		}
 		return [];
-	},
+	}
 
-	mkBtn2 : function() {
+	mkBtn2() {
 		let btns = [];
 		if (this.mode===MODE.REF) {
 			let user = Account.loginUser();
@@ -153,9 +152,9 @@ Cipher.prototype = {
 			});
 		}
 		Util.initButton(this.div.find('div[name="cp_button2"] button'), btns);
-	},
+	}
 
-	refresh : async function() {
+	async refresh() {
 		const btn1 = this.mkBtn1();
 		const person =  {
 			click : key => {
@@ -275,24 +274,24 @@ Cipher.prototype = {
 			},
 		});
 		this.set(this.data);
-	},
+	}
 
-	hist : async function() {
+	async hist() {
 		const ver = new CipherHist({
 			cipherid : this.data.cipherid,
 			div : $('#main')
 		});
 		History.run(_L('HISTORY1'), ver);
-	},
+	}
 
-	draw : async function() {
+	async draw() {
 		if (this.mode!==MODE.NEW) {
 			await this.current();
 		}
 		await this.refresh();
-	},
+	}
 
-	add : async function() {
+	async add() {
 		let data = this.get();
 		data.user = Account.user;
 		try {
@@ -308,9 +307,9 @@ Cipher.prototype = {
 		} catch (e) {
 			UI.alert(e.message);
 		}
-	},
+	}
 
-	commit : async function() {
+	async commit() {
 		let data = this.get();
 		data.user = Account.user;
 		try {
@@ -327,8 +326,7 @@ Cipher.prototype = {
 		} catch (e) {
 			UI.alert(e.message);
 		}
-	
-	},
+	}
 
 	startedit : async function() {
 		this.mode = MODE.EDIT;

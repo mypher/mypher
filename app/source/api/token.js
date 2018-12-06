@@ -10,25 +10,35 @@ const cmn = require('./cmn');
 const eos = require('../db/eos');
 
 module.exports = {
-	formdata : function(d) {
-		d.limit = parseInt(d.limit)||0;
-		d.when = parseInt(d.when)||0;
-		d.disposal = parseInt(d.disposal)||0;
-		d.type = parseInt(d.type)||0;
-		d.taskid = parseInt(d.taskid);
-		d.taskid = isNaN(d.taskid) ? cmn.NUMBER_NULL : d.taskid;
-		d.tokenid = parseInt(d.tokenid);
-		d.tokenid = isNaN(d.tokenid) ? cmn.NUMBER_NULL : d.tokenid;
-		d.reftoken = parseInt(d.reftoken)||0;
-		d.rcalctype = parseInt(d.rcalctype)||0;
-		d.nofdevtoken = parseInt(d.nofdevtoken)||0;
-		d.issuer2 = parseInt(d.issuer2);
-		d.issuer2 = isNaN(d.issuer2) ? cmn.NUMBER_NULL : d.issuer2;
+	conv4store : function(d) {
+		d.limit = cmn.st2num(d.limit);
+		d.when = cmn.st2ui8(d.when);
+		d.disposal = cmn.st2ui8(d.disposal);
+		d.type = cmn.st2ui8(d.type);
+		d.taskid = cmn.st2num(d.taskid);
+		d.tokenid = cmn.st2num(d.tokenid);
+		d.reftoken = cmn.st2num(d.reftoken);
+		d.rcalctype = cmn.st2ui8(d.rcalctype);
+		d.nofdevtoken = cmn.st2num(d.nofdevtoken);
+		d.issuer2 = cmn.st2num(d.issuer2);
+		return d;
+	},
+	conv4disp : function(d) {
+		d.limit = cmn.num2st(d.limit);
+		d.when = cmn.ui82st(d.when);
+		d.disposal = cmn.ui82st(d.disposal);
+		d.type = cmn.ui82st(d.type);
+		d.taskid = cmn.num2st(d.taskid);
+		d.tokenid = cmn.num2st(d.tokenid);
+		d.reftoken = cmn.num2st(d.reftoken);
+		d.rcalctype = cmn.ui82st(d.rcalctype);
+		d.nofdevtoken = cmn.num2st(d.nofdevtoken);
+		d.issuer2 = cmn.num2st(d.issuer2);
 		return d;
 	},
 
 	add : async function(d) {
-		try {
+		/*try {
 			if (!cmn.chkTypes([
 				{p:d.sender, f:cmn.isEosID},
 				{p:d.name, f:cmn.isEmpty, r:true},
@@ -50,15 +60,13 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			d = this.formdata(d);
-			if (d.code) {
-				return d;
-			}
+			d = this.conv4store(d);
 		} catch (e) {
 			return {code:'INVALID_PARAM'};
-		}
+		}*/
 		try {
-			return await eos.pushAction({
+			d = this.conv4store(d);
+			d = await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
 					name : 'tknew',
@@ -69,12 +77,13 @@ module.exports = {
 					data:d,
 				}]
 			});
+			return this.conv4disp(d);
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
 	},
 
-	list : async d => {
+	list : async function(d) {
 		try {
 			if (!cmn.isString(d.name)) {
 				return {code:'INVALID_PARAM'};
@@ -90,17 +99,13 @@ module.exports = {
 					ret.push(v);
 				}
 			});
-			ret.when = String(ret.when);
-			ret.disposal = String(ret.disposal);
-			ret.type = String(ret.type);
-			ret.rcalctype = String(ret.rcalctype);
-			return ret;
+			return this.conv2disp(ret);
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
 	},
 
-	list_for_cipher : async d => {
+	list_for_cipher : async function(d) {
 		try {
 			const data = await eos.getDataWithSubKey({
 				code : 'myphersystem',
@@ -114,7 +119,7 @@ module.exports = {
 					ret.push(v);
 				}
 			});
-			return ret;
+			return this.conv4disp(ret);
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
@@ -122,7 +127,7 @@ module.exports = {
 	},
 
 	update : async function(d) {
-		try {
+/*		try {
 			if (!cmn.chkTypes([
 				{p:d.id, f:cmn.isNumber},
 				{p:d.sender, f:cmn.isEosID},
@@ -145,15 +150,12 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			d = this.formdata(d);
-			if (d.code) {
-				return d;
-			}
 		} catch (e) {
 			return {code:'INVALID_PARAM'};
-		}
+		}*/
 		try {
-			return await eos.pushAction({
+			d = this.conv4store(d);
+			d = await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
 					name : 'tkupdate',
@@ -164,12 +166,13 @@ module.exports = {
 					data:d,
 				}]
 			});
+			return this.conv4disp(d);
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
 	},
 
-	get : async d=> {
+	get : async function(d) {
 		try {
 			let ret = {};
 			ret = await eos.getDataWithPKey({
@@ -180,11 +183,7 @@ module.exports = {
 			if (ret===null||ret.length===0) {
 				return {code:'NOT_FOUND'};
 			}
-			ret = ret[0];
-			ret.taskid = cmn.id2st(ret.taskid);
-			ret.tokenid = cmn.id2st(ret.tokenid);
-			ret.issuer2 = cmn.id2st(ret.issuer2);
-			return ret;
+			return this.conv4disp(ret[0]);
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}

@@ -352,22 +352,38 @@ module.exports = {
 
 	NUMBER_NULL : 0xffffffff, // TODO:javascript can't deal with 64bit number
 
-	id2st : v => {
+	num2st : v => {
 		if (v===apicmn.NUMBER_NULL) {
 			return '';
 		}
 		return String(v);
 	},
 
-	st2id : v => {
+	st2num : v => {
 		const id = parseInt(v);
 		return isNaN(id) ? apicmn.NUMBER_NULL : id;
+	},
+
+	ui82st : v => {
+		if (v===255) {
+			return '';
+		}
+		return String(v);
+	},
+
+	st2ui8 : v => {
+		const id = parseInt(v);
+		return isNaN(id) ? 255 : id;
 	},
 
 	parseEosError : e => {
 		const err = /^assertion failure with error code: ([0-9]+)$/.exec(e.message);
 		if (err===null||err.length===1) {
-			return {code:'E9999'};
+			if (e.message.includes('insufficient ram')) {
+				return {code:'E9998'};
+			} else {
+				return {code:'E9999'};
+			}
 		}
 		return {code:'E' + err[1]};
 	}

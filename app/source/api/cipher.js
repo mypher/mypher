@@ -23,19 +23,19 @@ function makeSubKey(cipherid, version, draftno) {
 
 module.exports = {
 	conv4store : function(d) {
-		d.id = cmn.st2id(d.id);
-		d.cipherid = cmn.st2id(d.cipherid);
-		d.version = cmn.st2id(d.version);
-		d.draftno = cmn.st2id(d.draftno);
-		d.drule_req = cmn.st2id(d.drule_req);
+		d.id = cmn.st2num(d.id);
+		d.cipherid = cmn.st2num(d.cipherid);
+		d.version = cmn.st2num(d.version);
+		d.draftno = cmn.st2num(d.draftno);
+		d.drule_req = cmn.st2num(d.drule_req);
 		return d;
 	},
 	conv4disp : function(d) {
-		d.id = cmn.id2st(d.id);
-		d.cipherid = cmn.id2st(d.cipherid);
-		d.version = cmn.id2st(d.version);
-		d.draftno = cmn.id2st(d.draftno);
-		d.drule_req = cmn.id2st(d.drule_req);
+		d.id = cmn.num2st(d.id);
+		d.cipherid = cmn.num2st(d.cipherid);
+		d.version = cmn.num2st(d.version);
+		d.draftno = cmn.num2st(d.draftno);
+		d.drule_req = cmn.num2st(d.drule_req);
 		return d;
 	},
 
