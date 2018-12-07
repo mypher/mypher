@@ -110,7 +110,7 @@ module.exports = {
 			const data = await eos.getDataWithSubKey({
 				code : 'myphersystem',
 				scope : 'myphersystem',
-				table : 'task',
+				table : 'token',
 				limit : 65535
 			}, 2, 'i64', d.cipherid, d.cipherid+1);
 			let ret =[];

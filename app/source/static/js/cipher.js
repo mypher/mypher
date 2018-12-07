@@ -40,7 +40,7 @@ class Cipher {
 		Util.setData(this.div, this.data);
 		this.mkBtn2();
 		const drawDesc = o => {
-			v = {
+			const v = {
 				purpose : o.purpose
 			};
 			Object.assign(this.data, v);
@@ -223,6 +223,7 @@ class Cipher {
 				onselect : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
+						cid : this.data.id,
 						id : d.id,
 						mode : MODE.REF
 					});
@@ -328,7 +329,7 @@ class Cipher {
 		}
 	}
 
-	startedit : async function() {
+	async startedit() {
 		this.mode = MODE.EDIT;
 		await this.refresh();
 	}

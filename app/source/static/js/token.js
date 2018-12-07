@@ -3,17 +3,20 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-class Token {
+class Token extends View {
 
 	constructor(d) {
+		super();
 		this.div = d.div;
 		this.mode = d.mode;
-		this.cid = d.cid;
 		this.data = {
 			id : d.id,
 			issuer2 : d.cipherid||'',
 			issuer : d.cipherid ? '' : Account.user
 		}
+		this.cdata = {
+			id : d.cid
+		};
 	}
 
 	get() {
@@ -60,6 +63,17 @@ class Token {
 			UI.alert(info.code);
 			return;
 		}
+		if (this.cdata.id) {
+			const cinfo = await Rpc.call(
+				'cipher.get',
+				[{id:this.cdata.id}]
+			);
+			if (cinfo.code!==undefined) {
+				UI.alert(info.code);
+				return;
+			}
+			this.cdata = cinfo.data;
+		}
 		this.data = info;
 	}
 
@@ -95,7 +109,7 @@ class Token {
 			});
 			break;
 		case MODE.REF:
-			if (this.Validator.canEdit(this.data)) {
+			if (this.Validator.canEdit()) {
 				btns.push({
 					text : 'EDIT',
 					click : () => {
@@ -314,7 +328,7 @@ class Token {
 	async create() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cid;
+		data.cid = this.cdata.id;
 		const ret = await Rpc.call(
 			'token.add',
 			[data]
@@ -329,7 +343,7 @@ class Token {
 	async commit() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cid;
+		data.cid = this.cdata.id;
 		let ret = await Rpc.call(
 			'token.update',
 			[data]
@@ -344,12 +358,13 @@ class Token {
 
 };
 
-Token.prototype = {
-	canEdit : function(data) {
-		if (data.issuer2) { // cipher
-			return false;
+Token.prototype.Validator = {
+	canEdit : function() {
+		const self = this.parent;
+		if (self.data.issuer2) { // cipher
+			return self.cdata.editors&&self.cdata.editors.includes(Account.user);
 		} else { // individual
-			return (Account.user===data.issuer);
+			return (Account.user===self.data.issuer);
 		}
 	}
 }

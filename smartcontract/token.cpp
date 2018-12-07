@@ -21,10 +21,10 @@ void Token::tknew(const account_name sender, const uint64_t cid,
 	data d(self, self);
 	uint64_t issuer2 = NUMBER_NULL;
 	uint64_t id = d.available_primary_key();
-	auto update = [&]() {
+	auto update = [&](const vector<account_name>& editors) {
 		eosio::print("#token#", sender, ":", id);
 		checkdata(sender, cid, name, issuer, when, limit, disposal, type, 
-				taskid, tokenid, reftoken, term, rcalctype, nofdevtoken);
+				taskid, tokenid, reftoken, term, rcalctype, nofdevtoken, editors);
 		d.emplace(sender, [&](auto& dd) {
 			dd.id = id;
 			dd.name = name;
@@ -51,13 +51,13 @@ void Token::tknew(const account_name sender, const uint64_t cid,
 		auto crec = cd.find(cid);
 		eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
 		issuer2 = crec->cipherid;
-		update();
+		update(crec->editors);
 		// append the task to the cipher
 		cd.modify(crec, sender, [&](auto& dd){
 			dd.tokenlist.push_back(id);	
 		});
 	} else {
-		update();
+		update(vector<account_name>{});
 	}
 }
 void Token::tkupdate(const account_name sender, 
@@ -71,14 +71,7 @@ void Token::tkupdate(const account_name sender,
 	auto rec = d.find(id);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	// check if data can edit
-	if (rec->issuer==N("")) { // cipher
-		eosio_assert_code(false, NOT_IMPLEMENT_YET);
-	} else { // individual
-		eosio_assert_code(rec->issuer==sender, NOT_EDITABLE);	
-	}
-	checkdata(sender, cid, name, issuer, limit, when, disposal, type, 
-			taskid, tokenid, reftoken, term, rcalctype, nofdevtoken);
+
 	// TODO:reject if token already issued
 
 	// check if specified cid is valid	
@@ -86,6 +79,11 @@ void Token::tkupdate(const account_name sender,
 	auto crec = cd.find(cid);
 	if (cid!=NUMBER_NULL) {
 		eosio_assert_code(crec->cipherid==rec->issuer2, CIPHER_NOT_FOUND);
+		checkdata(sender, cid, name, issuer, limit, when, disposal, type, 
+			taskid, tokenid, reftoken, term, rcalctype, nofdevtoken, crec->editors);
+	} else {
+		checkdata(sender, cid, name, issuer, limit, when, disposal, type, 
+			taskid, tokenid, reftoken, term, rcalctype, nofdevtoken, vector<account_name>{});
 	}
 
 	// if task is shared between some drafts, generates copy
@@ -94,6 +92,8 @@ void Token::tkupdate(const account_name sender,
 		d.emplace(sender, [&](auto& dd) {
 			dd.id = id;
 			dd.name = name;
+			dd.issuer = rec->issuer;
+			dd.issuer2 = rec->issuer2;
 			dd.limit = limit;
 			dd.when = when;
 			dd.disposal = disposal;
@@ -131,7 +131,8 @@ void Token::checkdata( const account_name sender, const uint64_t cid,
 			   const uint32_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken ) {
+			   const uint8_t rcalctype, const uint32_t nofdevtoken,
+			   const vector<account_name>& editors ) {
 
 	// check if sender is logined user
 	require_auth(sender);
@@ -144,8 +145,14 @@ void Token::checkdata( const account_name sender, const uint64_t cid,
 		Person::data pd(SELF, SELF);
 		auto prec = pd.find(issuer);
 		eosio_assert_code(prec!=pd.end(), INVALID_ISSUER);
+		eosio_assert_code(issuer==sender, NOT_EDITABLE);	
 	}
-
+	
+	// check if editors of cid is valid
+	if (cid!=NUMBER_NULL) {
+		auto found = std::find(editors.begin(), editors.end(), sender);
+		eosio_assert_code(found!=editors.end(), INVALID_ISSUER);
+	}
 }
 
 bool Token::is_shared( const uint64_t tokenid, const uint64_t cid) {

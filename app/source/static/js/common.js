@@ -1014,3 +1014,8 @@ Radio.prototype = {
 	}
 };
 
+class View {
+	constructor() {
+		this.Validator.parent = this;
+	}
+}

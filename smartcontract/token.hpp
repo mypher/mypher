@@ -87,7 +87,8 @@ private:
 			   const uint32_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken );
+			   const uint8_t rcalctype, const uint32_t nofdevtoken,
+			   const vector<account_name>& editors );
 
 	bool is_shared(const uint64_t tokenid, const uint64_t cid);
 
