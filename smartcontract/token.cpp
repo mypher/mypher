@@ -180,9 +180,11 @@ void Token::issue(const account_name sender, const uint32_t cipherid,
 	data d(SELF, SELF);
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), INVALID_TOKEN);
-	if (cipherid==NUMBER_NULL) {
+	if (cipherid!=NUMBER_NULL) {
+		eosio::print("issue1:", rec->issuer2, ":", cipherid);
 		eosio_assert_code(rec->issuer2==cipherid, TOKEN_NOT_OWNED_BY_SENDER);
 	} else {
+		eosio::print("issue2:", rec->issuer, ":", sender);
 		eosio_assert_code(rec->issuer==sender, TOKEN_NOT_OWNED_BY_SENDER);
 	}
 	// check the receiver

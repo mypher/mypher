@@ -102,7 +102,51 @@ User.prototype = {
 				click : function() {
 					alert(1);
 				}
-			}]
+			}],
+			tokenlist : {
+				col : [
+					{ width : 1, label : _L('ID'), name : 'id' },
+					{ width : 4, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 5, label : _L('NAME2'), name : 'name' },
+					{ width : 2, label : _L('QUANTITY'), name : 'quantity' }
+				],
+				key : [],
+				ondata : (d, list) => {
+					if (this.data.tokenlist.length===0) {
+						list.show([]);
+						return;
+					}
+					const conv = o => {
+						return (o.name ? o.name : '') + '(' + o.id + ')';
+					}
+					Rpc.call('token.list_for_person', [{
+						list : this.data.tokenlist,
+						person : this.data.id,
+					}]).then(ret => {
+						let l = [];
+						ret.forEach(v => {
+							l.push({
+								id : v.id,
+								issuer : conv(v.issuer),
+								name : v.name,
+								quantity : v.quantity
+							});
+						});
+						list.show(l);
+					}).catch( e=> {
+						console.log(e);
+					});
+				},
+				onselect : (d, list) => {
+					const token = new Token({
+						div : $('#main'),
+						id : d.id,
+						mode : MODE.REF
+					});
+					History.run(_L('TOKEN'), token);
+				},
+				onadd : () => {}
+			},
 		});
 		Util.setData(this.div, this.data);
 	},

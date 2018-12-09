@@ -142,7 +142,7 @@ module.exports = {
 			if (min==='') {
 				return ret;
 			}
-			let data = await eos.getData({
+			const data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'ckey',

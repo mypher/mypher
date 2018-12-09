@@ -50,7 +50,7 @@ class Task {
 		Util.setData(this.div, this.data);
 		await this.setenablestate();
 		const drawDesc = o => {
-			v = {
+			const v = {
 				description : o.description
 			};
 			Object.assign(this.data, v);

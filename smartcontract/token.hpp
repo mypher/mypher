@@ -56,7 +56,7 @@ public:
 		account_name owner;
 		uint32_t	 quantity;
 		
-		uint64_t primary_key() const { return owner; }
+		account_name primary_key() const { return owner; }
 
 		EOSLIB_SERIALIZE( issue, (owner)(quantity) )
 	};

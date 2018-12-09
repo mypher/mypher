@@ -853,6 +853,13 @@
             "key_types": ["uint64"]
         },
         {
+            "name": "issue",
+            "type": "issue",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "task",
             "type": "task",
             "index_type": "i64",

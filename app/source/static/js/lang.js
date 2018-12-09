@@ -135,6 +135,7 @@ var $L = {
 		'CANCEL_APPROVE_RESULTS' : '成果物承認取消',
 		'APPLY_FOR_PIC' : '担当者申請',
 		'CANCEL_APPLY_FOR_PIC' : '担当者申請取消',
+		'OWNED_TOKEN' : '所有トークン',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',
@@ -169,7 +170,6 @@ var $L = {
 		'SEARCH_TARGET_NOT_SET' : '検索対象が設定されていません。',
 		'INVALID_KEY' : 'キーが正しくありません。',
 		'FAILED_TO_GET_DATA' : 'データの取得に失敗しました。',
-
 
 		'E1' : '対象データが見つかりませんでした。(E1)',
 		'E2' : '対象データは既に登録されています。(E2)',

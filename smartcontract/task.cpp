@@ -29,12 +29,13 @@ void Task::tanew(const account_name sender, const uint64_t cid,
 	uint64_t id = d.available_primary_key();
 	auto update = [&]() {
 		// check data
-		checkdata(sender, sender, cid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
+		account_name owner = (cid==NUMBER_NULL) ? sender : N("");
+		checkdata(sender, owner, cid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
 		eosio::print("#tanew#", sender, ":", id);
 		d.emplace(sender, [&](auto& dd) {
 			dd.id = id;
 			dd.cipherid = cipherid;
-			dd.owner = sender;
+			dd.owner = owner;
 			dd.name = name;
 			dd.rewardid = rewardid;
 			dd.rquantity = rquantity;
@@ -157,7 +158,7 @@ void Task::taaprvtask( const account_name sender, const uint64_t id, const bool 
 		(result != rec->approvers.end()) || 
 		((result2 != rec->pic.end()) && picapproved) , SENDER_NOT_APPROVER);
 	// check if task is owned by person
-	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
+	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// chkck if task is already approved
 	auto result3 = std::find(rec->approve_task.begin(), rec->approve_task.end(), sender);
 	// if results is already approved, task can't change
@@ -196,7 +197,7 @@ void Task::taaprvpic( const account_name sender, const uint64_t id, const bool v
 	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
 	eosio_assert_code((result != rec->approvers.end()) || (sender == rec->owner), SENDER_NOT_APPROVER);
 	// check if task is owned by person
-	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
+	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// check if pic is already approved
 	auto result2 = std::find(rec->approve_pic.begin(), rec->approve_pic.end(), sender);
 	// if results is on review process, it can't be canceled approval for pic
@@ -242,7 +243,7 @@ void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool 
 	// chcek if task fulfills approval requirements
 	eosio_assert_code(is_task_approved(*rec), TASK_NOT_APPROVED);
 	// check if task is owned by person
-	eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
+	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
 	// check if results is already approved
 	auto result2 = std::find(rec->approve_results.begin(), rec->approve_results.end(), sender);
 	// check if pic is approved
@@ -276,6 +277,7 @@ void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool 
 			// TODO:how to deal with surplus
 			uint64_t dev = rec->rquantity / rec->pic.size();
 			for (auto it=rec->pic.begin(); it!=rec->pic.end(); ++it) {
+				eosio::print("issue:", rec->rewardid, ":", dev);
 				Token::issue(sender, rec->cipherid, rec->rewardid, *it, dev);
 			}
 		}
@@ -389,6 +391,7 @@ void Task::checkdata( const account_name sender,
 	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
 	
 	// check rewardid
+	eosio::print("rewardid", rewardid, ":", eosio::name{owner}, "\n");
 	Validator::check_tokenowner(rewardid, owner, crec->cipherid);
 
 	// check cipherid

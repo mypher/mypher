@@ -5,10 +5,8 @@
 
 'use_strict'
 
-//let db = require('../db/db');
-//let dcipher = require('../db/cipher');
-//let vcipher = require('../validator/cipher');
 const childProcess = require('child_process');
+const eos = require('../db/eos');
 
 let an = /^[abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_]*$/;
 module.exports = {

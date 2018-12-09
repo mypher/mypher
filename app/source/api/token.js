@@ -8,6 +8,7 @@
 const log = require('../cmn/logger')('api.token');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
+const person = require('./person');
 
 module.exports = {
 	conv4store : function(d) {
@@ -95,6 +96,75 @@ module.exports = {
 				}
 			});
 			return this.conv4disp(ret);
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+
+	list_for_person : async function(d) {
+		try {
+			log.info("test");
+			let min = cmn.NUMBER_NULL;
+			let max = 0;
+			d.list.forEach(v => {
+				v = parseInt(v);
+				if (isNaN(v)||v===cmn.NUMBER_NULL) return;
+				min = (min<v) ? min : v;
+				max = (max>v) ? max : v;
+			});
+			const data = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'token',
+				limit : 0,
+				lower_bound : min,
+				upper_bound : max + 1,
+			});
+			let ret = [];
+			for (const i in data.rows) {
+				const v  = data.rows[i];
+				const idata = await eos.getData({
+					code : 'myphersystem',
+					scope : v.id,
+					table : 'issue',
+					limit : 1,
+					lower_bound : d.person,
+				});
+				let issuer = {};
+				if (v.issuer2!==cmn.NUMBER_NULL) {
+					issuer.id = v.issuer2;
+					const pdata = await eos.getData({
+						code : 'myphersystem',
+						scope : 'myphersystem',
+						table : 'ckey',
+						limit : 1,
+						lower_bound : v.issuer2,
+					});
+					if (pdata.rows.length===1) {
+						issuer.name = pdata.rows[0].name;
+					}
+				} else {
+					issuer.id = v.issuer;
+					const pdata = await eos.getData({
+						code : 'myphersystem',
+						scope : 'myphersystem',
+						table : 'person',
+						limit : 1,
+						lower_bound : v.issuer,
+					});
+					if (pdata.rows.length===1) {
+						issuer.name = pdata.rows[0].name;
+					}
+				}
+				ret.push({
+					id : v.id,
+					issuer : issuer,
+					name : v.name,
+					quantity : idata.rows[0].quantity,
+				});
+			}
+			return ret;
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);

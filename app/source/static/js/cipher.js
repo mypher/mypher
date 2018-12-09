@@ -212,6 +212,10 @@ class Cipher {
 				],
 				key : [],
 				ondata : (d, list) => {
+					if (this.data.tokenlist.length===0) {
+						list.show([]);
+						return;
+					}
 					Rpc.call('token.list_for_cipher', [{
 						cipherid: this.data.cipherid,
 						list : this.data.tokenlist,
@@ -246,6 +250,10 @@ class Cipher {
 				],
 				key : [],
 				ondata : (d, list) => {
+					if (this.data.tasklist.length===0) {
+						list.show([]);
+						return;
+					}
 					Rpc.call('task.list_for_cipher', [{
 						cipherid : this.data.cipherid,
 						list : this.data.tasklist,
@@ -270,7 +278,7 @@ class Cipher {
 						cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
-					History.run(_L('TOKEN'), task);
+					History.run(_L('TASK'), task);
 				}	
 			},
 		});
@@ -362,11 +370,12 @@ Cipher.prototype.Validator = {
 
 	canUseForSource : function(data) {
 		// a draft whose version is bigger than latest formal version can be used for source.
-		if (data.version>data.formalver) {
+		if (parseInt(data.version)>parseInt(data.formalver)) {
 			return true;
 		}
 		// latest formal version can be used for source.
-		if (data.version===data.formalver && data.draftno===data.formaldraft) {
+		if (parseInt(data.version)===parseInt(data.formalver) && 
+			parseInt(data.draftno)===parseInt(data.formaldraft)) {
 			return true;
 		}
 		return false;
