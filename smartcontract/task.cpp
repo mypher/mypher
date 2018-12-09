@@ -6,6 +6,7 @@
 #include <eosiolib/print.hpp>
 #include <boost/range/iterator_range.hpp>
 #include "task.hpp"
+#include "token.hpp"
 #include "cipher.hpp"
 #include "person.hpp"
 #include "common/validator.hpp"
@@ -266,6 +267,19 @@ void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool 
 			dd.approve_results.erase(result, dd.approve_results.end());
 		}
 	});
+	// check if number of approval for results fulfills requirements
+	eosio::print("nof_approval_for_results:", rec->approve_results.size(), "\n");
+	if (rec->approve_results.size()>=rec->nofauth) {
+		// issue token to pic
+		if (rec->rewardid!=NUMBER_NULL) {
+			// calc quantity
+			// TODO:how to deal with surplus
+			uint64_t dev = rec->rquantity / rec->pic.size();
+			for (auto it=rec->pic.begin(); it!=rec->pic.end(); ++it) {
+				Token::issue(sender, rec->cipherid, rec->rewardid, *it, dev);
+			}
+		}
+	}
 }
 
 void Task::applyforpic( const account_name sender, const uint64_t id, const bool vec) {

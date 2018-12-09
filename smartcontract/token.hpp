@@ -26,28 +26,41 @@ public:
 	 * @brief information of token 
 	 */
 	struct [[eosio::table]] token {
-			uint64_t id;
-			string name;
-			account_name issuer;
-			uint32_t issuer2;
-			uint32_t limit;
-			uint8_t when;
-			uint8_t disposal;
-			uint8_t type;
-			uint64_t taskid;
-			uint64_t tokenid;
-			uint32_t reftoken;
-			string term;
-			uint8_t rcalctype;
-			uint32_t nofdevtoken;
+		uint64_t id;
+		string name;
+		account_name issuer;
+		uint32_t issuer2;
+		uint32_t limit;
+		uint8_t when;
+		uint8_t disposal;
+		uint8_t type;
+		uint64_t taskid;
+		uint64_t tokenid;
+		uint32_t reftoken;
+		string term;
+		uint8_t rcalctype;
+		uint32_t nofdevtoken;
 
-			uint64_t primary_key() const { return id; }
-			uint64_t secondary_key() const { return (uint64_t)issuer2; }
+		uint64_t primary_key() const { return id; }
+		uint64_t secondary_key() const { return (uint64_t)issuer2; }
 
 		EOSLIB_SERIALIZE( token, 
 			(id)(name)(issuer)(issuer2)(limit)(when)(disposal)(type)(taskid)(tokenid)
 			(reftoken)(term)(rcalctype)(nofdevtoken) )
 	};
+
+	/**
+	 * @brief information of issuing information of token 
+	 */
+	struct [[eosio::table]] issue {
+		account_name owner;
+		uint32_t	 quantity;
+		
+		uint64_t primary_key() const { return owner; }
+
+		EOSLIB_SERIALIZE( issue, (owner)(quantity) )
+	};
+
 	/**
 	 * @brief the definition of the table for "token"
 	 */
@@ -56,6 +69,14 @@ public:
 			token,
 			indexed_by<N(secondary_key), const_mem_fun<token, uint64_t, &token::secondary_key>>
 	> data;
+
+	/**
+	 * @brief the definition of the table for "issue"
+	 */
+	typedef eosio::multi_index<
+			N(issue),
+			issue
+	> data2;
 
 	/**
 	 * @brief create new token
@@ -80,6 +101,29 @@ public:
 			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
 			   const uint8_t rcalctype, const uint32_t nofdevtoken );
 
+	/**
+	 * @brief transfer a token 
+	 */
+	[[eosio::action]]
+	void tktransfer(const account_name sender, 
+				const uint64_t tokenid, const account_name receiver, const uint32_t quantity); 
+
+	/**
+	 * @brief use a token 
+	 */
+	[[eosio::action]]
+	void tkuse(const account_name sender, const uint64_t tokenid, const uint32_t quantity);
+
+	/*******************************************************************
+	  methods only called from inside of the myphersystem contract
+	 *******************************************************************/
+
+	/**
+	 * @brief issue a token 
+	 */
+	static void issue(const account_name sender, const uint32_t cipherid,
+			   const uint64_t tokenid, const account_name receiver, const uint32_t quantity);
+
 private:
 	void checkdata(
 			   const account_name sender, const uint64_t cid,
@@ -90,8 +134,11 @@ private:
 			   const uint8_t rcalctype, const uint32_t nofdevtoken,
 			   const vector<account_name>& editors );
 
-	bool is_shared(const uint64_t tokenid, const uint64_t cid);
+	bool is_shared(const uint64_t id, const uint64_t cid);
 
+	static uint32_t getAvailableAmount(const uint64_t id);
+	static bool is_issued(const uint64_t id);
+	static void set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint32_t quantity);
 };
 
 } // mypher

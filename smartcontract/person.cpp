@@ -55,4 +55,9 @@ bool Person::checkList(const vector<account_name>& list) {
 	return true;
 }
 
+bool Person::isExists(const account_name user) {
+	data d(SELF, SELF);
+	return d.find(user)!=d.end();
+}
+
 } // mypher

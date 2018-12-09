@@ -38,32 +38,6 @@ module.exports = {
 	},
 
 	add : async function(d) {
-		/*try {
-			if (!cmn.chkTypes([
-				{p:d.sender, f:cmn.isEosID},
-				{p:d.name, f:cmn.isEmpty, r:true},
-				{p:d.limit, f:cmn.isStrNumber},
-				{p:d.when, f:cmn.isStrLen, v:1},
-				{p:d.when, f:cmn.isStrNumber },
-				{p:d.type, f:cmn.isStrLen, v:1},
-				{p:d.type, f:cmn.isStrNumber },
-				{p:d.type, f:cmn.isEmpty, r:true },
-				{p:d.disposal, f:cmn.isStrLen, v:1},
-				{p:d.disposal, f:cmn.isStrNumber },
-				{p:d.disposal, f:cmn.isEmpty, r:true },
-				{p:d.taskid, f:cmn.isStrNumber},
-				{p:d.tokenid, f:cmn.isStrNumber},
-				{p:d.reftoken, f:cmn.isStrNumber},
-				{p:d.term, f:cmn.isDateTime},
-				{p:d.rcalctype, f:cmn.isStrNumber},
-				{p:d.nofdevtoken, f:cmn.isStrNumber}
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
-			d = this.conv4store(d);
-		} catch (e) {
-			return {code:'INVALID_PARAM'};
-		}*/
 		try {
 			d = this.conv4store(d);
 			d = await eos.pushAction({
@@ -77,7 +51,8 @@ module.exports = {
 					data:d,
 				}]
 			});
-			return this.conv4disp(d);
+			await cmn.waitcommit(d);
+			return {}
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
@@ -127,32 +102,6 @@ module.exports = {
 	},
 
 	update : async function(d) {
-/*		try {
-			if (!cmn.chkTypes([
-				{p:d.id, f:cmn.isNumber},
-				{p:d.sender, f:cmn.isEosID},
-				{p:d.name, f:cmn.isEmpty, r:true},
-				{p:d.limit, f:cmn.isStrNumber},
-				{p:d.when, f:cmn.isStrLen, v:1},
-				{p:d.when, f:cmn.isStrNumber },
-				{p:d.type, f:cmn.isStrLen, v:1},
-				{p:d.type, f:cmn.isStrNumber },
-				{p:d.type, f:cmn.isEmpty, r:true },
-				{p:d.disposal, f:cmn.isStrLen, v:1},
-				{p:d.disposal, f:cmn.isStrNumber },
-				{p:d.disposal, f:cmn.isEmpty, r:true },
-				{p:d.taskid, f:cmn.isStrNumber},
-				{p:d.tokenid, f:cmn.isStrNumber},
-				{p:d.reftoken, f:cmn.isStrNumber},
-				{p:d.term, f:cmn.isDateTime},
-				{p:d.rcalctype, f:cmn.isStrNumber},
-				{p:d.nofdevtoken, f:cmn.isStrNumber}
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
-		} catch (e) {
-			return {code:'INVALID_PARAM'};
-		}*/
 		try {
 			d = this.conv4store(d);
 			d = await eos.pushAction({
@@ -166,8 +115,29 @@ module.exports = {
 					data:d,
 				}]
 			});
-			return this.conv4disp(d);
+			await cmn.waitcommit(ret);
+			// if the token is owned by any cipher, check if that task was copied because of unsharing
+			if (d.cid!=cmn.NUMBER_NULL) {
+				const cdata = await eos.getDataWithPKey({
+					code : 'myphersystem',
+					scope : 'myphersystem',
+					table : 'cipher',
+				}, d.cid);
+				let ret = -1;
+				cdata[0].tokenlist.some(v=> {
+					if (v===parseInt(d.id)) {
+						ret = d.id;
+						return true;
+					}
+					// search the latest id
+					ret = (ret>v) ? ret : v;
+				});
+				return ret;
+			} else {
+				return d.id;
+			}
 		} catch (e) {
+			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},

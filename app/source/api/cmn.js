@@ -386,7 +386,20 @@ module.exports = {
 			}
 		}
 		return {code:'E' + err[1]};
+	},
+
+	waitcommit : async info => {
+		await apicmn.sleep(500);
+		for ( let i=0; i<5; i++) {
+			try {
+				await apicmn.sleep(300);
+				const result = await eos.getTransaction(info.transaction_id, info.processed.block_num);
+				break;
+			} catch (e) {
+				// not sent yet
+			}
+		}
 	}
 };
 
-let apicmn = module.exports;
+const apicmn = module.exports;

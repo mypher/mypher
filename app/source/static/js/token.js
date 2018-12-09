@@ -353,7 +353,8 @@ class Token extends View {
 			return;
 		}
 		this.mode = MODE.REF;
-		this.refresh();
+		this.data.id = ret;
+		this.draw();
 	}
 
 };

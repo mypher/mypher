@@ -242,6 +242,10 @@
                 {
                     "name": "info",
                     "type": "string"
+                },
+                {
+                    "name": "tokenlist",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -329,6 +333,20 @@
                 }
             ]
         },
+        {
+            "name": "issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "uint32"
+                }
+			]
+		},
         {
             "name": "tknew",
             "base": "",
@@ -457,6 +475,46 @@
                 }
             ]
         },
+        {
+            "name": "tktransfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "tokenid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "uint32"
+                }
+			]
+		},
+        {
+            "name": "tkuse",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sender",
+                    "type": "name"
+                },
+                {
+                    "name": "tokenid",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "uint32"
+                }
+			]
+		},
         {
             "name": "task",
             "base": "",

@@ -60,6 +60,7 @@ void Token::tknew(const account_name sender, const uint64_t cid,
 		update(vector<account_name>{});
 	}
 }
+
 void Token::tkupdate(const account_name sender, 
 			   const uint64_t cid, const uint64_t id,
 			   const string& name, const account_name issuer, 
@@ -72,7 +73,8 @@ void Token::tkupdate(const account_name sender,
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 
-	// TODO:reject if token already issued
+	// check if token already issued
+	eosio_assert_code(!is_issued(id), TOKEN_ALREADY_ISSUED);
 
 	// check if specified cid is valid	
 	Cipher::data cd(self, self);
@@ -142,9 +144,7 @@ void Token::checkdata( const account_name sender, const uint64_t cid,
 
 	// check if issuer is valid
 	if (issuer!=N("")) {
-		Person::data pd(SELF, SELF);
-		auto prec = pd.find(issuer);
-		eosio_assert_code(prec!=pd.end(), INVALID_ISSUER);
+		eosio_assert_code(Person::isExists(issuer), INVALID_ISSUER);
 		eosio_assert_code(issuer==sender, NOT_EDITABLE);	
 	}
 	
@@ -155,17 +155,105 @@ void Token::checkdata( const account_name sender, const uint64_t cid,
 	}
 }
 
-bool Token::is_shared( const uint64_t tokenid, const uint64_t cid) {
+bool Token::is_shared(const uint64_t id, const uint64_t cid) {
 	if (cid==NUMBER_NULL) return false;
 	Cipher::data d(SELF, SELF);
 	auto rec = d.find(cid);
 	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
 		if (it->id==cid) continue;
-		auto found = std::find(it->tokenlist.begin(), it->tokenlist.end(), tokenid);
+		auto found = std::find(it->tokenlist.begin(), it->tokenlist.end(), id);
 		if (found!=it->tokenlist.end()) return true;
 	}
 	return false;
+}
+
+void Token::issue(const account_name sender, const uint32_t cipherid,
+			   const uint64_t tokenid, const account_name receiver, const uint32_t quantity) {
+	// if issued by a cipher, check if there is this token in formal version of it 
+	if (cipherid!=NUMBER_NULL) {
+		// TODO:
+	}
+	// check limit
+	eosio_assert_code(getAvailableAmount(tokenid)>=quantity, INSUFFICIENT_AMOUNT);
+	// check token issuer
+	data d(SELF, SELF);
+	auto rec = d.find(tokenid);
+	eosio_assert_code(rec!=d.end(), INVALID_TOKEN);
+	if (cipherid==NUMBER_NULL) {
+		eosio_assert_code(rec->issuer2==cipherid, TOKEN_NOT_OWNED_BY_SENDER);
+	} else {
+		eosio_assert_code(rec->issuer==sender, TOKEN_NOT_OWNED_BY_SENDER);
+	}
+	// check the receiver
+	eosio_assert_code(Person::isExists(receiver), INVALID_RECEIVER);
+	// issue the token
+	set_amount(sender, tokenid, receiver, quantity);
+}
+
+void Token::tktransfer(const account_name sender, 
+				const uint64_t tokenid, const account_name receiver, const uint32_t quantity) {
+	// check the receiver
+	eosio_assert_code(Person::isExists(receiver), INVALID_RECEIVER);
+	data2 d2(self, tokenid);
+	auto rec2 = d2.find(sender);
+	// check if sender's amount is enough to send 
+	eosio_assert_code(rec2!=d2.end(), INSUFFICIENT_AMOUNT);
+	eosio_assert_code(rec2->quantity>=quantity, INSUFFICIENT_AMOUNT);
+	// transfer the token
+	d2.modify(rec2, sender, [&](auto& dd) {
+		dd.quantity -= quantity;
+	});
+	set_amount(sender, tokenid, receiver, quantity);
+}
+void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint32_t quantity) {
+	eosio::print("##Token:use");
+}
+
+uint32_t Token::getAvailableAmount(const uint64_t id) {
+	data d(SELF, SELF);
+	data2 d2(SELF, id);
+
+	auto rec = d.find(id);
+	if (rec==d.end()) {
+		return 0;
+	}
+	uint32_t used = 0;
+	for (auto it=d2.begin(); it!=d2.end(); ++it) {
+		used += it->quantity;
+	}
+	return rec->limit - used;
+}
+
+bool Token::is_issued(const uint64_t id) {
+	data2 d2(SELF, id);
+	return (d2.begin()!=d2.end());
+}
+
+void Token::set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint32_t quantity) {
+	data2 d2(SELF, tokenid);
+	auto rec2 = d2.find(user);
+	// first time to issue to specified receiver
+	if (rec2==d2.end()) {
+		d2.emplace(sender, [&](auto& dd) {
+			dd.owner = user;
+			dd.quantity = quantity;
+		});
+	} else {
+		d2.modify(rec2, sender, [&](auto& dd) {
+			dd.quantity += quantity;
+		});
+	}
+	Person::data pd(SELF, SELF);
+	auto prec = pd.find(user);
+	if (prec!=pd.end()) {
+		pd.modify(prec, sender, [&](auto& dd) {
+			auto found = std::find(dd.tokenlist.begin(), dd.tokenlist.end(), tokenid);
+			if (found==dd.tokenlist.end()) {
+				dd.tokenlist.push_back(tokenid);
+			}
+		});
+	}
 }
 
 } // mypher

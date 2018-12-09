@@ -31,12 +31,13 @@ public:
 	struct [[eosio::table]] person {
 		account_name id;
 		string name;
-		std::vector<std::string> tags;
-		std::string info;
+		vector<string> tags;
+		string info;
+		vector<uint64_t> tokenlist;
 
 		auto primary_key() const { return id; }
 
-		EOSLIB_SERIALIZE( person, (id)(name)(tags)(info) )
+		EOSLIB_SERIALIZE( person, (id)(name)(tags)(info)(tokenlist) )
 	};
 	/**
 	 * @brief the definition of the table for "person"
@@ -47,11 +48,12 @@ public:
 	 * @brief create new person
 	 */
 	[[eosio::action]]
-	void pupdate(const account_name id, const std::string& name, const std::vector<std::string>& tags, const std::string& info);
+	void pupdate(const account_name id, const string& name, const vector<string>& tags, const string& info);
 
 // common
 public:
 	static bool checkList(const vector<account_name>& list);
+	static bool isExists(const account_name user);
 
 };
 

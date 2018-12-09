@@ -28,19 +28,6 @@ module.exports = {
 		return d;		
 	},
 
-	waitcommit : async function(info) {
-		await cmn.sleep(500);
-		for ( let i=0; i<5; i++) {
-			try {
-				await cmn.sleep(300);
-				const result = await eos.getTransaction(info.transaction_id, info.processed.block_num);
-				break;
-			} catch (e) {
-				// not sent yet
-			}
-		}
-	},
-
 	add : async function(d) {
 		try {
 			if (!cmn.chkTypes([
@@ -79,7 +66,7 @@ module.exports = {
 					data:d,
 				}]
 			});
-			await this.waitcommit(ret);
+			await cmn.waitcommit(ret);
 			return {};
 		} catch (e) {
 			log.error(e);
@@ -205,7 +192,7 @@ module.exports = {
 					data:d,
 				}]
 			});
-			await this.waitcommit(ret);
+			await cmn.waitcommit(ret);
 			// if the task is owned by any cipher, check if that task was copied because of unsharing
 			if (d.cid!=cmn.NUMBER_NULL) {
 				const cdata = await eos.getDataWithPKey({
