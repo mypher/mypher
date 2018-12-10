@@ -1,0 +1,102 @@
+@startuml
+
+package Cipher <<Frame>> {
+	class cdraft << (M,orchid) >> {
+		uint64			cipherid
+		--
+	   -uint64			draftid
+	    uint16			version
+	    uint16			no
+		bool			formal
+		string			name
+		vector<string>	tags
+		vector<name>	editors
+		string			hash
+		uint16			nofapproval
+		vector<name>	approvers
+		vector<name>	approved
+		vector<uint64>	tasklist
+		vector<uint64>	tokenlist
+		--
+		key2		draftid + version + no
+	}
+
+	class cformal << (M,orchid) >> {
+		name			"myphersystem"
+		--
+	   -uint64			ciperid
+		uint64			draftid
+		string			name
+		vector<string>	tags
+	}
+}
+
+package Token <<Frame>> {
+	class token << (M,orchid) >> {
+		name		"myphersystem"
+		--
+	   -uint64		tokenid
+		string		name
+		name		issuerp
+		uint64		issuerc
+		uint32		limit
+		uint8		when
+		uint8		disposal
+		uint8		type
+		uint64		taskid
+		uint64		tokenid
+		uint32		reftoken
+		uint8		rcalctype
+		uint32		nofdesttoken
+		float64		nofdesteos
+		--
+		key2		issuerc
+	}
+
+	class issue << (M,orchid) >> {
+		uint64		tokenid
+		--
+		name		owner
+		uint32		quantity
+	}
+}
+
+package Task <<Frame>> {
+	class task << (M,orchid) >> {
+		name		"myphersystem"
+		--
+	   -uint64			taskid
+		uint64			ownerc
+		name			ownerp
+		string			name
+		uint64			rewardid
+		uint64			quantity
+		uint8			nofapproval
+		vector<name>	approvers
+		vector<name>	approve_content
+		vector<name>	approve_pic
+		vector<name>	approve_results
+		vector<name>	pic
+		string			hash
+		bool			formal
+		vector<string>	tags
+		--
+		key2			ownerc
+	}
+}
+
+package Person <<Frame>> {
+	class person << (M,orchid) >> {
+		name		"myphersystem"
+		--
+	   -name			personid
+		string			name
+		vector<string>	tags
+		string			hash
+		vector<uint64>	tokenlist
+	}
+}
+
+
+
+@enduml
