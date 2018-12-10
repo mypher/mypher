@@ -424,4 +424,13 @@ bool Task::is_shared(const uint64_t taskid, const uint64_t cid) {
 	return false;
 }
 
+bool Task::is_completed(const uint64_t taskid) {
+	data d(SELF, SELF);
+	auto rec = d.find(taskid);
+	if (rec==d.end()) {
+		return false;
+	}
+	return (rec->approve_results.size()>=rec->nofauth);
+}
+
 } // mypher

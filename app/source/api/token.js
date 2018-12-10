@@ -8,7 +8,7 @@
 const log = require('../cmn/logger')('api.token');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
-const person = require('./person');
+const cipher = require('./cipher');
 
 module.exports = {
 	conv4store : function(d) {
@@ -133,13 +133,13 @@ module.exports = {
 				});
 				let issuer = {};
 				if (v.issuer2!==cmn.NUMBER_NULL) {
-					issuer.id = v.issuer2;
+					const d = cipher.getFormalFromCipherID({cipherid:v.issuer2});
 					const pdata = await eos.getData({
 						code : 'myphersystem',
 						scope : 'myphersystem',
 						table : 'ckey',
 						limit : 1,
-						lower_bound : v.issuer2,
+						lower_bound : d.id,
 					});
 					if (pdata.rows.length===1) {
 						issuer.name = pdata.rows[0].name;

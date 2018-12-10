@@ -112,6 +112,7 @@ public:
 	[[eosio::action]]
 	void applyforpic( const account_name sender, const uint64_t id, const bool vec);
 
+	static bool is_completed(const uint64_t taskid);
 
 private:
 	bool is_pic_approved(const task& d);

@@ -21,6 +21,7 @@ using namespace std;
 class Cipher : virtual public MypherBase {
 
 public:
+	// TODO: dealing with scope with cipherid
 
 	/**
 	 * @brief information of cipher

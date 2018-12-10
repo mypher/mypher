@@ -356,17 +356,17 @@ module.exports = {
 			if (!cmn.isNumber(d.cipherid)) {
 				return {code:'INVALID_PARAM'};
 			}
-			let min = makeSubKey(d.cipherid, 1, 1);
-			let max = makeSubKey(d.cipherid+1, 1, 1);
-			let sdata = await eos.getDataWithSubKey({
-				code : 'myphersystem',
-				scope : 'myphersystem',
-				table : 'cipher',
-				limit : 65535
+			const min = makeSubKey(d.cipherid, 1, 1);
+			const max = makeSubKey(d.cipherid+1, 1, 1);
+			const sdata = await eos.getDataWithSubKey({
+					code : 'myphersystem',
+					scope : 'myphersystem',
+					table : 'cipher',
+					limit : 65535
 			}, 2, 'i64', min, max);
 			if (sdata instanceof Array) {
 				sdata.forEach(async d => {
-					let key = await eos.getDataWithPKey({
+					const key = await eos.getDataWithPKey({
 						code : 'myphersystem',
 						scope : 'myphersystem',
 						table : 'ckey',
@@ -377,6 +377,35 @@ module.exports = {
 			} else {
 				return [];
 			}
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
+
+	getFormalFromCipherID : d => {
+		try {
+			if (!cmn.isNumber(d.cipherid)) {
+				return {code:'INVALID_PARAM'};
+			}
+			const min = makeSubKey(d.cipherid, 1, 1);
+			const max = makeSubKey(d.cipherid+1, 1, 1);
+			let sdata = await eos.getDataWithSubKey({
+					code : 'myphersystem',
+					scope : 'myphersystem',
+					table : 'cipher',
+					limit : 65535
+			}, 2, 'i64', min, max);
+			let ret = {};
+			if (sdata instanceof Array) {
+				sdata.reverse();
+				sdata.some(async d => {
+					if (d.formal) {
+						ret = d;
+						return true;
+					}
+				});
+			}
+			return ret;
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}

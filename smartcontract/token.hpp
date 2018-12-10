@@ -22,6 +22,26 @@ using namespace eosio;
  */
 class Token : virtual public MypherBase {
 public:
+	enum Type {
+		NONE,
+		PUBLISH_QRCODE,
+		DISTRIBUTE_TOKEN,
+		DISTRIBUTE_CRYPTOCURRENCY
+	};
+
+	enum When {
+		UNALLOW,
+		COMPLETE_TASK,
+		OVER_ISSUER_OWNED_TOKEN,
+		ALWAYS,
+		FLAG	
+	};
+
+	enum Disposal {
+		NO,
+		YES
+	};
+
 	/**
 	 * @brief information of token 
 	 */
@@ -135,10 +155,15 @@ private:
 			   const vector<account_name>& editors );
 
 	bool is_shared(const uint64_t id, const uint64_t cid);
+	void distribute(const account_name sender, const uint32_t dcipherid, const account_name duserid, 
+					const uint64_t tokenid, const uint32_t quantity);
+	void send_currency(const account_name send, const account_name issuer, const uint32_t issuer2, const uint32_t quantity);
 
 	static uint32_t getAvailableAmount(const uint64_t id);
 	static bool is_issued(const uint64_t id);
 	static void set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint32_t quantity);
+	static bool is_sufficient_owned_token(account_name issuer, uint64_t issuer2, uint64_t tokenid, uint32_t amount);
+
 };
 
 } // mypher

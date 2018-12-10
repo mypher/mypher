@@ -5,6 +5,7 @@
 
 #include "mypher.hpp"
 #include <eosiolib/print.hpp>
+#include <eosiolib/asset.hpp>
 #include "common/validator.hpp"
 #include "cipher.hpp"
 #include "person.hpp"
@@ -210,6 +211,56 @@ void Token::tktransfer(const account_name sender,
 }
 void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint32_t quantity) {
 	eosio::print("##Token:use");
+	data d(self, self);
+	data d2(self, tokenid);
+
+	auto rec = d.find(tokenid);
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+	auto rec2 = d2.find(sender);
+	eosio_assert_code(rec2!=d2.end(), TOKEN_NOT_OWNED_BY_SENDER);
+	switch (rec->when) {
+	case When::UNALLOW:
+		eosio_assert_code(0, NOT_FULFILL_REQUIREMENT);
+	case When::COMPLETE_TASK:
+		eosio_assert_code(Task::is_completed(rec->taskid), NOT_FULFILL_REQUIREMENT);
+		break;
+	case When::OVER_ISSUER_OWNED_TOKEN:
+		eosio_assert_code(is_sufficient_owned_token(rec->issuer, rec->issuer2, rec->tokenid, rec->reftoken), NOT_FULFILL_REQUIREMENT);
+		break;
+	case When::ALWAYS:
+		// always allow
+		break;
+	case When::FLAG:
+		eosio_assert_code(0, NOT_IMPLEMENT_YET);
+	}
+
+	switch (rec->type) {
+	case Type::NONE:
+		break;
+	case Type::PUBLISH_QRCODE:
+		eosio_assert_code(0, NOT_IMPLEMENT_YET);
+		break;
+	case Type::DISTRIBUTE_TOKEN:
+		distribute(sender, rec->issuer2, rec->issuer, rec->tokenid, rec->nofdevtoken);
+		break;
+	case Type::DISTRIBUTE_CRYPTOCURRENCY:
+		eosio_assert_code(0, NOT_IMPLEMENT_YET);
+	}
+}
+
+void Token::distribute(const account_name sender, const uint32_t dcipherid, const account_name duserid, 
+					const uint64_t tokenid, const uint32_t quantity) {
+	
+}
+
+void Token::send_currency(const account_name sender, 
+				const account_name issuer, const uint32_t issuer2, const uint32_t quantity) {
+	// TODO:
+	action(
+		permission_level {sender,N(active)},
+        N(eosio.token),N(transfer),
+        std::make_tuple(self,N(eosio.token),asset(quantity,N(eos)),"")
+	).send();
 }
 
 uint32_t Token::getAvailableAmount(const uint64_t id) {
@@ -255,6 +306,19 @@ void Token::set_amount(const account_name sender, const uint64_t tokenid, const 
 				dd.tokenlist.push_back(tokenid);
 			}
 		});
+	}
+}
+
+bool Token::is_sufficient_owned_token(account_name issuer, uint64_t issuer2, uint64_t tokenid, uint32_t amount) {
+	if (issuer2!=NUMBER_NULL) {
+		return (getAvailableAmount(tokenid) > amount);
+	} else {
+		data2 d2(SELF, tokenid);
+		auto rec2 = d2.find(issuer);
+		if (rec2==d2.end()) {
+			return false;
+		}
+		return (rec2->quantity>=amount);
 	}
 }
 
