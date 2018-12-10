@@ -2,21 +2,21 @@
 
 package Cipher <<Frame>> {
 	class cdraft << (M,orchid) >> {
-		uint64			cipherid
+		CIPHERID		cipherid
 		--
-	   -uint64			draftid
-	    uint16			version
-	    uint16			no
-		bool			formal
-		string			name
-		vector<string>	tags
-		vector<name>	editors
-		string			hash
-		uint16			nofapproval
-		vector<name>	approvers
-		vector<name>	approved
-		vector<uint64>	tasklist
-		vector<uint64>	tokenlist
+	   -DRAFTID				draftid
+	    uint16				version
+	    uint16				no
+		bool				formal
+		string				name
+		vector<string>		tags
+		vector<name>		editors
+		ipfskey				hash
+		uint16				nofapproval
+		vector<name>		approvers
+		vector<name>		approved
+		vector<TASKID>		tasklist
+		vector<TOKENID>	tokenlist
 		--
 		key2		draftid + version + no
 	}
@@ -24,8 +24,8 @@ package Cipher <<Frame>> {
 	class cformal << (M,orchid) >> {
 		name			"myphersystem"
 		--
-	   -uint64			ciperid
-		uint64			draftid
+	   -CIPHERID		ciperid
+		DRAFTID			draftid
 		string			name
 		vector<string>	tags
 	}
@@ -35,28 +35,27 @@ package Token <<Frame>> {
 	class token << (M,orchid) >> {
 		name		"myphersystem"
 		--
-	   -uint64		tokenid
+	   -TOKENID		tokenid
 		string		name
-		name		issuerp
-		uint64		issuerc
+		CIPHERID	issuer
 		uint32		limit
 		uint8		when
 		uint8		disposal
 		uint8		type
-		uint64		taskid
-		uint64		tokenid
+		TASKID		taskid
+		TOKENID		tokenid
 		uint32		reftoken
 		uint8		rcalctype
 		uint32		nofdesttoken
 		float64		nofdesteos
 		--
-		key2		issuerc
+		key2		issuer
 	}
 
 	class issue << (M,orchid) >> {
-		uint64		tokenid
+		TOKENID		tokenid
 		--
-		name		owner
+	   -name		owner
 		uint32		quantity
 	}
 }
@@ -65,11 +64,10 @@ package Task <<Frame>> {
 	class task << (M,orchid) >> {
 		name		"myphersystem"
 		--
-	   -uint64			taskid
-		uint64			ownerc
-		name			ownerp
+	   -TASKID			taskid
+		CIPHERID		owner
 		string			name
-		uint64			rewardid
+		TOKENID			rewardid
 		uint64			quantity
 		uint8			nofapproval
 		vector<name>	approvers
@@ -77,11 +75,11 @@ package Task <<Frame>> {
 		vector<name>	approve_pic
 		vector<name>	approve_results
 		vector<name>	pic
-		string			hash
+		ipfskey			hash
 		bool			formal
 		vector<string>	tags
 		--
-		key2			ownerc
+		key2			owner
 	}
 }
 
@@ -93,7 +91,7 @@ package Person <<Frame>> {
 		string			name
 		vector<string>	tags
 		string			hash
-		vector<uint64>	tokenlist
+		vector<TOKENID>	tokenlist
 	}
 }
 
