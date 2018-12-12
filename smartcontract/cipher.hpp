@@ -21,64 +21,63 @@ using namespace std;
 class Cipher : virtual public MypherBase {
 
 public:
-	// TODO: dealing with scope with cipherid
+	/**
+	 * @brief information of formal version of cipher
+	 */
+	struct [[eosio::table]] cformal {
+	 	uint64_t		cipherid;
+		uint64_t		draftid;
+		string			name;
+		vector<string>	tags;
+
+		uint64_t primary_key() const { return cipherid; }
+		
+		EOSLIB_SERIALIZE(cformal, (cipherid)(draftid)(name)(tags))
+	};
 
 	/**
-	 * @brief information of cipher
+	 * @brief information of draft of cipher
 	 */
-	struct [[eosio::table]] cipher {
-		uint64_t id;
-		uint32_t cipherid;
-		uint16_t version;
-		uint16_t draftno;
-		bool formal;
-		vector<account_name> editors;
-		string hash;
-		uint16_t drule_req;
-		vector<account_name> drule_auth;
-		vector<account_name> approved;
-		vector<uint64_t> tasklist;
-		vector<uint64_t> tokenlist;
+	struct [[eosio::table]] cdraft {
+		uint64_t				draftid;
+	    uint16_t				version;
+	    uint16_t				no;
+		bool					formal;
+		string					name;
+		vector<string>			tags;
+		vector<account_name>	editors;
+		string					hash;
+		uint16_t				nofapproval;
+		vector<account_name>	approvers;
+		vector<account_name>	approved;
+		vector<uint64_t>		tasklist;
+		vector<uint64_t>		tokenlist;
 
-		uint64_t primary_key() const { return id; }
+		uint64_t primary_key() const { return draftid; }
 		uint64_t secondary_key() const {
-			return gen_secondary_key(cipherid, version, draftno);	
+			return gen_secondary_key(version, no);	
 		}
 		
-		EOSLIB_SERIALIZE(cipher, 
-			(id)(cipherid)(version)(draftno)(formal)(editors)(hash)
-			(drule_req)(drule_auth)(approved)(tasklist)(tokenlist))
-	};
-	/**
-	 * @brief keydata of cipher
-	 */
-	struct [[eosio::table]] ckey {
-		uint64_t id;
-		string name;
-		vector<string> tags;
-		bool formal;
-
-		uint64_t primary_key() const { return id; }
-		
-		EOSLIB_SERIALIZE(ckey, (id)(name)(tags)(formal))
+		EOSLIB_SERIALIZE(cdraft, (draftid)(version)(no)(formal)(name)
+			(tags)(editors)(hash)(nofapproval)(approvers)(approved)(tasklist)(tokenlist))
 	};
 
 	/**
-	 * @brief the definition of the table for "cipher"
+	 * @brief the definition of the table for "cformal"
 	 */
 	typedef eosio::multi_index< 
-			N(cipher), 
-			cipher,
-			indexed_by<N(secondary_key), const_mem_fun<cipher, uint64_t, &cipher::secondary_key>>
-	> data;
+			N(cformal), 
+			cformal
+	> cformal_data;
 
 	/**
-	 * @brief the definition of the table for key of "cipher"
+	 * @brief the definition of the table for key of "cdraft"
 	 */
 	typedef eosio::multi_index< 
-			N(ckey), 
-			ckey
-	> keydata;
+			N(cdraft), 
+			cdraft,
+			indexed_by<N(secondary_key), const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
+	> cdraft_data;
 
 	/**
 	 * @brief create new cipher
@@ -87,50 +86,55 @@ public:
 	void cnew(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
-				uint16_t drule_req, const vector<account_name>& drule_auth);
+				uint16_t nofapproval, const vector<account_name>& approvers);
+	/**
+	 * @brief create new draft from specified version 
+	 */
 	[[eosio::action]]
-	void ccopy(const account_name sender, uint64_t id);
-	/*[[eosio::action]]
-	void cdraft(const account_name sender, 
-				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const string& name, const vector<account_name>& editors,
-				const vector<string>& tags, const string& hash,
-				uint16_t drule_req, const vector<account_name>& drule_auth);*/
+	void cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
+
+	/**
+	 * @brief update draft data 
+	 */
 	[[eosio::action]]
-	void cupdate(const account_name sender,
-				uint64_t id,
-				uint32_t cipherid, uint16_t version, uint16_t draftno, 
-				const string& name, const vector<account_name>& editors,
-				const vector<string>& tags, const string& hash,
-				uint16_t drule_req, const vector<account_name>& drule_auth,
+	void cupdate(const account_name sender, const uint64_t cipherid, 
+				const uint64_t draftid, const uint16_t version, const uint16_t draftno, 
+				const string& name, const vector<string>& tags, 
+				const vector<account_name>& editors, const string& hash,
+				const uint16_t nofapproval, const vector<account_name>& approvers,
 				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
+
+	/**
+	 * @brief approve a draft 
+	 */
 	[[eosio::action]]
-	void capprove(const account_name sender, 
-				uint32_t cipherid, uint16_t version, uint16_t draftno);
+	void capprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
+
+	/**
+	 * @brief reverse approval for a draft 
+	 */
 	[[eosio::action]]
-	void crevapprove(const account_name sender, 
-				uint32_t cipherid, uint16_t version, uint16_t draftno);
+	void crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
 
 private:
-	static string gen_third_key(const bool& formal, const string& name);
+	bool can_edit(const account_name& sender, const vector<account_name>& editors);
+	/**
+	 * @brief generate version and draftno for new draft 
+	 */
+	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& draftno);
 
-	bool canEdit(const account_name& sender, const vector<account_name>& editors);
-	uint32_t getNewCipherId(const data& d);
-	uint16_t getNewVersion(const data& d,const uint32_t cipherid);
-	uint16_t getNewDraftNo(const data& d, const uint32_t cipherid, const uint16_t ver);
-	bool isVersionFormal(const data& d, const uint32_t cipherid, const uint16_t ver);
+	bool is_draft_version(const uint64_t cipherid, const uint16_t version);
 	void check_data(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
 				uint16_t drule_req, const vector<account_name>& drule_auth);
-	void checkTaskList(const vector<uint64_t>& list);
-	void checkTokenList(const vector<uint64_t>& list);
+	void validate_tasklist(const vector<uint64_t>& tasklist);
+	void validate_tokenlist(const vector<uint64_t>& tokenlist);
 
 // common
 public:
-	static bool isCipherExists(const uint64_t id); 
-	static uint64_t gen_secondary_key(const uint32_t& cipherid, 
-									 const uint16_t& ver, const uint16_t& draftno);
+	static bool exists(const uint64_t cipherid); 
+	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& draftno);
 };
 
 } // mypher

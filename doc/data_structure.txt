@@ -16,9 +16,9 @@ package Cipher <<Frame>> {
 		vector<name>		approvers
 		vector<name>		approved
 		vector<TASKID>		tasklist
-		vector<TOKENID>	tokenlist
+		vector<TOKENID>		tokenlist
 		--
-		key2		draftid + version + no
+		key2		version + no
 	}
 
 	class cformal << (M,orchid) >> {
@@ -38,15 +38,15 @@ package Token <<Frame>> {
 	   -TOKENID		tokenid
 		string		name
 		CIPHERID	issuer
-		uint32		limit
+		uint64		limit
 		uint8		when
 		uint8		disposal
 		uint8		type
 		TASKID		taskid
 		TOKENID		tokenid
-		uint32		reftoken
+		uint64		reftoken
 		uint8		rcalctype
-		uint32		nofdesttoken
+		uint64		nofdesttoken
 		float64		nofdesteos
 		--
 		key2		issuer
@@ -56,7 +56,7 @@ package Token <<Frame>> {
 		TOKENID		tokenid
 		--
 	   -name		owner
-		uint32		quantity
+		uint64		quantity
 	}
 }
 

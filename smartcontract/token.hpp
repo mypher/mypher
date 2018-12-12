@@ -26,7 +26,9 @@ public:
 		NONE,
 		PUBLISH_QRCODE,
 		DISTRIBUTE_TOKEN,
-		DISTRIBUTE_CRYPTOCURRENCY
+		DISTRIBUTE_CRYPTOCURRENCY,
+		// use for validating a value
+		TYPE_MAX
 	};
 
 	enum When {
@@ -34,39 +36,42 @@ public:
 		COMPLETE_TASK,
 		OVER_ISSUER_OWNED_TOKEN,
 		ALWAYS,
-		FLAG	
+		FLAG,
+		// use for validating a value
+		WHEN_MAX	
 	};
 
 	enum Disposal {
 		NO,
-		YES
+		YES,
+		// user for validatig a value
+		DISPOSAL_MAX
 	};
 
 	/**
 	 * @brief information of token 
 	 */
 	struct [[eosio::table]] token {
-		uint64_t id;
+		uint64_t tokenid;
 		string name;
-		account_name issuer;
-		uint32_t issuer2;
-		uint32_t limit;
+		uint64_t issuer;
+		uint64_t limit;
 		uint8_t when;
 		uint8_t disposal;
 		uint8_t type;
 		uint64_t taskid;
 		uint64_t tokenid;
-		uint32_t reftoken;
-		string term;
+		uint64_t reftoken;
 		uint8_t rcalctype;
-		uint32_t nofdevtoken;
+		uint64_t nofdesttoken;
+		float64_t nofdesteos;
 
 		uint64_t primary_key() const { return id; }
-		uint64_t secondary_key() const { return (uint64_t)issuer2; }
+		uint64_t secondary_key() const { return (uint64_t)issuer; }
 
 		EOSLIB_SERIALIZE( token, 
-			(id)(name)(issuer)(issuer2)(limit)(when)(disposal)(type)(taskid)(tokenid)
-			(reftoken)(term)(rcalctype)(nofdevtoken) )
+			(tokenid)(name)(issuer)(limit)(when)(disposal)(type)(taskid)(tokenid)
+			(reftoken)(rcalctype)(nofdesttoken)(nofdesteos) )
 	};
 
 	/**
@@ -74,7 +79,7 @@ public:
 	 */
 	struct [[eosio::table]] issue {
 		account_name owner;
-		uint32_t	 quantity;
+		uint64_t	 quantity;
 		
 		account_name primary_key() const { return owner; }
 
@@ -88,7 +93,7 @@ public:
 			N(token), 
 			token,
 			indexed_by<N(secondary_key), const_mem_fun<token, uint64_t, &token::secondary_key>>
-	> data;
+	> token_data;
 
 	/**
 	 * @brief the definition of the table for "issue"
@@ -96,18 +101,18 @@ public:
 	typedef eosio::multi_index<
 			N(issue),
 			issue
-	> data2;
+	> issue_data;
 
 	/**
 	 * @brief create new token
 	 */
 	[[eosio::action]]
-	void tknew(const account_name sender, const uint64_t cid,
-			   const string& name, const account_name issuer, 
-			   const uint32_t limit, const uint8_t when, 
+	void tknew(const account_name sender, const uint64_t draftid, 
+			   const string& name, const uint64_t issuer,
+			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken );
+			   const uint64_t tokenid, const uint64_t reftoken, 
+			   const uint8_t rcalctype, const uint64_t nofdesttoken, const float64_t nofdesteos );
 
 	/**
 	 * @brief update token data
@@ -146,13 +151,13 @@ public:
 
 private:
 	void checkdata(
-			   const account_name sender, const uint64_t cid,
-			   const string& name, const account_name issuer, 
-			   const uint32_t limit, const uint8_t when, 
+			   const account_name sender, 
+			   const string& name, const uint64_t issuer, 
+			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken,
-			   const vector<account_name>& editors );
+			   const uint64_t tokenid, const uint64_t reftoken,  
+			   const uint8_t rcalctype, const uint64_t nofdevtoken,
+			   const float64_t nofdesteos );
 
 	bool is_shared(const uint64_t id, const uint64_t cid);
 	void distribute(const account_name sender, const uint32_t dcipherid, const account_name duserid, 

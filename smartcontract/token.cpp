@@ -13,53 +13,42 @@
 
 namespace mypher {
 
-void Token::tknew(const account_name sender, const uint64_t cid, 
-				const string& name, const account_name issuer, 
-			   const uint32_t limit, const uint8_t when,
-			   const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken ) {
-	data d(self, self);
-	uint64_t issuer2 = NUMBER_NULL;
-	uint64_t id = d.available_primary_key();
-	auto update = [&](const vector<account_name>& editors) {
-		eosio::print("#token#", sender, ":", id);
-		checkdata(sender, cid, name, issuer, when, limit, disposal, type, 
-				taskid, tokenid, reftoken, term, rcalctype, nofdevtoken, editors);
-		d.emplace(sender, [&](auto& dd) {
-			dd.id = id;
-			dd.name = name;
-			dd.issuer = issuer;
-			dd.issuer2 = issuer2;
-			dd.limit = limit;
-			dd.when = when;
-			dd.disposal = disposal;
-			dd.type = type;
-			dd.taskid = taskid;
-			dd.tokenid = tokenid;
-			dd.reftoken = reftoken;
-			dd.term = term;
-			dd.rcalctype = rcalctype;
-			dd.nofdevtoken = nofdevtoken;
-		});
-	};
+void Token::tknew(const account_name sender, const uint64_t draftid,
+			   const string& name, const uint64_t issuer,
+			   const uint64_t limit, const uint8_t when, 
+			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
+			   const uint64_t tokenid, const uint64_t reftoken, 
+			   const uint8_t rcalctype, const uint64_t nofdesttoken, const float64_t nofdesteos) {
 
-	eosio::print("##cid#", cid, "\n");
-	// if this token is issued by any cipher, check and update that cipher 
-	if (cid!=NUMBER_NULL) {
-		Cipher::data cd(self, self);
-		// check if specified cipher is exists
-		auto crec = cd.find(cid);
-		eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
-		issuer2 = crec->cipherid;
-		update(crec->editors);
-		// append the task to the cipher
-		cd.modify(crec, sender, [&](auto& dd){
-			dd.tokenlist.push_back(id);	
-		});
-	} else {
-		update(vector<account_name>{});
-	}
+	token_data d(self, self);
+	uint64_t id = d.available_primary_key();
+	// common check
+	checkdata(sender, name, issuer, limit, when, disposal, type, 
+			taskid, tokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
+	// create new token
+	d.emplace(sender, [&](auto& dd) {
+		dd.tokenid = id;
+		dd.name = name;
+		dd.issuer = issuer;
+		dd.limit = limit;
+		dd.when = when;
+		dd.disposal = disposal;
+		dd.type = type;
+		dd.taskid = taskid;
+		dd.tokenid = tokenid;
+		dd.reftoken = reftoken;
+		dd.rcalctype = rcaltype;
+		dd.nofdesttoken = nofdesttoken;
+		dd.nofdesteos = nofdesteos;
+	});
+	// update cipher information
+	Cipher::cdraft_data d2(self, issuer);
+	auto rec = d2.find(draftid);
+	eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
+	// append token to cipher
+	d2.modify(rec, sender, [&](auto& dd){
+		dd.tokenlist.push_back(id);	
+	});
 }
 
 void Token::tkupdate(const account_name sender, 
@@ -129,31 +118,33 @@ void Token::tkupdate(const account_name sender,
 	}
 }
 
-void Token::checkdata( const account_name sender, const uint64_t cid,
-			   const string& name, const account_name issuer, 
-			   const uint32_t limit, const uint8_t when, 
+void Token::checkdata( const account_name sender, 
+			   const string& name, const uint64_t issuer, 
+			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken,
-			   const vector<account_name>& editors ) {
+			   const uint64_t tokenid, const uint64_t reftoken,
+			   const uint8_t rcalctype, const uint64_t nofdesttoken,
+			   const float64_t nofdesteos ) {
 
-	// check if sender is logined user
+	// check if sender is login user
 	require_auth(sender);
+	// check if "type" is valid
+	eosio_assert_code(type>=0&&type<TYPE_MAX, INVALID_VALUE);
+	// check if "when" is valid
+	eosio_assert_code(when>=0&&type<WHEN_MAX, INVALID_VALUE);
+	// check if "disposal" is valid
+	eosio_assert_code(disposal>=0&&disposal<DISPOSAL_MAX, INVALID_VALUE);
+	// check is task is exists
+	if (taskid!=NUMBER_NULL) [
 
-	// check if linked cipher is correct
-	Validator::check_cipher(cid);
-
-	// check if issuer is valid
-	if (issuer!=N("")) {
-		eosio_assert_code(Person::isExists(issuer), INVALID_ISSUER);
-		eosio_assert_code(issuer==sender, NOT_EDITABLE);	
+	]
+	// check if token is exists
+	if (tokenid!=NUMBER_NULL) {
+		// check if reftoken is set 
+		
 	}
-	
-	// check if editors of cid is valid
-	if (cid!=NUMBER_NULL) {
-		auto found = std::find(editors.begin(), editors.end(), sender);
-		eosio_assert_code(found!=editors.end(), INVALID_ISSUER);
-	}
+	// check if tokenid and nofdesttoken is set if type is "DISTRIBUTE_TOKEN"
+	// check if 
 }
 
 bool Token::is_shared(const uint64_t id, const uint64_t cid) {
