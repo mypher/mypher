@@ -4,19 +4,19 @@ package Cipher <<Frame>> {
 	class cdraft << (M,orchid) >> {
 		CIPHERID		cipherid
 		--
-	   -DRAFTID				draftid
-	    uint16				version
-	    uint16				no
-		bool				formal
-		string				name
-		vector<string>		tags
-		vector<name>		editors
-		ipfskey				hash
-		uint16				nofapproval
-		vector<name>		approvers
-		vector<name>		approved
-		vector<TASKID>		tasklist
-		vector<TOKENID>		tokenlist
+	   -DRAFTID			draftid
+	    uint16			version
+	    uint16			no
+		bool			formal
+		string			name
+		string[]		tags
+		name[]			editors
+		ipfskey			hash
+		uint16			nofapproval
+		name[]			approvers
+		name[]			approved
+		TASKID[]			tasklist
+		TOKENID[]		tokenlist
 		--
 		key2		version + no
 	}
@@ -27,7 +27,7 @@ package Cipher <<Frame>> {
 	   -CIPHERID		ciperid
 		DRAFTID			draftid
 		string			name
-		vector<string>	tags
+		string[]			tags
 	}
 }
 
@@ -36,18 +36,19 @@ package Token <<Frame>> {
 		name		"myphersystem"
 		--
 	   -TOKENID		tokenid
-		string		name
-		CIPHERID	issuer
-		uint64		limit
-		uint8		when
-		uint8		disposal
-		uint8		type
-		TASKID		taskid
-		TOKENID		tokenid
-		uint64		reftoken
-		uint8		rcalctype
-		uint64		nofdesttoken
-		float64		nofdesteos
+		string			name
+		CIPHERID		issuer
+		uint64			limit
+		uint8			when
+		uint8			disposal
+		uint8			type
+		TASKID			taskid
+		TOKENID		extokenid
+		uint64			reftoken
+		uint8			rcalctype
+		uint64			nofdesttoken
+		float64			nofdesteos
+		name[]			approval_4ex
 		--
 		key2		issuer
 	}
@@ -67,17 +68,17 @@ package Task <<Frame>> {
 	   -TASKID			taskid
 		CIPHERID		owner
 		string			name
-		TOKENID			rewardid
+		TOKENID		rewardid
 		uint64			quantity
 		uint8			nofapproval
-		vector<name>	approvers
-		vector<name>	approve_content
-		vector<name>	approve_pic
-		vector<name>	approve_results
-		vector<name>	pic
+		name[]			approvers
+		name[]			approve_content
+		name[]			approve_pic
+		name[]			approve_results
+		name[]			pic
 		ipfskey			hash
 		bool			formal
-		vector<string>	tags
+		string[]			tags
 		--
 		key2			owner
 	}
@@ -89,9 +90,9 @@ package Person <<Frame>> {
 		--
 	   -name			personid
 		string			name
-		vector<string>	tags
+		string[]			tags
 		string			hash
-		vector<TOKENID>	tokenlist
+		TOKENID[]		tokenlist
 	}
 }
 

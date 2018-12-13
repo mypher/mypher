@@ -134,6 +134,7 @@ private:
 // common
 public:
 	static bool exists(const uint64_t cipherid); 
+	static bool is_draft_exists(const uint64_t cipherid, const uint64_t draftid);
 	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& draftno);
 };
 

@@ -52,26 +52,27 @@ public:
 	 * @brief information of token 
 	 */
 	struct [[eosio::table]] token {
-		uint64_t tokenid;
-		string name;
-		uint64_t issuer;
-		uint64_t limit;
-		uint8_t when;
-		uint8_t disposal;
-		uint8_t type;
-		uint64_t taskid;
-		uint64_t tokenid;
-		uint64_t reftoken;
-		uint8_t rcalctype;
-		uint64_t nofdesttoken;
-		float64_t nofdesteos;
+		uint64_t 				tokenid;
+		string 					name;
+		uint64_t 				issuer;
+		uint64_t 				limit;
+		uint8_t 				when;
+		uint8_t 				disposal;
+		uint8_t					type;
+		uint64_t 				taskid;
+		uint64_t 				extokenid;
+		uint64_t		 		reftoken;
+		uint8_t 				rcalctype;
+		uint64_t 				nofdesttoken;
+		double_t 				nofdesteos;
+		vector<account_name> 	approval_4ex;
 
-		uint64_t primary_key() const { return id; }
+		uint64_t primary_key() const { return tokenid; }
 		uint64_t secondary_key() const { return (uint64_t)issuer; }
 
 		EOSLIB_SERIALIZE( token, 
-			(tokenid)(name)(issuer)(limit)(when)(disposal)(type)(taskid)(tokenid)
-			(reftoken)(rcalctype)(nofdesttoken)(nofdesteos) )
+			(tokenid)(name)(issuer)(limit)(when)(disposal)(type)(taskid)(extokenid)
+			(reftoken)(rcalctype)(nofdesttoken)(nofdesteos)(approval_4ex) )
 	};
 
 	/**
@@ -111,33 +112,35 @@ public:
 			   const string& name, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint64_t reftoken, 
-			   const uint8_t rcalctype, const uint64_t nofdesttoken, const float64_t nofdesteos );
+			   const uint64_t extokenid, const uint64_t reftoken, 
+			   const uint8_t rcalctype, const uint64_t nofdesttoken, const double_t nofdesteos );
 
 	/**
 	 * @brief update token data
 	 */
 	[[eosio::action]]
-	void tkupdate(const account_name sender, 
-			   const uint64_t cid, const uint64_t id,
-			   const string& name, const account_name issuer, 
-			   const uint32_t limit, const uint8_t when, 
+	void tkupdate(const account_name sender, const uint64_t draftid,
+			   const uint64_t tokenid,
+			   const string& name, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint32_t reftoken, const string& term, 
-			   const uint8_t rcalctype, const uint32_t nofdevtoken );
+			   const uint64_t extokenid, const uint32_t reftoken,  
+			   const uint8_t rcalctype, const uint32_t nofdesttoken, double_t nofdesteos );
 
 	/**
 	 * @brief transfer a token 
 	 */
 	[[eosio::action]]
 	void tktransfer(const account_name sender, 
-				const uint64_t tokenid, const account_name receiver, const uint32_t quantity); 
+				const uint64_t tokenid, const account_name recipient, const uint64_t quantity); 
 
 	/**
 	 * @brief use a token 
 	 */
 	[[eosio::action]]
-	void tkuse(const account_name sender, const uint64_t tokenid, const uint32_t quantity);
+	void tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity);
+
+	[[eosio::action]]
+	void approve_to_ex(const account_name sender, const uint64_t tokenid);
 
 	/*******************************************************************
 	  methods only called from inside of the myphersystem contract
@@ -146,28 +149,28 @@ public:
 	/**
 	 * @brief issue a token 
 	 */
-	static void issue(const account_name sender, const uint32_t cipherid,
-			   const uint64_t tokenid, const account_name receiver, const uint32_t quantity);
+	static void issue(const account_name sender, const uint64_t cipherid,
+			   const uint64_t tokenid, const account_name recipient, const uint64_t quantity);
 
 private:
-	void checkdata(
+	void check_data(
 			   const account_name sender, 
-			   const string& name, const uint64_t issuer, 
+			   const string& name, 
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t tokenid, const uint64_t reftoken,  
+			   const uint64_t extokenid, const uint64_t reftoken,  
 			   const uint8_t rcalctype, const uint64_t nofdevtoken,
-			   const float64_t nofdesteos );
+			   const double_t nofdesteos );
 
-	bool is_shared(const uint64_t id, const uint64_t cid);
-	void distribute(const account_name sender, const uint32_t dcipherid, const account_name duserid, 
-					const uint64_t tokenid, const uint32_t quantity);
-	void send_currency(const account_name send, const account_name issuer, const uint32_t issuer2, const uint32_t quantity);
+	bool is_shared(const uint64_t tokenid, const uint64_t cipherid);
+	void distribute(const account_name sender, const uint64_t cipherid, 
+					const uint64_t tokenid, const uint64_t quantity);
+	//void transfer_currency(const account_name send, const account_name issuer, const uint32_t issuer2, const uint32_t quantity);
 
-	static uint32_t getAvailableAmount(const uint64_t id);
-	static bool is_issued(const uint64_t id);
-	static void set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint32_t quantity);
-	static bool is_sufficient_owned_token(account_name issuer, uint64_t issuer2, uint64_t tokenid, uint32_t amount);
+	static uint64_t get_available_amount(const uint64_t tokenid);
+	static bool is_issued(const uint64_t tokeniid);
+	static void set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint64_t quantity);
+	static bool is_sufficient_owned_token(const uint64_t issuer, const uint64_t tokenid, const uint64_t amount);
 
 };
 

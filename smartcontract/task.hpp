@@ -15,30 +15,28 @@ using namespace eosio;
 
 namespace mypher {
 
-#define NAME_MINLEN 6 // minimum length of name
-
-
 /**
  * @defgroup mypher
  * @class cipher
  * @brief the contract for dealing with task
  */
 class Task : virtual public MypherBase {
+private:
+	const static int NAME_MINLEN = 6;
 
 public:
 	/**
 	 * @brief information of task
 	 */
 	struct [[eosio::table]] task {
-		uint64_t id;
-		uint32_t cipherid;
-		account_name owner;
+		uint64_t taskid;
+		uint64_t owner;
 		string name;
 		uint64_t rewardid;
-		uint64_t rquantity;
-		uint8_t nofauth;
+		uint64_t quantity;
+		uint8_t nofapproval;
 		vector<account_name> approvers;
-		vector<account_name> approve_task;
+		vector<account_name> approve_content;
 		vector<account_name> approve_pic;
 		vector<account_name> approve_results;
 		vector<account_name> pic;
@@ -47,7 +45,7 @@ public:
 		vector<string> tags;
 
 		uint64_t primary_key() const { return id; }
-		uint64_t secondary_key() const { return (uint64_t)cipherid; }
+		uint64_t secondary_key() const { return (uint64_t)owner; }
 
 		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
 							(rewardid)(rquantity)

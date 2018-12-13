@@ -249,12 +249,17 @@ void Cipher::validate_tasklist(const vector<uint64_t>& list) {
 }
 
 void Cipher::validate_tokenlist(const vector<uint64_t>& list) {
-	Token::data d(SELF, SELF);
+	Token::token_data d(SELF, SELF);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
 		eosio_assert_code(rec!=d.end(), INVALID_TOKEN);
 	}
 }
 
+bool Cipher::is_draft_exists(const uint64_t cipherid, const uint64_t draftid) {
+	cdraft_data d(SELF, cipherid);
+	auto rec = d.find(draftid);
+	return (rec!=d.end());
+}
 
 } // mypher
