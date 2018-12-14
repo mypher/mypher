@@ -108,7 +108,7 @@ public:
 	 * @brief create new token
 	 */
 	[[eosio::action]]
-	void tknew(const account_name sender, const uint64_t draftid, 
+	void tknew(const account_name sender, const uint64_t cdraftid, 
 			   const string& name, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
@@ -119,7 +119,7 @@ public:
 	 * @brief update token data
 	 */
 	[[eosio::action]]
-	void tkupdate(const account_name sender, const uint64_t draftid,
+	void tkupdate(const account_name sender, const uint64_t cdraftid,
 			   const uint64_t tokenid,
 			   const string& name, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 

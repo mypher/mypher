@@ -15,65 +15,53 @@ using namespace std;
 
 namespace mypher {
 
-void Task::tanew(const account_name sender, const uint64_t cid, 
-				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
+void Task::tanew(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
+				const string& name, const uint64_t rewardid, const uint64_t quantity, 
 				const uint8_t nofauth, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
 				const vector<string>& tags) {
 
-	data d(self, self);
-	Cipher::data cd(self, self);
-	uint64_t cipherid = NUMBER_NULL;
-	uint64_t id = d.available_primary_key();
-	auto update = [&]() {
-		// check data
-		account_name owner = (cid==NUMBER_NULL) ? sender : N("");
-		checkdata(sender, owner, cid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
-		eosio::print("#tanew#", sender, ":", id);
-		d.emplace(sender, [&](auto& dd) {
-			dd.id = id;
-			dd.cipherid = cipherid;
-			dd.owner = owner;
-			dd.name = name;
-			dd.rewardid = rewardid;
-			dd.rquantity = rquantity;
-			dd.nofauth = nofauth;
-			dd.approvers = approvers;
-			dd.pic = pic;
-			dd.hash = hash;
-			dd.tags = tags;
-		});
-	};
+	tdraft_data d(self, cipherid);
+	uint64_t newid = d.available_primary_key();
 
-	// check if specified hash is valid
-	Validator::check_hash(hash);
+	// check if specified draft of cipher exists
+	Cipher::cdraft_data cd(self, cipherid);
+	auto crec = cd.find(cdraftid);
+	eosio_assert_code(crec!=cd.end(), INVALID_PARAM);
 
-	// if this task is owned by any cipher, check and update that cipher
-	if (cid!=NUMBER_NULL) {
-		// check if specified cipher is exists
-		auto crec = cd.find(cid);
-		eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
-		cipherid = crec->cipherid;
-		update();
-		// append the task to the cipher
-		cd.modify(crec, sender, [&](auto& dd){
-			dd.tasklist.push_back(id);	
-		});
-	} else {
-		update();
-	}
+	// common check
+	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, 
+				pic, hash, tags);
+	
+	// create new draft of task
+	d.emplace(sender, [&](auto& dd) {
+		dd.tdraftid = newid;
+		dd.name = name;
+		dd.rewardid = rewardid;
+		dd.quantity = quantity;
+		dd.nofauth = nofauth;
+		dd.approvers = approvers;
+		dd.pic = pic;
+		dd.hash = hash;
+		dd.tags = tags;
+	});
+
+	// update tasklist in specified draft of cipher
+	cd.modify(crec, sender, [&](auto& dd){
+		dd.tasklist.push_back(newid);	
+	});
 }
 
 void Task::taupdate( const account_name sender, 
-				const uint64_t cid, const uint64_t id, 
+				const uint64_t cipherid, const uint64_t cdraftid,
+				const uint64_t tdraftid, 
 				const string& name,  
-				const uint64_t rewardid, const uint64_t rquantity, 
-				const uint8_t nofauth, 
+				const uint64_t rewardid, const uint64_t quantity, 
+				const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, 
-				const string& hash,
+				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
 
 	data d(self, self);
@@ -363,17 +351,12 @@ bool Task::is_results_approved_some(const task& d) {
 	return false;
 }
 
-void Task::checkdata( const account_name sender,
-				const account_name owner, const uint64_t cid,
+void Task::check_data( const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t rquantity, const uint8_t nofauth, 
+				const uint64_t quantity, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
-
-	Cipher::data cd(SELF, SELF);
-	auto crec = cd.find(cid);
-	eosio_assert_code(crec!=cd.end(), CIPHER_NOT_FOUND);
 
 	// check if sender is fulfill the required auth
 	require_auth(sender);
@@ -382,7 +365,7 @@ void Task::checkdata( const account_name sender,
 	eosio_assert_code(name.length()>=NAME_MINLEN, NAME_TOO_SHORT);
 	
 	// check if approver data is comformable
-	eosio_assert_code((size_t)nofauth<=approvers.size(), INVALID_APPROVER);
+	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_APPROVER);
 
 	// check if approvers is invalid
 	eosio_assert_code(Person::checkList(approvers), INVALID_APPROVER);
@@ -391,20 +374,15 @@ void Task::checkdata( const account_name sender,
 	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
 	
 	// check rewardid
-	eosio::print("rewardid", rewardid, ":", eosio::name{owner}, "\n");
-	Validator::check_tokenowner(rewardid, owner, crec->cipherid);
+	Validator::check_tokenowner(rewardid, cipherid);
 
-	// check cipherid
-	Validator::check_cipher(cid);
-	
 	// check if approver is set
 	eosio_assert_code(approvers.size()>0, APPROVER_NOT_SET);
 
-	// check if rquantity is set only in case that rquantity is set
-	eosio::print("##", rewardid, "::", rquantity);
+	// check if quantity is set only in case that rewardid is set
 	eosio_assert_code(
-		(rewardid != NUMBER_NULL && rquantity != NUMBER_NULL) ||
-		(rewardid == NUMBER_NULL && rquantity == NUMBER_NULL)
+		(rewardid != NUMBER_NULL && quantity != NUMBER_NULL) ||
+		(rewardid == NUMBER_NULL && quantity == NUMBER_NULL)
 		, INVALID_REWARD);
 	
 	// check hash

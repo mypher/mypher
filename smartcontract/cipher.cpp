@@ -26,7 +26,7 @@ void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& d
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
 	
 	cdraft_data d2(self, cipherid);
-	auto rec2 = d2.find(rec1->draftid);
+	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 
 	// version is next number of formal version
@@ -46,7 +46,7 @@ bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 	auto rec1 = d1.find(cipherid);
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
 	cdraft_data d2(self,cipherid);
-	auto rec2 = d2.find(rec1->draftid);
+	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 	return (rec2->version<version);
 }
@@ -62,19 +62,19 @@ void Cipher::cnew(const account_name sender,
 	cformal_data d1(self, self);
 	uint64_t cipherid = d1.available_primary_key();
 	cdraft_data d2(self, cipherid);
-	uint64_t draftid = d2.available_primary_key();
+	uint64_t cdraftid = d2.available_primary_key();
 
 	// insert new formal version
 	d1.emplace(sender, [&](auto& dd) {
 	 	dd.cipherid = cipherid;
-		dd.draftid = draftid;
+		dd.cdraftid = cdraftid;
 		dd.name = name;
 		dd.tags = tags;
 	});
 
 	// insert new draft data
 	d2.emplace(sender, [&](auto& dd) {
-		dd.draftid = draftid;
+		dd.cdraftid = cdraftid;
 		dd.version = 1;
 		dd.no = 1;
 		dd.formal = true;
@@ -87,7 +87,7 @@ void Cipher::cnew(const account_name sender,
 	});
 }
 
-void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t draftid) {
+void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	
 	require_auth(sender);
 
@@ -102,7 +102,7 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 	editors.push_back(sender);
 	// insert new draft
 	d.emplace(sender, [&](auto& dd) {
-		dd.draftid = newid;
+		dd.cdraftid = newid;
 		dd.version = version;
 		dd.no = draftno;
 		dd.formal = false;
@@ -118,7 +118,7 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 }
 
 void Cipher::cupdate(const account_name sender, const uint64_t cipherid, 
-				const uint64_t draftid, const uint16_t version, const uint16_t draftno, 
+				const uint64_t cdraftid, const uint16_t version, const uint16_t draftno, 
 				const string& name, const vector<string>& tags, 
 				const vector<account_name>& editors, const string& hash,
 				const uint16_t nofapproval, const vector<account_name>& approvers,
@@ -135,7 +135,7 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	validate_tokenlist(tokenlist);
 
 	cdraft_data d(self, cipherid);
-	auto rec = d.find(draftid);
+	auto rec = d.find(cdraftid);
 	// check if draft is exists
 	eosio_assert_code(rec==d.end(), NOT_FOUND);
 	eosio_assert_code((version==rec->version && draftno==rec->no), NOT_FOUND);
@@ -155,12 +155,12 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	});
 }
 
-void Cipher::capprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid) {
+void Cipher::capprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	// check if sender is logined user
 	require_auth(sender);
 
 	cdraft_data d(self, cipherid);
-	auto rec = d.find(draftid);
+	auto rec = d.find(cdraftid);
 	// check if the draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if the version is formal
@@ -186,20 +186,20 @@ void Cipher::capprove(const account_name sender, const uint64_t cipherid, const 
 		cformal_data d2(self, self);
 		auto rec2 = d2.find(cipherid);
 		d2.modify(rec2, sender, [&](auto& dd) {
-			dd.draftid = rec->draftid;
+			dd.cdraftid = rec->cdraftid;
 			dd.name = rec->name;
 			dd.tags = rec->tags;
 		});
 	}
 }
 
-void Cipher::crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid) {
+void Cipher::crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	require_auth(sender);
 
 	// check if sender is logined user
 	cdraft_data d(self, cipherid);
 	// check if data is registered
-	auto rec = d.find(draftid);
+	auto rec = d.find(cdraftid);
 	// check if the draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	// check if the version is formal
@@ -256,9 +256,9 @@ void Cipher::validate_tokenlist(const vector<uint64_t>& list) {
 	}
 }
 
-bool Cipher::is_draft_exists(const uint64_t cipherid, const uint64_t draftid) {
+bool Cipher::is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid) {
 	cdraft_data d(SELF, cipherid);
-	auto rec = d.find(draftid);
+	auto rec = d.find(cdraftid);
 	return (rec!=d.end());
 }
 

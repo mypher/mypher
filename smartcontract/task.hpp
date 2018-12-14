@@ -26,48 +26,68 @@ private:
 
 public:
 	/**
-	 * @brief information of task
+	 * @brief information for the formal version of task 
 	 */
-	struct [[eosio::table]] task {
-		uint64_t taskid;
-		uint64_t owner;
+	struct [[eosio::table]] tformal {
+		uint64_t tformalid;
+		uint64_t cipherid; 
+		uint64_t tdraftid; 
+		string name;
+		vector<string> tags;
+
+		uint64_t primary_key() const { return tformalid; }
+		uint64_t secondary_key() const { return cipherid; }
+
+		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(tags) )
+	};
+
+	/**
+	 * @brief information for the draft version of task 
+	 */
+	struct [[eosio::table]] tdraft {
+		uint64_t tdraftid;
 		string name;
 		uint64_t rewardid;
 		uint64_t quantity;
-		uint8_t nofapproval;
+		uint6_t nofapproval;
 		vector<account_name> approvers;
 		vector<account_name> approve_content;
 		vector<account_name> approve_pic;
 		vector<account_name> approve_results;
 		vector<account_name> pic;
 		string hash;
-		bool formal;
 		vector<string> tags;
 
-		uint64_t primary_key() const { return id; }
-		uint64_t secondary_key() const { return (uint64_t)owner; }
-
-		EOSLIB_SERIALIZE( task, (id)(cipherid)(owner)(name)
-							(rewardid)(rquantity)
-							(nofauth)(approvers)(approve_task)(approve_pic)(approve_results)
-							(pic)(hash)(formal)(tags))
+		uint64_t primary_key() const { return tdraftid; }
+		eoslib_serialize( tdraft,(tdraftid)(name)(rewardid)(quantity)
+						(nofapproval)(approvers)(approve_content)(approve_pic)
+						(approve_results)(pic)(hash)(tags) )
 	};
+
 	/**
-	 * @brief the definition of the table for "task"
+	 * @brief the definition of the table for "tformal"
 	 */
 	typedef eosio::multi_index<
-			N(task), 
-			task,
-			indexed_by<N(secondary_key), const_mem_fun<task, uint64_t, &task::secondary_key>>
-	> data;
+			N(tformal), 
+			tformal,
+			indexed_by<N(secondary_key), const_mem_fun<tformal, uint64_t, &tformal::secondary_key>>
+	> tformal_data;
+
+	/**
+	 * @brief the definition of the table for "tdraft"
+	 */
+	typedef eosio::multi_index<
+			N(tdraft), 
+			tdraft,
+	> tdraft_data;
 
 	/**
 	 * @brief create new task
 	 */
 	[[eosio::action]]
-	void tanew(	const account_name sender, const uint64_t cid, 
+	void tanew(	const account_name sender, const uint64_t cipherid, uint64_t cdraftid,
 				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
-				const uint8_t nofauth, 
+				const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -77,11 +97,11 @@ public:
 	 * @brief update task data
 	 */
 	[[eosio::action]]
-	void taupdate( const account_name sender, 
-				const uint64_t cid, const uint64_t id, 
+	void taupdate( const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
+				const uint64_t tdraftid, 
 				const string& name,  
-				const uint64_t rewardid, const uint64_t rquantity, 
-				const uint8_t nofauth, 
+				const uint64_t rewardid, const uint64_t quantity, 
+				const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);
@@ -117,11 +137,10 @@ private:
 	bool is_task_approved(const task& d);
 	bool is_results_approved(const task& d);
 	bool is_results_approved_some(const task& d);
-	void checkdata( 
-				const account_name sender,
-				const account_name owner, const uint64_t cid,
+	void check_data( 
+				const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t rquantity, const uint8_t nofauth, 
+				const uint64_t quantity, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);

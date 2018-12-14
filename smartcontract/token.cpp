@@ -13,7 +13,7 @@
 
 namespace mypher {
 
-void Token::tknew(const account_name sender, const uint64_t draftid,
+void Token::tknew(const account_name sender, const uint64_t cdraftid,
 			   const string& name, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
@@ -43,7 +43,7 @@ void Token::tknew(const account_name sender, const uint64_t draftid,
 	});
 	// update cipher information
 	Cipher::cdraft_data d2(self, issuer);
-	auto rec = d2.find(draftid);
+	auto rec = d2.find(cdraftid);
 	eosio_assert_code(rec!=d2.end(), CIPHER_NOT_FOUND);
 	// append token to cipher
 	d2.modify(rec, sender, [&](auto& dd){
@@ -51,7 +51,7 @@ void Token::tknew(const account_name sender, const uint64_t draftid,
 	});
 }
 
-void Token::tkupdate(const account_name sender, const uint64_t draftid,
+void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 			   const uint64_t tokenid,
 			   const string& name, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
@@ -90,7 +90,7 @@ void Token::tkupdate(const account_name sender, const uint64_t draftid,
 		});
 		// update the id registered in cipher to new one
 		Cipher::cdraft_data cd(self, rec->issuer);
-		auto crec = cd.find(draftid);
+		auto crec = cd.find(cdraftid);
 		eosio_assert_code(crec!=cd.end(), INVALID_PARAM); 
 		cd.modify(crec, sender, [&](auto& dd){
 			std::replace(dd.tokenlist.begin(), dd.tokenlist.end(), rec->tokenid, id);

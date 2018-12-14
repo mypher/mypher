@@ -26,20 +26,20 @@ public:
 	 */
 	struct [[eosio::table]] cformal {
 	 	uint64_t		cipherid;
-		uint64_t		draftid;
+		uint64_t		cdraftid;
 		string			name;
 		vector<string>	tags;
 
 		uint64_t primary_key() const { return cipherid; }
 		
-		EOSLIB_SERIALIZE(cformal, (cipherid)(draftid)(name)(tags))
+		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(name)(tags))
 	};
 
 	/**
 	 * @brief information of draft of cipher
 	 */
 	struct [[eosio::table]] cdraft {
-		uint64_t				draftid;
+		uint64_t				cdraftid;
 	    uint16_t				version;
 	    uint16_t				no;
 		bool					formal;
@@ -53,12 +53,12 @@ public:
 		vector<uint64_t>		tasklist;
 		vector<uint64_t>		tokenlist;
 
-		uint64_t primary_key() const { return draftid; }
+		uint64_t primary_key() const { return cdraftid; }
 		uint64_t secondary_key() const {
 			return gen_secondary_key(version, no);	
 		}
 		
-		EOSLIB_SERIALIZE(cdraft, (draftid)(version)(no)(formal)(name)
+		EOSLIB_SERIALIZE(cdraft, (cdraftid)(version)(no)(formal)(name)
 			(tags)(editors)(hash)(nofapproval)(approvers)(approved)(tasklist)(tokenlist))
 	};
 
@@ -91,14 +91,14 @@ public:
 	 * @brief create new draft from specified version 
 	 */
 	[[eosio::action]]
-	void cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
+	void cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 	/**
 	 * @brief update draft data 
 	 */
 	[[eosio::action]]
 	void cupdate(const account_name sender, const uint64_t cipherid, 
-				const uint64_t draftid, const uint16_t version, const uint16_t draftno, 
+				const uint64_t cdraftid, const uint16_t version, const uint16_t draftno, 
 				const string& name, const vector<string>& tags, 
 				const vector<account_name>& editors, const string& hash,
 				const uint16_t nofapproval, const vector<account_name>& approvers,
@@ -108,13 +108,13 @@ public:
 	 * @brief approve a draft 
 	 */
 	[[eosio::action]]
-	void capprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
+	void capprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 	/**
 	 * @brief reverse approval for a draft 
 	 */
 	[[eosio::action]]
-	void crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t draftid);
+	void crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 private:
 	bool can_edit(const account_name& sender, const vector<account_name>& editors);
@@ -134,7 +134,7 @@ private:
 // common
 public:
 	static bool exists(const uint64_t cipherid); 
-	static bool is_draft_exists(const uint64_t cipherid, const uint64_t draftid);
+	static bool is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid);
 	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& draftno);
 };
 

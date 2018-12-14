@@ -1,98 +1,107 @@
 @startuml
-
+skinparam {
+	defaultFontName Geneva
+}
 package Cipher <<Frame>> {
-	class cdraft << (M,orchid) >> {
-		CIPHERID		cipherid
+	class cdraft << (M,crimson) >> {
+		CIPHERID
 		--
-	   -DRAFTID			draftid
-	    uint16			version
-	    uint16			no
-		bool			formal
-		string			name
-		string[]		tags
-		name[]			editors
-		ipfskey			hash
-		uint16			nofapproval
-		name[]			approvers
-		name[]			approved
-		TASKID[]			tasklist
-		TOKENID[]		tokenlist
+		-cdraftid : CDRAFTID
+		version : uint16
+		no : uint16
+		formal : bool
+		name : string
+		tags : string[]
+		editors : name[]
+		hash : ipfskey
+		nofapproval : uint16
+		approvers : name[]
+		approved : name[]
+		tasklist : TASKID[]
+		tokenlist : TOKENID[]
 		--
-		key2		version + no
+		key2 -> version + no
 	}
 
-	class cformal << (M,orchid) >> {
-		name			"myphersystem"
+	class cformal << (M,crimson) >> {
+		"myphersystem"
 		--
-	   -CIPHERID		ciperid
-		DRAFTID			draftid
-		string			name
-		string[]			tags
+		-ciperid : CIPHERID
+		cdraftid : CDRAFTID
+		name : string
+		tags : string[]
 	}
 }
 
 package Token <<Frame>> {
-	class token << (M,orchid) >> {
-		name		"myphersystem"
+	class token << (M,crimson) >> {
+		"myphersystem"
 		--
-	   -TOKENID		tokenid
-		string			name
-		CIPHERID		issuer
-		uint64			limit
-		uint8			when
-		uint8			disposal
-		uint8			type
-		TASKID			taskid
-		TOKENID		extokenid
-		uint64			reftoken
-		uint8			rcalctype
-		uint64			nofdesttoken
-		float64			nofdesteos
-		name[]			approval_4ex
+		-tokenid : TOKENID
+		name : string
+		issuer : CIPHERID
+		limit : uint64
+		when : uint8
+		disposal : uint8
+		type : uint8
+		taskid : TFORMALID
+		extokenid : TOKENID
+		reftoken : uint64
+		rcalctype : uint8
+		nofdesttoken : uint64
+		nofdesteos : float64
+		approval_4ex : name[]
 		--
-		key2		issuer
+		key2 -> issuer	
 	}
 
-	class issue << (M,orchid) >> {
-		TOKENID		tokenid
+	class issue << (M,crimson) >> {
+		TOKENID
 		--
-	   -name		owner
-		uint64		quantity
+		-owner : name
+		quantity : uint64
 	}
 }
 
 package Task <<Frame>> {
-	class task << (M,orchid) >> {
-		name		"myphersystem"
+	class tformal << (M,crimson) >> {
+		"myphersystem"
 		--
-	   -TASKID			taskid
-		CIPHERID		owner
-		string			name
-		TOKENID		rewardid
-		uint64			quantity
-		uint8			nofapproval
-		name[]			approvers
-		name[]			approve_content
-		name[]			approve_pic
-		name[]			approve_results
-		name[]			pic
-		ipfskey			hash
-		bool			formal
-		string[]			tags
+		-tformalid : TFORMALID
+		cipherid : CIPHERID
+		tdraftid : TDRAFTID
+		name : string
+		tags : string[]
 		--
-		key2			owner
+		key2 -> cipherid 
+	}
+	class tdraft << (M,crimson) >> {
+		CIPHERID
+		--
+		-tdraftid : TDRAFTID
+		name : string
+		rewardid : TOKENID
+		quantity : uint64
+		nofapproval : uint8
+		approvers : name[]
+		approve_content : name[]
+		approve_pic : name[]
+		approve_results : name[]
+		pic : name[]
+		hash : ipfskey
+		tags : string[]
 	}
 }
 
 package Person <<Frame>> {
-	class person << (M,orchid) >> {
-		name		"myphersystem"
+	class person << (M,crimson) >> {
+		"myphersystem"
 		--
-	   -name			personid
-		string			name
-		string[]			tags
-		string			hash
-		TOKENID[]		tokenlist
+		-personid : name
+		name : string
+		tags : string[]
+		hash : string
+		tokenlist : TOKENID[]
 	}
 }
 
