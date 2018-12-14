@@ -71,6 +71,8 @@ package Task <<Frame>> {
 		cipherid : CIPHERID
 		tdraftid : TDRAFTID
 		name : string
+		approve_pic : name[]
+		approve_results : name[]
 		tags : string[]
 		--
 		key2 -> cipherid 
@@ -84,9 +86,6 @@ package Task <<Frame>> {
 		quantity : uint64
 		nofapproval : uint8
 		approvers : name[]
-		approve_content : name[]
-		approve_pic : name[]
-		approve_results : name[]
 		pic : name[]
 		hash : ipfskey
 		tags : string[]

@@ -42,10 +42,10 @@ void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& d
 }
 
 bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
-	cformal_data d1(self, self);
+	cformal_data d1(SELF, SELF);
 	auto rec1 = d1.find(cipherid);
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
-	cdraft_data d2(self,cipherid);
+	cdraft_data d2(SELF,cipherid);
 	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 	return (rec2->version<version);
@@ -130,7 +130,7 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	// check if version is already formal
 	eosio_assert_code(is_draft_version(cipherid, version), ALREADY_FORMAL);
 	// check if task list is valid
-	validate_tasklist(tasklist);
+	validate_tasklist(cipherid, tasklist);
 	// check if token list is valid
 	validate_tokenlist(tokenlist);
 
@@ -240,8 +240,8 @@ void Cipher::check_data(const account_name sender,
 	Validator::check_hash(hash);
 }
 
-void Cipher::validate_tasklist(const vector<uint64_t>& list) {
-	Task::data d(SELF, SELF);
+void Cipher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& list) {
+	Task::tdraft_data d(SELF, cipherid);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
 		eosio_assert_code(rec!=d.end(), INVALID_TASK);

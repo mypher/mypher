@@ -64,191 +64,176 @@ void Task::taupdate( const account_name sender,
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
 
-	data d(self, self);
-	auto rec = d.find(id);
+	tdraft_data d(self, cipherid);
+	auto rec = d.find(tdraftid);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 
-	// if results is already approved, task can't change
-	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
+	// check if cdraftid is later than formal version
+	eosio_assert_code(Cipher::is_draft_version(cipherid, cdraftid), INVALID_PARAM);
 	
 	// check data
-	checkdata(sender, rec->owner, cid, name, rewardid, rquantity, nofauth, approvers, pic, hash, tags);
+	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, pic, hash, tags);
 
-	// check if task is already formal
-	// TODO:bug
-	if (rec->cipherid!=NUMBER_NULL) {
-		Cipher::data d2(self, self);
-		auto rec2 = d2.find(rec->cipherid);
-		eosio_assert_code(rec2!=d2.end(), CIPHER_NOT_FOUND);
-		eosio_assert_code(!rec2->formal, ALREADY_FORMAL);
-	}
-	// check if task is approved
-	eosio_assert_code(!is_task_approved(*rec), TASK_ALREADY_APPROVED);
-
-	// check if hash is valid
-	Validator::check_hash(hash);
+	// get linked cdraft data
+	Cipher::cdraft_data cd(self, cipherid);
+	auto crec = cd.find(cdraftid);
+	eosio_assert_code(crec!=cd.end(), INVALID_PARAM);
 
 	// if task is shared between some drafts, generates copy
-	if (is_shared(id, cid)) {
-		uint64_t id = d.available_primary_key();
+	if (is_shared(tdraftid, cipherid, cdraftid)) {
+		uint64_t newid = d.available_primary_key();
 		d.emplace(sender, [&](auto& dd) {
-			dd.id = id;
-			dd.cipherid = rec->cipherid;
-			dd.owner = sender;
+			dd.tdraftid = newid;
 			dd.name = name;
 			dd.rewardid = rewardid;
-			dd.rquantity = rquantity;
+			dd.quantity = quantity;
 			dd.nofauth = nofauth;
+			dd.approvers = approvers;
 			dd.pic = pic;
 			dd.hash = hash;
 			dd.tags = tags;
 		});
-		// update the id registered in cipher to new one
-		Cipher::data cd(self, self);
-		auto crec = cd.find(cid);
-		eosio_assert_code(crec->cipherid==rec->cipherid, CIPHER_NOT_FOUND);
+		// update tasklist in a draft of cipher clear approval list
 		cd.modify(crec, sender, [&](auto& dd){
-			std::replace(dd.tasklist.begin(), dd.tasklist.end(), rec->id, id);
+			std::replace(dd.tasklist.begin(), dd.tasklist.end(), rec->tdraftid, newid);
+			dd.approved = vector<account_name>{};
 		});
 	} else {
 		d.modify(rec, sender, [&](auto& dd){
 			dd.name = name;
 			dd.rewardid = rewardid;
-			dd.rquantity = rquantity;
+			dd.quantity = quantity;
 			dd.nofauth = nofauth;
 			dd.approvers = approvers;
+			dd.pic = pic;
 			dd.hash = hash;
 			dd.tags = tags;
-			dd.approve_task = vector<account_name>{};
-			if (dd.pic!=pic) {
-				dd.approve_pic = vector<account_name>{};
-			}
-			dd.pic = pic;
+		});
+		// clear approval list
+		cd.modify(crec, sender, [&](auto& dd){
+			dd.approved = vector<account_name>{};
 		});
 	}
 }
 
-void Task::taaprvtask( const account_name sender, const uint64_t id, const bool vec) {
-	// check if sender is fulfill the required auth
-	require_auth(sender);
-	
-	data d(self, self);
-	auto rec = d.find(id);
-	// check if data exists
-	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	// check if sender is approver or approved pic
-	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	auto result2 = std::find(rec->pic.begin(), rec->pic.end(), sender);
-	auto picapproved = is_pic_approved(*rec);
-	eosio::print(picapproved, ":", (result != rec->approvers.end()), ":", (result2 != rec->pic.end()));
-	eosio_assert_code(
-		(result != rec->approvers.end()) || 
-		((result2 != rec->pic.end()) && picapproved) , SENDER_NOT_APPROVER);
-	// check if task is owned by person
-	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
-	// chkck if task is already approved
-	auto result3 = std::find(rec->approve_task.begin(), rec->approve_task.end(), sender);
-	// if results is already approved, task can't change
-	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
 
-	if (vec) { // approve
-		// check if sender doesn't approve the task
-		eosio_assert_code(result3 == rec->approve_task.end(), SENDER_ALREADY_APPROVE);
-	} else { //cancel approval 
-		// check if sender approves the task
-		eosio_assert_code(result3 != rec->approve_task.end(), SENDER_NOT_APPROVE_YET);
-		// if task is fulfill approval requirements, only pic can cancel approval
-		if (is_task_approved(*rec)) {
-			eosio_assert_code(result2 != rec->pic.end(), TASK_ALREADY_APPROVED);
-		}
-	}
-	d.modify(rec, sender, [&](auto& dd){
-		if (vec) { // approve
-			dd.approve_task.push_back(sender);
-		} else { // cancel approval
-			auto result = std::remove(dd.approve_task.begin(), dd.approve_task.end(), sender);
-			dd.approve_task.erase(result, dd.approve_task.end());
-		}
-	});
-}
-
-void Task::taaprvpic( const account_name sender, const uint64_t id, const bool vec) {
-	// check if sender is fulfill the required auth
+void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const bool vec) {
+	// check if sender is valid
 	require_auth(sender);
-	
-	data d(self, self);
-	auto rec = d.find(id);
+
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
 	// check if data exists
-	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
+
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+
+	// get cformal data
+	Cipher::cformal cfd(self, self);
+	auto cfrec = cfd.find(tfrec->cipherid);
+	// check if data exists
+	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
+
+	// get cdraft data
+	Cipher::cdraft cdd(self, cipherid);
+	auto cdrec = cdd.find(tfrec->cdraftid);
+	// check if data exists
+	eosio_assert_code(cdrec!=cdd.end(), INVALID_PARAM);
+
 	// check if sender is approver or pic
-	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	eosio_assert_code((result != rec->approvers.end()) || (sender == rec->owner), SENDER_NOT_APPROVER);
-	// check if task is owned by person
-	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
-	// check if pic is already approved
-	auto result2 = std::find(rec->approve_pic.begin(), rec->approve_pic.end(), sender);
-	// if results is on review process, it can't be canceled approval for pic
-	eosio_assert_code(rec->approve_results.size()==0, RESULTS_APPROVED_SOME);
-	// if results is already approved, pic can't change
-	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
+	auto result1 = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), sender);
+	auto result2 = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
+	eosio_assert_code(
+		(result1!=cdrec->approvers.end()) || (result2!=tdrec->pic.end()), 
+		SENDER_NOT_APPROVER);
 
+	// check if sender already approve the pic
+	auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->end(), sender);
 	if (vec) { // approve
 		// check if pic is not set yet
-		eosio_assert_code(rec->pic.size()>0, PIC_NOT_ASSIGNED);
-		// sender already approved pic
-		eosio_assert_code(result2 == rec->approve_pic.end(), SENDER_ALREADY_APPROVE);
+		eosio_assert_code(tdrec->pic.size()>0, PIC_NOT_ASSIGNED);
+		// check if sender already approved pic
+		eosio_assert_code(result3 == tfrec->approve_pic.end(), SENDER_ALREADY_APPROVE);
 	} else { //cancel approval 
-		eosio_assert_code(result2 != rec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
+		// check if sender doesn't approve pic yet
+		eosio_assert_code(result3 != tfrec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
+		// check if resutls is being reviewed
+		eoiso_assert_code(tfrec->approve_results.size()>0, RESULTS_IN_REVIEW);
 	}
-	d.modify(rec, sender, [&](auto& dd){
+	// update approval lists
+	tfd.modify(tfrec, sender, [&](auto& dd){
 		if (vec) { // approve
 			dd.approve_pic.push_back(sender);
 		} else { // cancel approval
 			auto result = std::remove(dd.approve_pic.begin(), dd.approve_pic.end(), sender);
 			dd.approve_pic.erase(result, dd.approve_pic.end());
-			// if pic is canceled approval, an approval for task pic did is canceled
-			for (auto it = dd.pic.begin(); it != dd.pic.end(); ++it) {
-				auto result2 = std::remove(dd.approve_task.begin(), dd.approve_task.end(), *it);
-				dd.approve_task.erase(result2, dd.approve_task.end()); 
-			}
 		}
 		dd.approve_results = vector<account_name>{};
 	});
 }
 
-void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool vec) {
-	// check if sender is fulfill the required auth
+void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, const bool vec) {
+	// check if sender is valid
 	require_auth(sender);
-	
-	data d(self, self);
-	auto rec = d.find(id);
-	// check if data exists
-	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	// check if sender is approver
-	auto result = std::find(rec->approvers.begin(), rec->approvers.end(), sender);
-	eosio_assert_code(result != rec->approvers.end(), SENDER_NOT_APPROVER);
-	// chcek if task fulfills approval requirements
-	eosio_assert_code(is_task_approved(*rec), TASK_NOT_APPROVED);
-	// check if task is owned by person
-	//eosio_assert_code(rec->owner!=N(""), TASK_OWNED_BY_CIPHER);
-	// check if results is already approved
-	auto result2 = std::find(rec->approve_results.begin(), rec->approve_results.end(), sender);
-	// check if pic is approved
-	eosio_assert_code(is_pic_approved(*rec), PIC_NOT_APPROVED);
 
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
+	// check if data exists
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
+
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+
+	// get cformal data
+	Cipher::cformal cfd(self, self);
+	auto cfrec = cfd.find(tfrec->cipherid);
+	// check if data exists
+	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
+
+	// get cdraft data
+	Cipher::cdraft cdd(self, cipherid);
+	auto cdrec = cdd.find(tfrec->cdraftid);
+
+	// check if data exists
+	eosio_assert_code(cdrec!=cdd.end(), INVALID_PARAM);
+	
+	// check if sender is approver
+	auto result1 = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), sender);
+	eosio_assert_code(result1 != cdrec->approvers.end(), SENDER_NOT_APPROVER);
+
+	// check if results is already approved
+	auto result2 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end(), sender);
+	// check if required number of approvers approve pic
+	eosio_assert_code((cdrec->nofapproval + tdrec->pic.size()) <= tfrec->approve_pic.size(), PIC_NOT_APPROVED);
+	// check if each pic approve pic lists
+	for (auto it = tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
+		auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), *it)
+		eosio_assert_code(result3!=tfrec->approve_pic.end(), PIC_NOT_APPROVED);
+	}
+	// check if already approval requirements for results are already fulfilled
+	eosio_assert_code(cdrec->nofapproval=<tfrec->approve_results.size(), TASK_COMPLETED);
+	// check if sender approve results
+	auto result4 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end());
 	if (vec) { // approve
 		// check if pic is not set yet
-		eosio_assert_code(rec->pic.size()>0, PIC_NOT_ASSIGNED);
-		// check if sender doesn't approve results
-		eosio_assert_code(result2 == rec->approve_results.end(), SENDER_ALREADY_APPROVE);
+		eosio_assert_code(tdrec->pic.size()>0, PIC_NOT_ASSIGNED);
+		// check if sender already approve results
+		eosio_assert_code(result4==tfrec->approve_results.end(), SENDER_ALREADY_APPROVE);
 	} else { //cancel approval 
-		// check if sender approves results
-		eosio_assert_code(result2 != rec->approve_results.end(), SENDER_NOT_APPROVE_YET);
-		// check if already approval requirements for results are already fulfilled
-		eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
+		// check if sender does't approve results
+		eosio_assert_code(result4!=tfrec->approve_results.end(), SENDER_NOT_APPROVE_YET);
 	}
-	d.modify(rec, sender, [&](auto& dd){
+	tfd.modify(tfrec, sender, [&](auto& dd){
 		if (vec) { // approve
 			dd.approve_results.push_back(sender);
 		} else { // cancel approval
@@ -256,99 +241,53 @@ void Task::taaprvrslt( const account_name sender, const uint64_t id, const bool 
 			dd.approve_results.erase(result, dd.approve_results.end());
 		}
 	});
-	// check if number of approval for results fulfills requirements
-	eosio::print("nof_approval_for_results:", rec->approve_results.size(), "\n");
-	if (rec->approve_results.size()>=rec->nofauth) {
-		// issue token to pic
-		if (rec->rewardid!=NUMBER_NULL) {
-			// calc quantity
-			// TODO:how to deal with surplus
-			uint64_t dev = rec->rquantity / rec->pic.size();
-			for (auto it=rec->pic.begin(); it!=rec->pic.end(); ++it) {
-				eosio::print("issue:", rec->rewardid, ":", dev);
-				Token::issue(sender, rec->cipherid, rec->rewardid, *it, dev);
-			}
-		}
+	// send the reward to pic
+	if (tfrec->approve_results.size()>=cdrec->nofapproval) {
+		// TODO:
 	}
 }
 
-void Task::applyforpic( const account_name sender, const uint64_t id, const bool vec) {
+void Task::applyforpic( const account_name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 	
-	data d(self, self);
-	auto rec = d.find(id);
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
 	// check if data exists
-	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+	
 	if (vec) { // apply
 		// check if pic is set
-		eosio_assert_code(rec->pic.size()==0, PIC_IS_ASSIGNED);
+		eosio_assert_code(tdrec->pic.size()==0, PIC_IS_ASSIGNED);
 	} else { // cancel application
 		// check if pic is sender
-		auto result = std::find(rec->pic.begin(), rec->pic.end(), sender);
-		eosio_assert_code(result!=rec->pic.end(), PIC_IS_NOT_SENDER);
+		auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
+		eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 	}
-	// if results is already approved, pic can't change
-	eosio_assert_code(!is_results_approved(*rec), RESULTS_ALREADY_APPROVED);
 
-	d.modify(rec, sender, [&](auto& dd){
+	tdd.modify(tdrec, sender, [&](auto& dd){
 		if (vec) { // approve
 			dd.pic = vector<account_name>{sender};	
 		} else { // cancel approval
-			// if pic is canceled, an approval for task pic did is canceled
-			for (auto it = dd.pic.begin(); it != dd.pic.end(); ++it) {
-				auto result2 = std::remove(dd.approve_task.begin(), dd.approve_task.end(), *it);
-				dd.approve_task.erase(result2, dd.approve_task.end()); 
-			}
 			auto result = std::remove(dd.pic.begin(), dd.pic.end(), sender);
 			dd.pic.erase(result, dd.pic.end());
 		}
-		// initialize approval for pic
-		dd.approve_pic = vector<account_name>{};
-		// initialize approval for results 
-		dd.approve_results = vector<account_name>{};
 	});
-}
-
-bool Task::is_pic_approved(const task& d) {
-	for (auto it = d.approvers.begin(); it != d.approvers.end(); ++it) {
-		// check if each approver approved the pic 
-		auto found = std::find(d.approve_pic.begin(), d.approve_pic.end(), *it);
-		if (found==d.approve_pic.end()) return false;
+	if (!vec) {
+		tfd.modify(tfrec, sender [&](auto& dd) {
+			// initialize approval for pic
+			dd.approve_pic = vector<account_name>{};
+			// initialize approval for results 
+			dd.approve_results = vector<account_name>{};
+		});
 	}
-	return true;
-}
-
-bool Task::is_task_approved(const task& d) {
-	int nofapprover = 0, nofpic = 0;
-	for (auto it = d.approve_task.begin(); it != d.approve_task.end(); ++it) {
-		// count a person who is approver 
-		auto found = std::find(d.approvers.begin(), d.approvers.end(), *it);
-		if (found!=d.approvers.end()) nofapprover++;
-		// count a person who is in charge of this task 
-		auto found2 = std::find(d.pic.begin(), d.pic.end(), *it);
-		if (found2!=d.pic.end()) nofpic++;
-	}
-	return (nofapprover>=d.nofauth) && (nofpic==d.pic.size());
-}
-
-bool Task::is_results_approved(const task& d) {
-	for (auto it = d.approvers.begin(); it != d.approvers.end(); ++it) {
-		// check if each approver approved results 
-		auto found = std::find(d.approve_results.begin(), d.approve_results.end(), *it);
-		if (found==d.approve_results.end()) return false;
-	}
-	return true;
-}
-
-bool Task::is_results_approved_some(const task& d) {
-	for (auto it = d.approvers.begin(); it != d.approvers.end(); ++it) {
-		// check if each approver approved results
-		auto found = std::find(d.approve_results.begin(), d.approve_results.end(), *it);
-		if (found!=d.approve_results.end()) return true;
-	}
-	return false;
 }
 
 void Task::check_data( const account_name sender, const uint64_t cipherid,
@@ -389,26 +328,18 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	Validator::check_hash(hash);
 }
 
-bool Task::is_shared(const uint64_t taskid, const uint64_t cid) {
-	if (cid==NUMBER_NULL) return false;
-	Cipher::data d(SELF, SELF);
-	auto rec = d.find(cid);
-	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
+bool Task::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uint64_t cdraftid) {
+	Cipher::cdraft_data d(SELF, cipherid);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
-		if (it->id==cid) continue;
-		auto found = std::find(it->tasklist.begin(), it->tasklist.end(), taskid);
-		if (found!=it->tasklist.end()) return true;
+		auto found = std::find(it->tasklist.begin(), it->tasklist.end(), tdraftid);
+		if (cdraftid!=it->cdraftid && found!=it->tasklist.end()) return true;
 	}
 	return false;
 }
 
-bool Task::is_completed(const uint64_t taskid) {
-	data d(SELF, SELF);
-	auto rec = d.find(taskid);
-	if (rec==d.end()) {
-		return false;
-	}
-	return (rec->approve_results.size()>=rec->nofauth);
+bool Task::exists(const uint64_t tformalid) {
+	tformal_data d(SELF, SELF);
+	return (d.find(tformalid)!=d.end());
 }
 
 } // mypher

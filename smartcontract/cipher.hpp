@@ -123,16 +123,16 @@ private:
 	 */
 	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& draftno);
 
-	bool is_draft_version(const uint64_t cipherid, const uint16_t version);
 	void check_data(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
 				uint16_t drule_req, const vector<account_name>& drule_auth);
-	void validate_tasklist(const vector<uint64_t>& tasklist);
+	void validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& tasklist);
 	void validate_tokenlist(const vector<uint64_t>& tokenlist);
 
 // common
 public:
+	static bool is_draft_version(const uint64_t cipherid, const uint16_t version);
 	static bool exists(const uint64_t cipherid); 
 	static bool is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid);
 	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& draftno);

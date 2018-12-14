@@ -129,9 +129,9 @@ void Token::check_data( const account_name sender,
 	// check if "disposal" is valid
 	eosio_assert_code(disposal>=0&&disposal<DISPOSAL_MAX, INVALID_PARAM);
 	// check is task is exists
-	if (taskid!=NUMBER_NULL) [
+	if (taskid!=NUMBER_NULL) {
 		eosio_assert_code(Task::exists(taskid), INVALID_PARAM);
-	]
+	}
 	// check if token is exists
 	if (extokenid!=NUMBER_NULL) {
 		eosio_assert_code(Token::exists(extokenid), INVALID_PARAM);

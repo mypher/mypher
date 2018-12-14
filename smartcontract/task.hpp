@@ -33,12 +33,15 @@ public:
 		uint64_t cipherid; 
 		uint64_t tdraftid; 
 		string name;
+		vector<account_name> approve_pic;
+		vector<account_name> approve_results;
 		vector<string> tags;
 
 		uint64_t primary_key() const { return tformalid; }
 		uint64_t secondary_key() const { return cipherid; }
 
-		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(tags) )
+		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(approve_pic)
+						(approve_results)(tags) )
 	};
 
 	/**
@@ -49,19 +52,15 @@ public:
 		string name;
 		uint64_t rewardid;
 		uint64_t quantity;
-		uint6_t nofapproval;
+		uint64_t nofapproval;
 		vector<account_name> approvers;
-		vector<account_name> approve_content;
-		vector<account_name> approve_pic;
-		vector<account_name> approve_results;
 		vector<account_name> pic;
 		string hash;
 		vector<string> tags;
 
 		uint64_t primary_key() const { return tdraftid; }
-		eoslib_serialize( tdraft,(tdraftid)(name)(rewardid)(quantity)
-						(nofapproval)(approvers)(approve_content)(approve_pic)
-						(approve_results)(pic)(hash)(tags) )
+		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(quantity)
+						(nofapproval)(approvers)(pic)(hash)(tags) )
 	};
 
 	/**
@@ -78,7 +77,7 @@ public:
 	 */
 	typedef eosio::multi_index<
 			N(tdraft), 
-			tdraft,
+			tdraft
 	> tdraft_data;
 
 	/**
@@ -107,36 +106,26 @@ public:
 				const vector<string>& tags);
 	
 	/**
-	 * @brief approve a task 
-	 */
-	[[eosio::action]]
-	void taaprvtask( const account_name sender, const uint64_t id, const bool vec);
-
-	/**
 	 * @brief approve a pic 
 	 */
 	[[eosio::action]]
-	void taaprvpic( const account_name sender, const uint64_t id, const bool vec);
+	void taaprvpic( const account_name sender, const uint64_t tformalid, const bool vec);
 
 	/**
 	 * @brief approve results
 	 */
 	[[eosio::action]]
-	void taaprvrslt( const account_name sender, const uint64_t id, const bool vec);
+	void taaprvrslt( const account_name sender, const uint64_t tformalid, const bool vec);
 
 	/**
 	 * @brief apply for pic of a task
 	 */
 	[[eosio::action]]
-	void applyforpic( const account_name sender, const uint64_t id, const bool vec);
+	void applyforpic( const account_name sender, const uint64_t tformalid, const bool vec);
 
-	static bool is_completed(const uint64_t taskid);
+	static bool exists(const uint64_t tformalid);
 
 private:
-	bool is_pic_approved(const task& d);
-	bool is_task_approved(const task& d);
-	bool is_results_approved(const task& d);
-	bool is_results_approved_some(const task& d);
 	void check_data( 
 				const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
@@ -144,7 +133,7 @@ private:
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);
-	bool is_shared(const uint64_t taskid, const uint64_t cid);
+	bool is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uint64_t cdraftid);
 };
 
 } // mypher
