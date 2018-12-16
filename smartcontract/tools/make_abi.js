@@ -76,16 +76,25 @@ function parse(txt) {
 				table = null;
 				return;
 			}
+			if (v==='secondary_key') {
+				table.key = true;
+			}
 		}
 		if (action) {
 			if (v==='void') return;
 			if (action.name===undefined) {
+				v = v.split('(');
 				action = {
-					name : v,
+					name : v[0],
 					base : '',
 					fields : []
 				};
-				return;
+				if (v.length>1) {
+					v.shift();
+					v = v.join('(');
+				} else {
+					return;
+				}
 			} else {
 				if (type) {
 					const last = v.includes(');');
@@ -111,23 +120,51 @@ function parse(txt) {
 
 (() => {
 	try {
-		const path = '../';
+		if (process.argv.length<4) {
+			console.log('invalid arguments');
+			return;
+		}
+		const path = process.argv[2];
 		const list = fs.readdirSync(path);
 		list.forEach( l => {
 			if (/\.hpp/.exec(l)!=null) {
-				const txt = fs.readFileSync(path + l, 'utf-8');
+				const txt = fs.readFileSync(path + '/' + l, 'utf8');
 				parse(txt);
 			}
 		});
-		output();
+		output(process.argv[3]);
 	} catch (e) {
 		console.log(e);
 	}
 })();
 
-function output() {
+function output(fn) {
+	let output = {
+		version: 'eosio::abi/1.0',
+		types : '',
+		actions : [],
+		tables : []
+	};
+	output.structs = [].concat(tables, actions);
+
 	let idx_table = [];
 	let idx_action = [];
-
+	tables.forEach(t => {
+		output.tables.push({
+			name : t.name,
+			type : t.name,
+			key_names : t.key ? ['secondary_key'] : [],
+			key_types : t.key ? ['uint64'] : [],
+			index_type : 'i64'
+		});
+	});
+	actions.forEach(a => {
+		output.actions.push({
+			name : a.name,
+			type : a.name,
+			ricardian_contract : ''
+		});
+	});
+	fs.writeFileSync(fn, JSON.stringify(output), 'utf8');
 }
 
