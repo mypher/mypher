@@ -17,7 +17,7 @@ namespace mypher {
 
 void Task::tanew(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
 				const string& name, const uint64_t rewardid, const uint64_t quantity, 
-				const uint8_t nofauth, 
+				const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -41,7 +41,7 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 		dd.name = name;
 		dd.rewardid = rewardid;
 		dd.quantity = quantity;
-		dd.nofauth = nofauth;
+		dd.nofapproval = nofapproval;
 		dd.approvers = approvers;
 		dd.pic = pic;
 		dd.hash = hash;
@@ -88,7 +88,7 @@ void Task::taupdate( const account_name sender,
 			dd.name = name;
 			dd.rewardid = rewardid;
 			dd.quantity = quantity;
-			dd.nofauth = nofauth;
+			dd.nofapproval = nofapproval;
 			dd.approvers = approvers;
 			dd.pic = pic;
 			dd.hash = hash;
@@ -104,7 +104,7 @@ void Task::taupdate( const account_name sender,
 			dd.name = name;
 			dd.rewardid = rewardid;
 			dd.quantity = quantity;
-			dd.nofauth = nofauth;
+			dd.nofapproval = nofapproval;
 			dd.approvers = approvers;
 			dd.pic = pic;
 			dd.hash = hash;
@@ -135,14 +135,14 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
 
 	// get cformal data
-	Cipher::cformal cfd(self, self);
+	Cipher::cformal_data cfd(self, self);
 	auto cfrec = cfd.find(tfrec->cipherid);
 	// check if data exists
 	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
 
 	// get cdraft data
-	Cipher::cdraft cdd(self, cipherid);
-	auto cdrec = cdd.find(tfrec->cdraftid);
+	Cipher::cdraft_data cdd(self, tfrec->cipherid);
+	auto cdrec = cdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(cdrec!=cdd.end(), INVALID_PARAM);
 
@@ -154,7 +154,7 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 		SENDER_NOT_APPROVER);
 
 	// check if sender already approve the pic
-	auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->end(), sender);
+	auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), sender);
 	if (vec) { // approve
 		// check if pic is not set yet
 		eosio_assert_code(tdrec->pic.size()>0, PIC_NOT_ASSIGNED);
@@ -164,7 +164,7 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 		// check if sender doesn't approve pic yet
 		eosio_assert_code(result3 != tfrec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
 		// check if resutls is being reviewed
-		eoiso_assert_code(tfrec->approve_results.size()>0, RESULTS_IN_REVIEW);
+		eosio_assert_code(tfrec->approve_results.size()>0, RESULTS_IN_REVIEW);
 	}
 	// update approval lists
 	tfd.modify(tfrec, sender, [&](auto& dd){
@@ -195,14 +195,14 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
 
 	// get cformal data
-	Cipher::cformal cfd(self, self);
+	Cipher::cformal_data cfd(self, self);
 	auto cfrec = cfd.find(tfrec->cipherid);
 	// check if data exists
 	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
 
 	// get cdraft data
-	Cipher::cdraft cdd(self, cipherid);
-	auto cdrec = cdd.find(tfrec->cdraftid);
+	Cipher::cdraft_data cdd(self, tfrec->cipherid);
+	auto cdrec = cdd.find(tfrec->tdraftid);
 
 	// check if data exists
 	eosio_assert_code(cdrec!=cdd.end(), INVALID_PARAM);
@@ -217,13 +217,13 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	eosio_assert_code((cdrec->nofapproval + tdrec->pic.size()) <= tfrec->approve_pic.size(), PIC_NOT_APPROVED);
 	// check if each pic approve pic lists
 	for (auto it = tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
-		auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), *it)
+		auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), *it);
 		eosio_assert_code(result3!=tfrec->approve_pic.end(), PIC_NOT_APPROVED);
 	}
 	// check if already approval requirements for results are already fulfilled
-	eosio_assert_code(cdrec->nofapproval=<tfrec->approve_results.size(), TASK_COMPLETED);
+	eosio_assert_code(cdrec->nofapproval>=tfrec->approve_results.size(), TASK_COMPLETED);
 	// check if sender approve results
-	auto result4 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end());
+	auto result4 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end(), sender);
 	if (vec) { // approve
 		// check if pic is not set yet
 		eosio_assert_code(tdrec->pic.size()>0, PIC_NOT_ASSIGNED);
@@ -281,7 +281,7 @@ void Task::applyforpic( const account_name sender, const uint64_t tformalid, con
 		}
 	});
 	if (!vec) {
-		tfd.modify(tfrec, sender [&](auto& dd) {
+		tfd.modify(tfrec, sender, [&](auto& dd) {
 			// initialize approval for pic
 			dd.approve_pic = vector<account_name>{};
 			// initialize approval for results 
@@ -307,10 +307,10 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_APPROVER);
 
 	// check if approvers is invalid
-	eosio_assert_code(Person::checkList(approvers), INVALID_APPROVER);
+	eosio_assert_code(Person::check_list(approvers), INVALID_APPROVER);
 	
 	// check if pic is invalid
-	eosio_assert_code(Person::checkList(pic), INVALID_PIC);
+	eosio_assert_code(Person::check_list(pic), INVALID_PIC);
 	
 	// check rewardid
 	Validator::check_tokenowner(rewardid, cipherid);
@@ -340,6 +340,26 @@ bool Task::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uin
 bool Task::exists(const uint64_t tformalid) {
 	tformal_data d(SELF, SELF);
 	return (d.find(tformalid)!=d.end());
+}
+
+bool Task::completed(const uint64_t tformalid) {
+	tformal_data tfd(SELF, SELF);
+	auto tfrec = tfd.find(tformalid);
+	Cipher::cformal_data cfd(SELF, SELF);
+	auto cfrec = cfd.find(tfrec->cipherid);
+	Cipher::cdraft_data cdd(SELF, tfrec->cipherid);
+	auto cdrec = cdd.find(cfrec->cdraftid);
+	uint64_t n = 0;
+	for (auto it = tfrec->approve_results.begin(); it!=tfrec->approve_results.end(); ++it) {
+		auto found = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), *it);
+		if (found!=cdrec->approvers.end()) {
+			n++;
+			if (n==cdrec->nofapproval) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 } // mypher

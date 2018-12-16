@@ -124,6 +124,7 @@ public:
 	void applyforpic( const account_name sender, const uint64_t tformalid, const bool vec);
 
 	static bool exists(const uint64_t tformalid);
+	static bool completed(const uint64_t tformalid);
 
 private:
 	void check_data( 

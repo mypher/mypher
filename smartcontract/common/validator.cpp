@@ -15,27 +15,19 @@ using namespace std;
 
 namespace mypher {
 
-void Validator::check_tokenowner(
-	const uint64_t id, const account_name owner, const uint32_t cipherid) {
-	// is tokenid is not set, validation is not needed
-	if (id==NUMBER_NULL) return;
-
-	Token::data d(SELF, SELF);
-	auto rec = d.find(id);
+void Validator::check_tokenowner(const uint64_t tokenid, const uint64_t cipherid) {
+		
+	Token::token_data d(SELF, SELF);
+	auto rec = d.find(tokenid);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), INVALID_TOKENID);
-	// check token owner
-	if (owner==N("")) {
-		eosio_assert_code(rec->issuer2==cipherid, TOKEN_NOT_OWNED_BY_SENDER);
-	} else {
-		eosio_assert_code(rec->issuer==owner, TOKEN_NOT_OWNED_BY_SENDER);
-	}
+	eosio_assert_code(rec->issuer==cipherid, TOKEN_NOT_OWNED_BY_SENDER);
 }
 
 void Validator::check_hash(const string& hash) {
 	// TODO:
 }
-
+/*
 void Validator::check_cipher(const uint64_t id) {
 	if (id==NUMBER_NULL) return;
 
@@ -54,6 +46,6 @@ void Validator::check_cipher(const uint64_t id) {
 		perversion = it->version;
 	}
 }
-
+*/
 
 } // mypher

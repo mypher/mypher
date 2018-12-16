@@ -8,36 +8,33 @@
 
 namespace mypher {
 
-void Person::pupdate(const account_name id, const string& name, const std::vector<std::string>& tags, const std::string& info) {
-	//require_auth(permission_level{id, N(owner)});
-	require_auth(id);
+void Person::pupdate(const account_name personid, const string& name, const std::vector<std::string>& tags, const std::string& hash) {
+	require_auth(personid);
 
-	data d(self, self);
+	person_data d(self, self);
 	// search the target data
-	auto to = d.find(id);
+	auto to = d.find(personid);
 	// if data is not registered
 	if (to == d.end()) {
-		eosio::print("###not found", id);
 		// register the attributes
-		d.emplace(id, [&](auto& dd) {
-			dd.id = id;
+		d.emplace(personid, [&](auto& dd) {
+			dd.personid = personid;
 			dd.name = name;
 			dd.tags = tags;
-			dd.info = info;
+			dd.hash = hash;
 		});
 	} else {
-		eosio::print("###found", id);
 		// update the attributes
-		d.modify(to, id, [&](auto& dd) {
+		d.modify(to, personid, [&](auto& dd) {
 			dd.name = name;
 			dd.tags = tags;
-			dd.info = info;
+			dd.hash = hash;
 		});	
 	}
 }
 
-bool Person::checkList(const vector<account_name>& list) {
-	data d(SELF, SELF);
+bool Person::check_list(const vector<account_name>& list) {
+	person_data d(SELF, SELF);
 
 	vector<account_name> sort;
 	for (auto it = list.begin(); it != list.end(); ++it ) {
@@ -55,8 +52,8 @@ bool Person::checkList(const vector<account_name>& list) {
 	return true;
 }
 
-bool Person::isExists(const account_name user) {
-	data d(SELF, SELF);
+bool Person::exists(const account_name user) {
+	person_data d(SELF, SELF);
 	return d.find(user)!=d.end();
 }
 

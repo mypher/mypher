@@ -302,4 +302,9 @@ bool Token::is_sufficient_owned_token(const uint64_t issuer, const uint64_t toke
 	return (get_available_amount(tokenid) > amount);
 }
 
+bool Token::exists(const uint64_t tokenid) {
+	token_data d(SELF, SELF);
+	return (d.begin()!=d.end());
+}
+
 } // mypher

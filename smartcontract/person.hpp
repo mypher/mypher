@@ -29,31 +29,31 @@ public:
 	 * @brief information of person
 	 */
 	struct [[eosio::table]] person {
-		account_name id;
+		account_name personid;
 		string name;
 		vector<string> tags;
-		string info;
+		string hash;
 		vector<uint64_t> tokenlist;
 
-		auto primary_key() const { return id; }
+		auto primary_key() const { return personid; }
 
-		EOSLIB_SERIALIZE( person, (id)(name)(tags)(info)(tokenlist) )
+		EOSLIB_SERIALIZE( person, (personid)(name)(tags)(hash)(tokenlist) )
 	};
 	/**
 	 * @brief the definition of the table for "person"
 	 */
-	typedef eosio::multi_index<N(person), person> data;
+	typedef eosio::multi_index<N(person), person> person_data;
 
 	/**
 	 * @brief create new person
 	 */
 	[[eosio::action]]
-	void pupdate(const account_name id, const string& name, const vector<string>& tags, const string& info);
+	void pupdate(const account_name personid, const string& name, const vector<string>& tags, const string& hash);
 
 // common
 public:
-	static bool checkList(const vector<account_name>& list);
-	static bool isExists(const account_name user);
+	static bool check_list(const vector<account_name>& list);
+	static bool exists(const account_name user);
 
 };
 

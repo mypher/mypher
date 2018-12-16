@@ -171,7 +171,7 @@ private:
 	static bool is_issued(const uint64_t tokeniid);
 	static void set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint64_t quantity);
 	static bool is_sufficient_owned_token(const uint64_t issuer, const uint64_t tokenid, const uint64_t amount);
-
+	static bool exists(const uint64_t tokenid);
 };
 
 } // mypher

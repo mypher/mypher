@@ -12,6 +12,7 @@
 namespace mypher {
 
 using namespace std;
+using namespace eosio;
 
 /**
  * @defgroup mypher
