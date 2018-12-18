@@ -382,7 +382,7 @@ module.exports = {
 		}
 	},
 
-	getFormalFromCipherID : d => {
+	getFormalFromCipherID : async d => {
 		try {
 			if (!cmn.isNumber(d.cipherid)) {
 				return {code:'INVALID_PARAM'};
