@@ -6,11 +6,15 @@
 'use_strict'
 
 const assert = require('assert');
+const tools = require('./tools');
 
 module.exports = () => {
 	describe('cnew', () => {
 		it('case1',  () => {
-			assert.equal(true, false);
+			assert.equal(tools.connect(1), true);
+			const ret = tool.push('cnew', {
+			});
+			console.log(JSON.stringify(ret));
 		});
 	});
 };

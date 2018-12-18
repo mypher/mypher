@@ -7,6 +7,7 @@
 
 const assert = require('assert');
 const cipher = require('./cipher');
+const eos = require('./eos');
 
 describe('hooks', () => {
 
