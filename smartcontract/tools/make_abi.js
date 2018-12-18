@@ -141,7 +141,7 @@ function parse(txt) {
 function output(fn) {
 	let output = {
 		version: 'eosio::abi/1.0',
-		types : '',
+		types : [],
 		actions : [],
 		tables : []
 	};

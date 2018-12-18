@@ -140,7 +140,7 @@ public:
 	void tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity);
 
 	[[eosio::action]]
-	void approve_to_ex(const account_name sender, const uint64_t tokenid);
+	void approve2ex(const account_name sender, const uint64_t tokenid);
 
 	/*******************************************************************
 	  methods only called from inside of the myphersystem contract

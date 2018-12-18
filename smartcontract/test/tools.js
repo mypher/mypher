@@ -6,6 +6,7 @@
 'use_strict'
 
 const { execSync } = require('child_process');
+const path = require('path');
 
 module.exports = {
 	initDocker : async () => {
@@ -17,12 +18,14 @@ module.exports = {
 			'-p 9876:9876 ',
 			'-p 7000:7000 ',
 			'-p 7100:7100 ',
-			'-v ../../docker/contracts:/contracts ',
-			'-v ../../docker/scripts:/scripts ',
-			'-v ../../app:/app ',
+			'-v ' + path.join(__dirname, '../../docker/contracts') + ':/contracts ',
+			'-v ' + path.join(__dirname, '../../docker/scripts') + ':/scripts ',
+			'-v ' + path.join(__dirname, '../../app') + ':/app ',
 			'mypher_test ',
-			'/bin/bash -c "/scripts/start.sh"'
+			'/bin/bash -c "/scripts/start.sh" &'
 		].join('');
+		console.log(command);
 		execSync(command);
+		sleep(100000);
 	}
 };

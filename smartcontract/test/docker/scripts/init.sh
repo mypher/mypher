@@ -38,7 +38,7 @@ cp /testscripts/eosio.user /keys
 
 bash -c /scripts/start.sh &
 
-sleep 1m
+sleep 50
 
 cleos system newaccount eosio --transfer test1 EOS77Ch4niaihrqUtiPVj86mJKCuZaTrH4S2BkHNDFdnrv4DFjSzz --stake-net "4.0000 SYS" --stake-cpu "5.0000 SYS" --buy-ram-kbytes 1024
 cleos system newaccount eosio --transfer test2 EOS7GAyaQWeHZtTfy4MsxWrvJC6NprpjEZgfFcBcgcEH2WQ67ZJgv --stake-net "4.0000 SYS" --stake-cpu "5.0000 SYS" --buy-ram-kbytes 1024
@@ -50,9 +50,14 @@ cleos wallet import --private-key 5Hz1SxDgsKG9rA5wyoPCp9d59VEzoNhnNzzjbuJP5YgQDy
 cleos wallet import --private-key 5JDR2gXH2fvecAzcaxK19Cqgivk8ojHNwWzAwArUHPszLgiVXSq
 cleos wallet import --private-key 5J6wBifS6gy4Sx97mhudtuWfbJw6vbXdnBggdunw5i5ArbwPqev
 
-cleos push action myphersystem pupdate '{"personid":"test1", "name":"テスト1", "tags":["test", "テスト"], "info":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test1
-cleos push action myphersystem pupdate '{"personid":"test2", "name":"テスト2", "tags":["test", "テスト"], "info":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test2
-cleos push action myphersystem pupdate '{"personid":"test3", "name":"テスト3", "tags":["test", "テスト"], "info":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test3
-cleos push action myphersystem pupdate '{"personid":"test4", "name":"テスト4", "tags":["test", "テスト"], "info":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test4
+cleos push action myphersystem pupdate '{"personid":"test1", "name":"テスト1", "tags":["test", "テスト"], "hash":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test1
+cleos push action myphersystem pupdate '{"personid":"test2", "name":"テスト2", "tags":["test", "テスト"], "hash":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test2
+cleos push action myphersystem pupdate '{"personid":"test3", "name":"テスト3", "tags":["test", "テスト"], "hash":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test3
+cleos push action myphersystem pupdate '{"personid":"test4", "name":"テスト4", "tags":["test", "テスト"], "hash":"GmPjXvs59U7zoBG9LLy99r6h4YXbiaxQjL8J6coAXrcApi"}' -p test4
 
-echo "########################################"
+sleep 5
+
+bash -c /scripts/stop.sh
+
+sleep 10m
+

@@ -13,7 +13,7 @@ PWD=$(cd $(dirname $0) && pwd)
 # start docker
 docker run \
 	--rm \
-	--name mypher_test \
+	--name mypher_eosio \
 	-p ${PUBLISH_PORT_HTTP}:8888 \
 	-p ${PUBLISH_PORT_APP}:8800 \
 	-p ${PUBLISH_PORT_P2P}:9876 \
@@ -25,5 +25,11 @@ docker run \
 	-v ${PWD}/../../../app:/app \
 	-v ${PWD}/scripts:/testscripts \
 	mypher \
-	/bin/bash -c "/testscripts/init.sh"
+	/bin/bash -c "/testscripts/init.sh" &
 
+sleep 70
+
+echo "generating testimage..."
+docker commit mypher_eosio mypher_test
+docker stop mypher_eosio
+echo "done."
