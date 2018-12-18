@@ -22,7 +22,7 @@ module.exports = {
 			'-v ' + path.join(__dirname, '../../docker/scripts') + ':/scripts ',
 			'-v ' + path.join(__dirname, '../../app') + ':/app ',
 			'mypher_test ',
-			'/bin/bash -c "/scripts/start.sh" &'
+			'/bin/bash -c "/scripts/run.sh" &'
 		].join('');
 		console.log(command);
 		execSync(command);

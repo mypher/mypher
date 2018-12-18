@@ -36,7 +36,7 @@ echo "/key/swarm/psk/1.0.0/
 cp /testscripts/base_config.ini /mnt/dev/config
 cp /testscripts/eosio.user /keys
 
-bash -c /scripts/start.sh &
+bash -c /scripts/prepare_eosio.sh &
 
 sleep 50
 
