@@ -232,9 +232,17 @@ bool Cipher::exists(const uint64_t cipherid) {
 void Cipher::check_data(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
-				uint16_t drule_req, const vector<account_name>& drule_auth) {
+				uint16_t nofapproval, const vector<account_name>& approvers) {
 	// check if sender is logined user
 	require_auth(sender);
+
+	// check if editors is valid
+	eosio_assert_code(editors.size()>0, INVALID_PARAM);
+	eosio_assert_code(Person::check_list(editors), INVALID_PARAM);
+
+	// check if approvers is valid
+	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
+	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
 
 	// check hash
 	Validator::check_hash(hash);

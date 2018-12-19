@@ -5,18 +5,19 @@
 
 'use_strict'
 
-const eosjs = require('eosjs');
+const {Api, JsonRpc, RpcError} = require('eosjs');
+const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').default;
 const fetch = require('node-fetch');
 const { TextDecoder, TextEncoder } = require('text-encoding'); 
 const httpEndpoint = 'http://127.0.0.1:8888';
-const rpc = new eosjs.Rpc.JsonRpc(httpEndpoint, { fetch });
+const rpc = new JsonRpc(httpEndpoint, { fetch });
 const ecc = require('eosjs-ecc');
 
 module.exports = {
 	refresh : async function(keys) {
 		// TODO:check if it is possible to get private key from wallet via jsonrpc call
-		const signatureProvider = new eosjs.SignatureProvider(keys);
-		this.api = new eosjs.Api({ rpc, signatureProvider, textDecoder: new TextDecoder, textEncoder: new TextEncoder });
+		const signatureProvider = new JsSignatureProvider(keys);
+		this.api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder, textEncoder: new TextEncoder });
 	},
 
 	pri2pub : key => {

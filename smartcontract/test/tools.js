@@ -4,6 +4,8 @@
 //
 //
 
+'use_strict'
+
 const eos = require('./eos');
 
 const connect = async d => {
@@ -24,13 +26,12 @@ const connect = async d => {
 		});
 		return found;
 	} catch (e) {
-		log.error(e.message)
-		throw 'INVALID_ID_OR_PASS';
+		return e.message;
 	}
 };
 
 
-moduke.exports = {
+module.exports = {
 	active : '',
 	connect : async function(d) {
 		const acnt = [

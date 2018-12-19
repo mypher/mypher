@@ -77,6 +77,7 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ -z $1 ]; then
+	cleos set contract myphersystem /contracts/myphersystem
 	while :
 	do
 		sleep 10000

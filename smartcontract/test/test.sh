@@ -27,7 +27,7 @@ sleep 30
 
 echo 'test container started.'
 
-./mocha
+./node_modules/mocha/bin/mocha
 
 echo 'terminating test container...'
 
