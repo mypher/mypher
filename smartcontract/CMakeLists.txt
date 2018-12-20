@@ -19,5 +19,5 @@ add_custom_command(
 
 
 file(MAKE_DIRECTORY ../docker/contracts/myphersystem)
-add_custom_target(cpwasm DEPENDS myphersystem.wasm COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/myphersystem")
+add_custom_target(cpwasm ALL DEPENDS myphersystem.wasm COMMAND "cp" "-f" "*.wasm" "../../docker/contracts/myphersystem")
 add_custom_target(cpabi ALL DEPENDS myphersystem.abi COMMAND "cp" "-f" "*.abi" "../../docker/contracts/myphersystem")

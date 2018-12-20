@@ -55,7 +55,6 @@ void Cipher::cnew(const account_name sender,
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
 				uint16_t nofapproval, const vector<account_name>& approvers) {
-
 	// check data
 	check_data(sender, name, editors, tags, hash, nofapproval, approvers);
 
@@ -243,6 +242,10 @@ void Cipher::check_data(const account_name sender,
 	// check if approvers is valid
 	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
 	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
+
+	// check if nofapproval is valid
+	eosio_assert_code(nofapproval>0, INVALID_PARAM);
+	eosio_assert_code(nofapproval<=approvers.size(), INVALID_PARAM);
 
 	// check hash
 	Validator::check_hash(hash);

@@ -77,6 +77,17 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ -z $1 ]; then
+	# wait for running of nodeos
+	for i in {1..5}
+	do
+		result=`cleos set contract myphersystem /contracts/eosio.system`
+		if [ -z $result ];
+		then
+			sleep 1
+		else
+			break
+		fi
+	done
 	cleos set contract myphersystem /contracts/myphersystem
 	while :
 	do

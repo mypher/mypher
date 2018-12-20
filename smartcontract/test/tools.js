@@ -60,5 +60,8 @@ module.exports = {
 		} catch (e) {
 			return e.message;
 		}
+	},
+	message : c => {
+		return 'assertion failure with error code: ' + c;
 	}
 };
