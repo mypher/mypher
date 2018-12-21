@@ -65,6 +65,10 @@ function parse(txt) {
 				return;
 			} else {
 				if (type) {
+					if (v.indexOf('(')!=-1) {
+						type = undefined;
+						return;
+					}
 					v = v.replace(';','');
 					table.fields.push({name:v, type:type});
 					type = undefined;

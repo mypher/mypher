@@ -61,7 +61,58 @@ module.exports = {
 			return e.message;
 		}
 	},
+	getByKey : async ({n,s,d}) => {
+		try {
+			if (s===undefined) s = 'myphersystem';
+			const ret =  await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : s,
+				table : n,
+			}, d );
+			return ret.rows;
+		} catch (e) {
+			return e.message;
+		}
+	},
+	getHead : async ({n,s,c}) => {
+		try {
+			if (s===undefined) s = 'myphersystem';
+			const ret =  await eos.getData({
+				code : 'myphersystem',
+				scope : s,
+				table : n,
+			}, c );
+			return ret.rows;
+		} catch (e) {
+			return e.message;
+		}
+	},
 	message : c => {
 		return 'assertion failure with error code: ' + c;
+	},
+	sleep : async time => {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve();
+			}, time);
+		});
+	},
+	verify : (o1, o2, ignore) => {
+		if (ignore) {
+			ignore.forEach(v => {
+				delete o1[v];
+				delete o2[v];
+			});
+		}
+		const jo1 = JSON.stringify(o1);
+		const jo2 = JSON.stringify(o2);
+		if (jo1!==jo2) {
+			console.log('- target1');
+			console.log(JSON.stringify(o1));
+			console.log('- target2');
+			console.log(JSON.stringify(o2));
+			return false;
+		}
+		return true;
 	}
 };

@@ -95,7 +95,9 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 	uint16_t version, draftno;
 	vector<account_name> editors;
 
-	auto rec = d.find(draftno);
+	auto rec = d.find(cdraftid);
+	eosio::print("::", rec->cdraftid);
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	gen_draftno(cipherid, version, draftno);
 
 	editors.push_back(sender);
