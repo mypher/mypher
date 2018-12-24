@@ -7,6 +7,8 @@
 'use_strict'
 
 const eos = require('./eos');
+const assert = require('assert');
+const expect = require('expect.js');
 
 const connect = async d => {
 	try {
@@ -98,21 +100,41 @@ module.exports = {
 		});
 	},
 	verify : (o1, o2, ignore) => {
-		if (ignore) {
-			ignore.forEach(v => {
-				delete o1[v];
-				delete o2[v];
-			});
-		}
-		const jo1 = JSON.stringify(o1);
-		const jo2 = JSON.stringify(o2);
-		if (jo1!==jo2) {
-			console.log('- target1');
-			console.log(JSON.stringify(o1));
-			console.log('- target2');
-			console.log(JSON.stringify(o2));
+		let jo1 = Object.assign({}, o1);
+		let jo2 = Object.assign({}, o2);
+		const err = (o1, o2, n) => {
+			if (JSON.stringify(o1[n])!==JSON.stringify(o2[n])) {
+				console.log('member:' + n + ' is different from expected value');
+				console.log('- target1');
+				console.log(JSON.stringify(o1));
+				console.log('- target2');
+				console.log(JSON.stringify(o2));
+				return true;
+			}
 			return false;
 		}
+		if (ignore) {
+			ignore.forEach(v => {
+				delete jo1[v];
+				delete jo2[v];
+			});
+		}
+		for (let i in jo1) {
+			if (err(jo1, jo2, i)) {
+				return false;
+			}
+		}
+		for (let i in jo2) {
+			if (err(jo1, jo2, i)) {
+				return false;
+			}
+		}
 		return true;
+	},
+	checkIfMissAuth : (o, n) => {
+		assert.equal(o, 'missing authority of ' +n);
+	},
+	checkIfSent : o => {
+		expect(o).to.have.property('transaction_id');
 	}
 };

@@ -301,22 +301,22 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	require_auth(sender);
 
 	// check if name is set
-	eosio_assert_code(name.length()>=NAME_MINLEN, NAME_TOO_SHORT);
+	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
 	
 	// check if approver data is comformable
-	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_APPROVER);
+	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_PARAM);
 
 	// check if approvers is invalid
-	eosio_assert_code(Person::check_list(approvers), INVALID_APPROVER);
+	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
 	
 	// check if pic is invalid
-	eosio_assert_code(Person::check_list(pic), INVALID_PIC);
+	eosio_assert_code(Person::check_list(pic), INVALID_PARAM);
 	
 	// check rewardid
 	Validator::check_tokenowner(rewardid, cipherid);
 
 	// check if approver is set
-	eosio_assert_code(approvers.size()>0, APPROVER_NOT_SET);
+	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
 
 	// check if quantity is set only in case that rewardid is set
 	eosio_assert_code(

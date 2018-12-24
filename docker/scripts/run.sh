@@ -78,7 +78,7 @@ fi
 
 if [ -z $1 ]; then
 	# wait for running of nodeos
-	for i in {1..5}
+	for i in {1..10}
 	do
 		result=`cleos set contract myphersystem /contracts/eosio.system`
 		if [ -z $result ];

@@ -20,6 +20,8 @@ using namespace eosio;
  * @brief the contract for managing a group named "cipher"
  */
 class Cipher : virtual public MypherBase {
+private:
+	const static int NAME_MINLEN = 6;
 
 public:
 	/**
@@ -99,7 +101,7 @@ public:
 	 */
 	[[eosio::action]]
 	void cupdate(const account_name sender, const uint64_t cipherid, 
-				const uint64_t cdraftid, const uint16_t version, const uint16_t draftno, 
+				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
 				const string& name, const vector<string>& tags, 
 				const vector<account_name>& editors, const string& hash,
 				const uint16_t nofapproval, const vector<account_name>& approvers,
@@ -120,9 +122,9 @@ public:
 private:
 	bool can_edit(const account_name& sender, const vector<account_name>& editors);
 	/**
-	 * @brief generate version and draftno for new draft 
+	 * @brief generate version and no for new draft 
 	 */
-	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& draftno);
+	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no);
 
 	void check_data(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
@@ -136,7 +138,7 @@ public:
 	static bool is_draft_version(const uint64_t cipherid, const uint16_t version);
 	static bool exists(const uint64_t cipherid); 
 	static bool is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid);
-	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& draftno);
+	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& no);
 };
 
 } // mypher

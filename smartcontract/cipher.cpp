@@ -15,12 +15,12 @@ namespace mypher {
 
 using namespace eosio;
 
-uint64_t Cipher::gen_secondary_key(const uint16_t& ver, const uint16_t& draftno) {
-	uint64_t ret = (uint64_t{ver} << 16) | draftno;
+uint64_t Cipher::gen_secondary_key(const uint16_t& ver, const uint16_t& no) {
+	uint64_t ret = (uint64_t{ver} << 16) | no;
 	return ret;
 }
 
-void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& draftno ) {
+void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no ) {
 	cformal_data d1(self, self);
 	auto rec1 = d1.find(cipherid);
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
@@ -37,8 +37,8 @@ void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& d
 	eosio_assert_code(rec3!=idx.rend(), NOT_FOUND);
 	
 	// if the version of most recent draft is already formaled, then 1
-	// if is not formaled, then recent draftno +1
-	draftno = (rec2->version==rec3->version) ? 1 : rec3->no + 1;
+	// if is not formaled, then recent no +1
+	no = (rec2->version==rec3->version) ? 1 : rec3->no + 1;
 }
 
 bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
@@ -92,20 +92,19 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 
 	cdraft_data d(self, cipherid);
 	uint64_t newid = d.available_primary_key();
-	uint16_t version, draftno;
+	uint16_t version, no;
 	vector<account_name> editors;
 
 	auto rec = d.find(cdraftid);
-	eosio::print("::", rec->cdraftid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	gen_draftno(cipherid, version, draftno);
+	gen_draftno(cipherid, version, no);
 
 	editors.push_back(sender);
 	// insert new draft
 	d.emplace(sender, [&](auto& dd) {
 		dd.cdraftid = newid;
 		dd.version = version;
-		dd.no = draftno;
+		dd.no = no;
 		dd.formal = false;
 		dd.name = rec->name;
 		dd.tags = rec->tags;
@@ -119,7 +118,7 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 }
 
 void Cipher::cupdate(const account_name sender, const uint64_t cipherid, 
-				const uint64_t cdraftid, const uint16_t version, const uint16_t draftno, 
+				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
 				const string& name, const vector<string>& tags, 
 				const vector<account_name>& editors, const string& hash,
 				const uint16_t nofapproval, const vector<account_name>& approvers,
@@ -138,8 +137,8 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	cdraft_data d(self, cipherid);
 	auto rec = d.find(cdraftid);
 	// check if draft is exists
-	eosio_assert_code(rec==d.end(), NOT_FOUND);
-	eosio_assert_code((version==rec->version && draftno==rec->no), NOT_FOUND);
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+	eosio_assert_code((version==rec->version && no==rec->no), NOT_FOUND);
 	// check if sender can edit this draft
 	eosio_assert_code(can_edit(sender, rec->editors), SENDER_CANT_EDIT);
 	// update data
@@ -237,6 +236,9 @@ void Cipher::check_data(const account_name sender,
 	// check if sender is logined user
 	require_auth(sender);
 
+	// check if "name" is of sufficient length
+	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
+
 	// check if editors is valid
 	eosio_assert_code(editors.size()>0, INVALID_PARAM);
 	eosio_assert_code(Person::check_list(editors), INVALID_PARAM);
@@ -257,7 +259,7 @@ void Cipher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& 
 	Task::tdraft_data d(SELF, cipherid);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
-		eosio_assert_code(rec!=d.end(), INVALID_TASK);
+		eosio_assert_code(rec!=d.end(), INVALID_PARAM);
 	}
 }
 
@@ -265,7 +267,7 @@ void Cipher::validate_tokenlist(const vector<uint64_t>& list) {
 	Token::token_data d(SELF, SELF);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
-		eosio_assert_code(rec!=d.end(), INVALID_TOKEN);
+		eosio_assert_code(rec!=d.end(), INVALID_PARAM);
 	}
 }
 

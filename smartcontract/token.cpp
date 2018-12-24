@@ -44,7 +44,7 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 	// update cipher information
 	Cipher::cdraft_data d2(self, issuer);
 	auto rec = d2.find(cdraftid);
-	eosio_assert_code(rec!=d2.end(), CIPHER_NOT_FOUND);
+	eosio_assert_code(rec!=d2.end(), NOT_FOUND);
 	// append token to cipher
 	d2.modify(rec, sender, [&](auto& dd){
 		dd.tokenlist.push_back(id);	
@@ -160,7 +160,7 @@ void Token::check_data( const account_name sender,
 
 bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid) {
 	Cipher::cdraft_data d(SELF, cipherid);
-	eosio_assert_code(d.begin()!=d.end(), CIPHER_NOT_FOUND);
+	eosio_assert_code(d.begin()!=d.end(), NOT_FOUND);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
 		auto found = std::find(it->tokenlist.begin(), it->tokenlist.end(), tokenid);
 		if (found!=it->tokenlist.end()) return true;
