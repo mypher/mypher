@@ -12,6 +12,7 @@ const eos = require('./eos');
 
 module.exports = () => {
 	describe('cnew', () => {
+		const N = 'cnew';
 		const _P = p => {
 			let ret = {
 				sender : 'test1',
@@ -28,43 +29,43 @@ module.exports = () => {
 		};
 		it('invalid "sender"',  async () => {
 			assert.equal(await tools.connect(1), true);
-			const ret = await tools.push('cnew', _P({sender:'noname'}));
+			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
 		it('"editors" is not set',  async () => {
-			const ret = await tools.push('cnew', _P({editors:[]}));
+			const ret = await tools.push(N, _P({editors:[]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "editors"',  async () => {
-			let ret = await tools.push('cnew', _P({editors:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({editors:['test1', 'mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cnew', _P({editors:['a', 'test2']}));
+			ret = await tools.push(N, _P({editors:['a', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cnew', _P({editors:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({editors:['mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is not set',  async () => {
-			const ret = await tools.push('cnew', _P({approvers:[]}));
+			const ret = await tools.push(N, _P({approvers:[]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "approvers"',  async () => {
-			let ret = await tools.push('cnew', _P({approvers:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({approvers:['test1', 'mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cnew', _P({approvers:['a', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['a', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cnew', _P({approvers:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is 0',  async () => {
-			const ret = await tools.push('cnew', _P({nofapproval:0}));
+			const ret = await tools.push(N, _P({nofapproval:0}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "nofapproval"',  async () => {
-			let ret = await tools.push('cnew', _P({nofapproval:3}));
+			let ret = await tools.push(N, _P({nofapproval:3}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cnew', _P({nofapproval:2}));
+			ret = await tools.push(N, _P({nofapproval:2}));
 			tools.checkIfSent(ret);
-			ret = await tools.push('cnew', _P({nofapproval:1}));
+			ret = await tools.push(N, _P({nofapproval:1}));
 			tools.checkIfSent(ret);
 		});
 		it('check if the data is correctly generated', async () => {
@@ -97,6 +98,7 @@ module.exports = () => {
 		});
 	});
 	describe('cnewdraft', () => {
+		const N = 'cnewdraft';
 		const _P = p => {
 			let ret = {
 				sender : 'test1',
@@ -116,15 +118,15 @@ module.exports = () => {
 			assert.equal(ret,tools.message(1));
 		});
 		it('draftid not found', async () => {
-			const ret = await tools.push('cnewdraft', _P({cdraftid:10}));
+			const ret = await tools.push(N, _P({cdraftid:10}));
 			assert.equal(ret,tools.message(1));
 		});
 		it('check if data is correctly copied', async () => {
 			const p = _P({});
-			let ret = await tools.push('cnewdraft', p);
+			let ret = await tools.push(N, p);
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.push('cnewdraft', p);
+			ret = await tools.push(N, p);
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:p.cipherid, c:2});
@@ -145,6 +147,7 @@ module.exports = () => {
 		});
 	});
 	describe('cupdate', () => {
+		const N = 'cupdate';
 		const _P = p => {
 			let ret = {
 				cipherid : 0,
@@ -166,59 +169,59 @@ module.exports = () => {
 			return ret;
 		};
 		it('invalid "sender"',  async () => {
-			const ret = await tools.push('cupdate', _P({sender:'noname'}));
+			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
 		it('"editors" is not set',  async () => {
-			const ret = await tools.push('cupdate', _P({editors:[]}));
+			const ret = await tools.push(N, _P({editors:[]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "editors"',  async () => {
-			let ret = await tools.push('cupdate', _P({editors:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({editors:['test1', 'mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({editors:['a', 'test2']}));
+			ret = await tools.push(N, _P({editors:['a', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({editors:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({editors:['mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is not set',  async () => {
-			const ret = await tools.push('cupdate', _P({approvers:[]}));
+			const ret = await tools.push(N, _P({approvers:[]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "approvers"',  async () => {
-			let ret = await tools.push('cupdate', _P({approvers:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({approvers:['test1', 'mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({approvers:['a', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['a', 'test2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({approvers:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['mamamama', 'test2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is 0',  async () => {
-			const ret = await tools.push('cupdate', _P({nofapproval:0}));
+			const ret = await tools.push(N, _P({nofapproval:0}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "nofapproval"',  async () => {
-			let ret = await tools.push('cupdate', _P({approvers:['test1', 'test2'], nofapproval:3}));
+			let ret = await tools.push(N, _P({approvers:['test1', 'test2'], nofapproval:3}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({approvers:['test1', 'test2'], nofapproval:2}));
+			ret = await tools.push(N, _P({approvers:['test1', 'test2'], nofapproval:2}));
 			tools.checkIfSent(ret);
-			ret = await tools.push('cupdate', _P({nofapproval:2}));
+			ret = await tools.push(N, _P({nofapproval:2}));
 			tools.checkIfSent(ret);
 		});
 		it('"name" is of invalid length',  async () => {
-			let ret = await tools.push('cupdate', _P({name:'12345'}));
+			let ret = await tools.push(N, _P({name:'12345'}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({name:''}));
+			ret = await tools.push(N, _P({name:''}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push('cupdate', _P({name:'123456'}));
+			ret = await tools.push(N, _P({name:'123456'}));
 			tools.checkIfSent(ret);
 		});
 		it('"tasklist" has invalid task',  async () => {
-			let ret = await tools.push('cupdate', _P({tasklist:[1]}));
+			let ret = await tools.push(N, _P({tasklist:[1]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"tokenlist" has invalid token',  async () => {
-			let ret = await tools.push('cupdate', _P({tokenlist:[1]}));
+			let ret = await tools.push(N, _P({tokenlist:[1]}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('check data',  async () => {
@@ -226,7 +229,7 @@ module.exports = () => {
 			// TODO:valis tokenlist
 			// TODO:valid hash
 			let p = _P({});
-			let ret = await tools.push('cupdate', p);
+			let ret = await tools.push(N, p);
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:p.cipherid, c:2});
@@ -234,6 +237,7 @@ module.exports = () => {
 		});
 	});
 	describe('capprove', () => {
+		const N = 'capprove';
 		const _P = p => {
 			let ret = {
 				cipherid : 0,
@@ -245,29 +249,29 @@ module.exports = () => {
 			return ret;
 		};
 		it('invalid "sender"',  async () => {
-			const ret = await tools.push('capprove', _P({sender:'noname'}));
+			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
 		it('sender is not approver',  async () => {
 			assert.equal(await tools.connect(4), true);
-			const ret = await tools.push('capprove', _P({sender:'test4'}));
+			const ret = await tools.push(N, _P({sender:'test4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('cipherid not found',  async () => {
 			assert.equal(await tools.connect(3), true);
-			const ret = await tools.push('capprove', _P({cipherid:10}));
+			const ret = await tools.push(N, _P({cipherid:10}));
 			assert.equal(ret,tools.message(1));
 		});
 		it('cdraftid not found',  async () => {
-			const ret = await tools.push('capprove', _P({cdraftid:10}));
+			const ret = await tools.push(N, _P({cdraftid:10}));
 			assert.equal(ret,tools.message(1));
 		});
 		it('formal version',  async () => {
-			const ret = await tools.push('capprove', _P({cdraftid:0}));
+			const ret = await tools.push(N, _P({cdraftid:0}));
 			assert.equal(ret,tools.message(3));
 		});
 		it('success',  async () => {
-			let ret = await tools.push('capprove', _P({}));
+			let ret = await tools.push(N, _P({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
@@ -275,7 +279,7 @@ module.exports = () => {
 			assert.equal(draft[1].approved[0], 'test3');
 		});
 		it('already approved',  async () => {
-			let ret = await tools.push('capprove', _P({}));
+			let ret = await tools.push(N, _P({}));
 			assert.equal(ret,tools.message(6));
 		});
 		it('check if approved is cleared after updating',  async () => {
@@ -288,7 +292,7 @@ module.exports = () => {
 			assert.equal(draft[1].approved.length, 0);
 		});
 		it('reapprove',  async () => {
-			let ret = await tools.push('capprove', _P({}));
+			let ret = await tools.push(N, _P({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
@@ -297,7 +301,7 @@ module.exports = () => {
 		});
 		it('fulfill the requirement of approval', async () => {
 			assert.equal(await tools.connect(2), true);
-			let ret = await tools.push('capprove', _P({'sender':'test2'}));
+			let ret = await tools.push(N, _P({'sender':'test2'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
@@ -310,11 +314,12 @@ module.exports = () => {
 		});
 		it('approve formaled version', async () => {
 			assert.equal(await tools.connect(1), true);
-			const ret = await tools.push('capprove', _P({sender:'test1', cdraftid:2}));
+			const ret = await tools.push(N, _P({sender:'test1', cdraftid:2}));
 			assert.equal(ret,tools.message(3));
 		});
 	});
 	describe('crevapprove', () => {
+		const N = 'crevapprove';
 		const _P = p => {
 			let ret = {
 				cipherid : 0,
@@ -331,26 +336,26 @@ module.exports = () => {
 			await tools.sleep(500);
 		});
 		it('invalid "sender"',  async () => {
-			const ret = await tools.push('crevapprove', _P({sender:'noname'}));
+			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
 		it('cipherid not found',  async () => {
-			const ret = await tools.push('crevapprove', _P({cipherid:10}));
+			const ret = await tools.push(N, _P({cipherid:10}));
 			assert.equal(ret,tools.message(1));
 		});
 		it('already formal',  async () => {
 			assert.equal(await tools.connect(2), true);
-			const ret = await tools.push('crevapprove', _P({sender:'test2',cdraftid:1}));
+			const ret = await tools.push(N, _P({sender:'test2',cdraftid:1}));
 			assert.equal(ret,tools.message(3));
 		});
 		it('sender is not approver',  async () => {
 			assert.equal(await tools.connect(4), true);
-			const ret = await tools.push('crevapprove', _P({sender:'test4'}));
+			const ret = await tools.push(N, _P({sender:'test4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('sender does not approved yet',  async () => {
 			assert.equal(await tools.connect(1), true);
-			const ret = await tools.push('crevapprove', _P({}));
+			const ret = await tools.push(N, _P({}));
 			assert.equal(ret,tools.message(7));
 		});
 		it('success to reverse approval',  async () => {
@@ -358,7 +363,7 @@ module.exports = () => {
 			let ret = await tools.push('capprove', _P({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.push('crevapprove', _P({}));
+			ret = await tools.push(N, _P({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:'myphersystem', c:3});

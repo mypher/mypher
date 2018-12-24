@@ -29,7 +29,10 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 	// check if specified draft of cipher exists
 	Cipher::cdraft_data cd(self, cipherid);
 	auto crec = cd.find(cdraftid);
-	eosio_assert_code(crec!=cd.end(), INVALID_PARAM);
+	eosio_assert_code(crec!=cd.end(), NOT_FOUND);
+	
+	// check if cdraftid is later than formal version
+	eosio_assert_code(Cipher::is_draft_version(cipherid, cdraftid), INVALID_PARAM);
 
 	// common check
 	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, 
@@ -313,7 +316,9 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	eosio_assert_code(Person::check_list(pic), INVALID_PARAM);
 	
 	// check rewardid
-	Validator::check_tokenowner(rewardid, cipherid);
+	if (rewardid!=NUMBER_NULL) {
+		Validator::check_tokenowner(rewardid, cipherid);
+	}
 
 	// check if approver is set
 	eosio_assert_code(approvers.size()>0, INVALID_PARAM);

@@ -85,7 +85,7 @@ public:
 	 */
 	[[eosio::action]]
 	void tanew(	const account_name sender, const uint64_t cipherid, uint64_t cdraftid,
-				const string& name, const uint64_t rewardid, const uint64_t rquantity, 
+				const string& name, const uint64_t rewardid, const uint64_t quantity, 
 				const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
