@@ -318,16 +318,51 @@ module.exports = () => {
 		const _P = p => {
 			let ret = {
 				cipherid : 0,
-				cdraftid : 2,
-				sender : 'test3',
+				cdraftid : 3,
+				sender : 'test1',
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
 			return ret;
 		};
+		it('preparation', async () => {
+			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:1});
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
 		it('invalid "sender"',  async () => {
-			//const ret = await tools.push('capprove', _P({sender:'noname'}));
-			//tools.checkIfMissAuth(ret, 'noname');
+			const ret = await tools.push('crevapprove', _P({sender:'noname'}));
+			tools.checkIfMissAuth(ret, 'noname');
+		});
+		it('cipherid not found',  async () => {
+			const ret = await tools.push('crevapprove', _P({cipherid:10}));
+			assert.equal(ret,tools.message(1));
+		});
+		it('already formal',  async () => {
+			assert.equal(await tools.connect(2), true);
+			const ret = await tools.push('crevapprove', _P({sender:'test2',cdraftid:1}));
+			assert.equal(ret,tools.message(3));
+		});
+		it('sender is not approver',  async () => {
+			assert.equal(await tools.connect(4), true);
+			const ret = await tools.push('crevapprove', _P({sender:'test4'}));
+			assert.equal(ret,tools.message(5));
+		});
+		it('sender does not approved yet',  async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push('crevapprove', _P({}));
+			assert.equal(ret,tools.message(7));
+		});
+		it('success to reverse approval',  async () => {
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push('capprove', _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.push('crevapprove', _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			const draft = await tools.getHead({n:'cdraft',s:'myphersystem', c:3});
+			console.log(draft[2]);
 		});
 	});
 };
