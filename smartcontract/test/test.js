@@ -10,6 +10,9 @@ const cipher = require('./cipher');
 const task = require('./task');
 const eos = require('./eos');
 
+const pass_cipher = true;
+const pass_task = false;
+
 describe('hooks', () => {
 
 	before(async () => {
@@ -24,8 +27,8 @@ describe('hooks', () => {
 	afterEach(() => {
 	});
 
-	describe('Cipher', cipher);
-	describe('Task', task);
+	describe('Cipher', cipher[pass_cipher]);
+	describe('Task', task[pass_task]);
 
 });
 

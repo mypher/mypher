@@ -27,25 +27,5 @@ void Validator::check_tokenowner(const uint64_t tokenid, const uint64_t cipherid
 void Validator::check_hash(const string& hash) {
 	// TODO:
 }
-/*
-void Validator::check_cipher(const uint64_t id) {
-	if (id==NUMBER_NULL) return;
-
-	Cipher::data d(SELF, SELF);
-	auto rec = d.find(id);
-	eosio_assert_code(rec!=d.end(), CIPHER_NOT_FOUND);
-	eosio_assert_code(!rec->formal, CIPHER_NOT_DRAFT);
-	auto idx = d.get_index<N(secondary_key)>();
-	auto lower = idx.lower_bound(Cipher::gen_secondary_key(rec->cipherid, rec->version, 0));
-	uint64_t perversion = lower->version;
-	for (auto it=lower; it!=idx.end(); ++it) {
-		// if there is a formal draft in the same version, it can't be edited 
-		eosio_assert_code(it->formal==false, CIPHER_NOT_DRAFT);
-		// if there is a newer version in the same cipher, it can'T be edited 
-		eosio_assert_code(it->version==perversion, CIPHER_NOT_DRAFT);
-		perversion = it->version;
-	}
-}
-*/
 
 } // mypher

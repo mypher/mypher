@@ -10,7 +10,8 @@ const expect = require('expect.js');
 const tools = require('./tools');
 const eos = require('./eos');
 
-module.exports = () => {
+module.exports = {
+false : () => {
 	describe('cnew', () => {
 		const N = 'cnew';
 		const _P = p => {
@@ -370,4 +371,57 @@ module.exports = () => {
 			console.log(draft[2]);
 		});
 	});
+}, true : () => {
+	describe('just create the data which is of premise of next testing', () => {
+		const _P = p => {
+			let ret = {
+				sender : 'test1',
+				name : 'test111',
+				editors : ['test1', 'test2'],
+				tags : ['aaa', 'えい'],
+				hash : '',
+				nofapproval : 2,
+				approvers : ['test1', 'test2']
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		it('create data', async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push('cnew', _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('create a couple of draft', async () => {
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve a draft', async () => {
+			let ret = await tools.push('capprove', {sender:'test1', cipherid:0, cdraftid:1}); 
+			tools.checkIfSent(ret);
+			assert.equal(await tools.connect(2), true);
+			ret = await tools.push('capprove', {sender:'test2', cipherid:0, cdraftid:1}); 
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('create a new draft', async () => {
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:1});
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			const draft = await tools.getHead({n:'cdraft',s:0, c:10});
+			console.log(draft);
+		});
+	});
+}
 };
+

@@ -190,6 +190,7 @@ void Cipher::capprove(const account_name sender, const uint64_t cipherid, const 
 			dd.name = rec->name;
 			dd.tags = rec->tags;
 		});
+		// TODO:task
 	}
 }
 
