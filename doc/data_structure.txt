@@ -17,7 +17,7 @@ package Cipher <<Frame>> {
 		nofapproval : uint16
 		approvers : name[]
 		approved : name[]
-		tasklist : TASKID[]
+		tasklist : TDRAFTID[]
 		tokenlist : TOKENID[]
 		--
 		key2 -> version + no

@@ -214,18 +214,22 @@ false : () => {
 			ret = await tools.push('capprove', {sender:'test2', cipherid:0, cdraftid:3}); 
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.push(N, _P({}));
+			ret = await tools.getHead({n:'tformal', s:'myphersystem', c:5});
+			console.log(ret);
+			let p = _P({});
+			ret = await tools.push(N, p);
 			assert.equal(ret,tools.message(2));
 		});
 
 	});
 	describe('taaprvpic', () => {
+		// - only formal data can be applied the pic
 		const N = 'taaprvpic';
 		const _P = p => {
 			let ret = {
 				sender : 'test1',
 				tformalid : 0,
-				vec : 1
+				vec : true
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
@@ -236,13 +240,26 @@ false : () => {
 			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
-		it('cipherid not found',  async () => {
-			const ret = await tools.push(N, _P({cipherid:10}));
+		it('tformalid not found',  async () => {
+			const ret = await tools.push(N, _P({tformalid:10}));
 			assert.equal(ret,tools.message(1));
 		});
-		it('cdraftid not found',  async () => {
-			const ret = await tools.push(N, _P({cdraftid:10}));
-			assert.equal(ret,tools.message(1));
+		it('older version', async () => {
+			// TODO:
+		});
+		it('reverse to unapproved task', async () => {
+			let ret = await tools.push(N, _P({vec:false}));
+			assert.equal(ret,tools.message(7));
+		});
+		it('success to apply', async() => {
+			let ret = await tools.push(N, _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.getHead({n:'tformal', s:0 , c:5});
+			assert.equal(ret.length, 1);
+			assert.equal(ret[0].approve_pic.length, 1);
+			assert.equal(ret[0].approve_pic[0], 'test1');
+			console.log(ret);
 		});
 	});
 

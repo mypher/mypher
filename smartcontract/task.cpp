@@ -367,4 +367,30 @@ bool Task::completed(const uint64_t tformalid) {
 	return false;
 }
 
+void Task::formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist) {
+	tformal_data tfd(SELF, SELF); 
+	tdraft_data tdd(SELF, cipherid);
+
+	// delete task list of the previous version
+	auto idx = tfd.get_index<N(secondary_key)>();
+	auto rec = idx.find(cipherid);
+	while(rec!=idx.end()) {
+		auto prev = rec;
+		rec++;
+		idx.erase(prev);
+	}
+
+	// formalize task list of new version
+	for (auto it=tasklist.begin(); it!=tasklist.end(); ++it) {
+		auto rec = tdd.find(*it);
+		eosio_assert_code(rec!=tdd.end(), INCONSISTENT_DATA_EXISTS);
+		tfd.emplace(sender, [&](auto& dd) { 
+			dd.cipherid = cipherid; 
+			dd.tdraftid = rec->tdraftid; 
+			dd.name = rec->name;
+			dd.tags = rec->tags;
+		});	
+	}
+}
+
 } // mypher
