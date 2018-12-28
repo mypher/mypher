@@ -18,7 +18,7 @@ docker run --rm \
 -p 7100:7100 \
 -v ${PWD}/../../docker/contracts:/contracts \
 -v ${PWD}/../../docker/scripts:/scripts \
--v ${PWD}/dummy:/app \
+-v ${PWD}/dummy:/app/source \
 -d \
 mypher_test \
 /bin/bash -c "/scripts/run.sh"

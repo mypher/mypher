@@ -167,7 +167,7 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 		// check if sender doesn't approve pic yet
 		eosio_assert_code(result3 != tfrec->approve_pic.end(), SENDER_NOT_APPROVE_YET);
 		// check if resutls is being reviewed
-		eosio_assert_code(tfrec->approve_results.size()>0, RESULTS_IN_REVIEW);
+		eosio_assert_code(tfrec->approve_results.size()==0, RESULTS_IN_REVIEW);
 	}
 	// update approval lists
 	tfd.modify(tfrec, sender, [&](auto& dd){

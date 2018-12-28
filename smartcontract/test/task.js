@@ -114,7 +114,7 @@ false : () => {
 				quantity : 0xffffffff,
 				nofapproval : 1,
 				approvers : ['test1', 'test3'],
-				pic : ['test4', 'test3'],
+				pic : ['test1', 'test3'],
 				hash : '',
 				tags : ['aaa','ddd', 'eee'],
 			};
@@ -255,14 +255,53 @@ false : () => {
 			let ret = await tools.push(N, _P({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.getHead({n:'tformal', s:0 , c:5});
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
 			assert.equal(ret.length, 1);
 			assert.equal(ret[0].approve_pic.length, 1);
 			assert.equal(ret[0].approve_pic[0], 'test1');
 			console.log(ret);
 		});
+		it('duplicate approval', async () => {
+			let ret = await tools.push(N, _P({}));
+			assert.equal(ret,tools.message(6));
+		});
+		it('reverse an approval', async() => {
+			let ret = await tools.push(N, _P({vec:false}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
+			assert.equal(ret.length, 1);
+			assert.equal(ret[0].approve_pic.length, 0);
+			console.log(ret);
+		});
+		it('an approval from a person is not approver', async () => {
+			assert.equal(await tools.connect(4), true);
+			let ret = await tools.push(N, _P({sender:'test4'}));
+			assert.equal(ret,tools.message(5));
+		});
+		it('in review', async() => {
+			// TODO:
+		});
 	});
-
+	describe('taaprvrslt', async() => {
+		const N = 'taaprvrslt';
+		const _P = p => {
+			let ret = {
+				sender : 'test1',
+				tformalid : 0,
+				vec : true
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		it('invalid "sender"', async() => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push(N, _P({sender:'noname'}));
+			tools.checkIfMissAuth(ret, 'noname');
+		});
+		
+	});
 }, true : () => {
 }
 };

@@ -417,6 +417,8 @@ false : () => {
 			await tools.sleep(500);
 			ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:1});
 			tools.checkIfSent(ret);
+		});
+		it('output generated data', async () => {
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:10});
 			console.log(draft);
