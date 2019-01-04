@@ -217,14 +217,9 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	// check if results is already approved
 	auto result2 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end(), sender);
 	// check if required number of approvers approve pic
-	eosio_assert_code((cdrec->nofapproval + tdrec->pic.size()) <= tfrec->approve_pic.size(), PIC_NOT_APPROVED);
-	// check if each pic approve pic lists
-	for (auto it = tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
-		auto result3 = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), *it);
-		eosio_assert_code(result3!=tfrec->approve_pic.end(), PIC_NOT_APPROVED);
-	}
+	eosio_assert_code(pic_approved(tformalid), PIC_NOT_APPROVED);
 	// check if already approval requirements for results are already fulfilled
-	eosio_assert_code(cdrec->nofapproval>=tfrec->approve_results.size(), TASK_COMPLETED);
+	eosio_assert_code(cdrec->nofapproval>tfrec->approve_results.size(), TASK_COMPLETED);
 	// check if sender approve results
 	auto result4 = std::find(tfrec->approve_results.begin(), tfrec->approve_results.end(), sender);
 	if (vec) { // approve
@@ -391,6 +386,40 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 			dd.tags = rec->tags;
 		});	
 	}
+}
+
+bool Task::pic_approved(const uint64_t tformalid) {
+	// get tformal data	
+	tformal_data tfd(SELF, SELF);
+	auto tfrec = tfd.find(tformalid);
+	// check if data exists
+	if (tfrec==tfd.end()) {
+		return false;
+	}
+	// get tdraft data 
+	tdraft_data tdd(SELF, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	if (tdrec==tdd.end()) {
+		return false;
+	}
+	// check if number of approvals by approvers is more than the requirement
+	uint64_t cnt = 0;
+	for (auto it=tfrec->approve_pic.begin(); it!=tfrec->approve_pic.end(); ++it) {
+		auto found = std::find(tdrec->approvers.begin(), tdrec->approvers.end(), *it);
+		cnt += (found!=tdrec->approvers.end()) ? 1 : 0;
+	} 
+	if (cnt<tdrec->nofapproval) {
+		return false;
+	}
+	// check if all members approve the pic members
+	for (auto it=tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
+		auto found = std::find(tfrec->approve_pic.begin(), tfrec->approve_pic.end(), *it);
+		if (found==tfrec->approve_pic.end()) {
+			return false;
+		}
+	} 
+	return true;
 }
 
 } // mypher

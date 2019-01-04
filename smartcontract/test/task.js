@@ -198,7 +198,6 @@ false : () => {
 			let cdraft = await tools.getHead({n:'cdraft', s:p.cipherid, c:6});
 			assert.equal(tdraft.length, 2);
 			tools.verify(p, tdraft[1], ['cipherid', 'tdraftid']);
-			console.log(cdraft);
 			assert.equal(cdraft[3].tasklist.length, 1);
 			assert.equal(cdraft[3].tasklist[0], tdraft[1].tdraftid);
 			assert.equal(cdraft[5].tasklist.length, 1);
@@ -213,9 +212,10 @@ false : () => {
 			assert.equal(await tools.connect(2), true);
 			ret = await tools.push('capprove', {sender:'test2', cipherid:0, cdraftid:3}); 
 			tools.checkIfSent(ret);
+		});
+		it('...continuation', async ()=> {
 			await tools.sleep(500);
 			ret = await tools.getHead({n:'tformal', s:'myphersystem', c:5});
-			console.log(ret);
 			let p = _P({});
 			ret = await tools.push(N, p);
 			assert.equal(ret,tools.message(2));
@@ -259,7 +259,6 @@ false : () => {
 			assert.equal(ret.length, 1);
 			assert.equal(ret[0].approve_pic.length, 1);
 			assert.equal(ret[0].approve_pic[0], 'test1');
-			console.log(ret);
 		});
 		it('duplicate approval', async () => {
 			let ret = await tools.push(N, _P({}));
@@ -272,7 +271,6 @@ false : () => {
 			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
 			assert.equal(ret.length, 1);
 			assert.equal(ret[0].approve_pic.length, 0);
-			console.log(ret);
 		});
 		it('an approval from a person is not approver', async () => {
 			assert.equal(await tools.connect(4), true);
@@ -300,8 +298,214 @@ false : () => {
 			const ret = await tools.push(N, _P({sender:'noname'}));
 			tools.checkIfMissAuth(ret, 'noname');
 		});
-		
+		it('tformalid not found',  async () => {
+			const ret = await tools.push(N, _P({tformalid:10}));
+			assert.equal(ret,tools.message(1));
+		});
+		it('older version', async () => {
+			// TODO:
+		});
+		it('an approval from a person is not approver', async () => {
+			assert.equal(await tools.connect(4), true);
+			let ret = await tools.push(N, _P({sender:'test4'}));
+			assert.equal(ret,tools.message(5));
+		});
+		it('pic is not approved yet', async () => {
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push(N, _P({}));
+			assert.equal(ret,tools.message(15));
+		});
+		it('prepare for next testing', async () => {
+			let p = {
+				sender : 'test1',
+				tformalid : 0,
+				vec : true
+			};
+			const n = 'taaprvpic';
+			let ret = await tools.push(n, p);
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			assert.equal(await tools.connect(2), true);
+			p.sender = 'test2';
+			ret = await tools.push(n, p);
+			tools.checkIfSent(ret);
+		});
+		it('...continuation', async () => {
+			const p = {
+				sender : 'test3',
+				tformalid : 0,
+				vec : true
+			};
+			assert.equal(await tools.connect(3), true);
+			await tools.sleep(500);
+			const n = 'taaprvpic';
+			let ret = await tools.push(n, p);
+			tools.checkIfSent(ret);
+		});
+		it('try to cancel the approval in the case that the task is not approved', async () => {
+			await tools.sleep(500);
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push(N, _P({vec:false}));
+			assert.equal(ret,tools.message(7));
+		});
+		it('success to approve', async () => {
+			let ret = await tools.push(N, _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
+			assert.equal(ret.length, 1);
+			assert.equal(ret[0].approve_results.length, 1);
+		});
+		it('try to cancel the approval for pic and cancel the approval for resutls', async () => {
+			// try to cancel the approval for pic
+			const p = {
+				sender : 'test1',
+				tformalid : 0,
+				vec : false 
+			};
+			const n = 'taaprvpic';
+			let ret = await tools.push(n, p);
+			assert.equal(ret,tools.message(14));
+			// cnacel the approval for results
+			assert.equal(await tools.connect(1), true);
+			ret = await tools.push(N, _P({vec:false}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
+			assert.equal(ret.length, 1);
+			assert.equal(ret[0].approve_results.length, 0);
+		});
+		it('prepare for next testing which is in the case of completed task', async () => {
+			ret = await tools.push(N, _P({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+			assert.equal(await tools.connect(2), true);
+			ret = await tools.push(N, _P({sender:'test2'}));
+			tools.checkIfSent(ret);
+		});
+		it('...continuation', async () => {
+			await tools.sleep(500);
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
+			assert.equal(ret.length, 1);
+			assert.equal(ret[0].approve_results.length, 2);
+			assert.equal(ret[0].approve_results[0], 'test1');
+			assert.equal(ret[0].approve_results[1], 'test2');
+		});
+		it('cancel the approval in the case that the task is already approved ', async () => {
+			assert.equal(await tools.connect(1), true);
+			let ret = await tools.push(N, _P({vec:false}));
+			assert.equal(ret,tools.message(16));
+		});
 	});
 }, true : () => {
+	describe('just create the data which is of premise of next testing', () => {
+		const N_new = 'tanew';
+		const P_new = p => {
+			let ret = {
+				sender : 'test1',
+				cipherid : 0,
+				cdraftid : 3,
+				name : 'testta',
+				rewardid : 0xffffffff,
+				quantity : 0xffffffff,
+				nofapproval : 2,
+				approvers : ['test1','test2','test3'],
+				pic : ['test3'],
+				hash : '',
+				tags : ['aaa','bbb'],
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		const N_pic = 'taaprvpic';
+		const P_pic = p => {
+			let ret = {
+				sender : 'test1',
+				tformalid : 0,
+				vec : true
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		const N_rslt = 'taaprvrslt';
+		const P_rslt = p => {
+			let ret = {
+				sender : 'test1',
+				tformalid : 0,
+				vec : true
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		const N_cipher = 'capprove';
+		const P_cipher = p => {
+			let ret = {
+				sender  : 'test1',
+				cipherid  : 0,
+				cdraftid : 3,
+			};
+			Object.assign(ret, p);
+			console.log(JSON.stringify(ret));
+			return ret;
+		};
+		it('create task', async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push(N_new, P_new({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('formalize the cipher', async ()=> {
+			let ret = await tools.push(N_cipher, P_cipher({})); 
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('...continuation', async ()=> {
+			assert.equal(await tools.connect(2), true);
+			ret = await tools.push(N_cipher, P_cipher({sender:'test2'}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve the pic by test1', async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push(N_pic, P_pic({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve the pic by test2', async () => {
+			assert.equal(await tools.connect(2), true);
+			const ret = await tools.push(N_pic, P_pic({sender:'test2'}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve the pic by test3', async () => {
+			assert.equal(await tools.connect(3), true);
+			const ret = await tools.push(N_pic, P_pic({sender:'test3'}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve results by test1', async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push(N_rslt, P_rslt({}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+		it('approve results by test2', async () => {
+			assert.equal(await tools.connect(2), true);
+			const ret = await tools.push(N_rslt, P_rslt({sender:'test2'}));
+			tools.checkIfSent(ret);
+			await tools.sleep(500);
+		});
+/*		it('output generated data', async() => {
+			let ret = await tools.getHead({n:'tdraft', s:0 , c:5});
+			console.log('■tdraft');
+			console.log(ret);
+			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
+			console.log('■tformal');
+			console.log(ret);
+		}); */
+	});
 }
 };

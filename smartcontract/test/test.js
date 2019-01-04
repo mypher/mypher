@@ -8,10 +8,12 @@
 const assert = require('assert');
 const cipher = require('./cipher');
 const task = require('./task');
+const token = require('./token');
 const eos = require('./eos');
 
 const pass_cipher = true;
-const pass_task = false;
+const pass_task = true;
+const pass_token = false;
 
 describe('hooks', () => {
 
@@ -29,6 +31,7 @@ describe('hooks', () => {
 
 	describe('Cipher', cipher[pass_cipher]);
 	describe('Task', task[pass_task]);
+	describe('Token', token[pass_token]);
 
 });
 

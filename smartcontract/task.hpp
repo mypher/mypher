@@ -126,6 +126,7 @@ public:
 	static bool exists(const uint64_t tformalid);
 	static bool completed(const uint64_t tformalid);
 	static void formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist);
+	static bool pic_approved(const uint64_t tformalid);
 
 private:
 	void check_data( 

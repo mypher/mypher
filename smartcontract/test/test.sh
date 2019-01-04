@@ -23,7 +23,7 @@ docker run --rm \
 mypher_test \
 /bin/bash -c "/scripts/run.sh"
 
-sleep 30
+sleep 40
 
 echo 'test container started.'
 
