@@ -38,7 +38,6 @@ false : () => {
 		const N = 'tknew';
 		const _P = p => {
 			let ret = {
-					
 				sender : 'test1', 
 				cdraftid : 5,
 				name : '1234567', 
@@ -58,6 +57,15 @@ false : () => {
 			console.log(JSON.stringify(ret));
 			return ret;
 		};
+		it('invalid "sender"',  async () => {
+			assert.equal(await tools.connect(1), true);
+			const ret = await tools.push(N, _P({sender:'noname'}));
+			tools.checkIfMissAuth(ret, 'noname');
+		});
+		it('invalid "cdraftid"',  async () => {
+			const ret = await tools.push(N, _P({cdraftid:10}));
+			assert.equal(ret,tools.message(1));
+		});
 	});
 }, true : () => {
 }

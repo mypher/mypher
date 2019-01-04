@@ -18,12 +18,15 @@ function parse(txt) {
 	const tag_action = '[[eosio::action]]';
 	const dict = {
 		'uint64_t' : 'uint64',
+		'uint32_t' : 'uint32',
 		'uint16_t' : 'uint16',
 		'uint8_t' : 'uint8',
+		'double_t' : 'float64',
 		'string' : 'string',
 		'account_name' : 'name',
 		'bool' : 'bool',
 		'vector<uint64_t>' : 'uint64[]',
+		'vector<uint32_t>' : 'uint32[]',
 		'vector<uint16_t>' : 'uint16[]',
 		'vector<uint8_t>' : 'uint8[]',
 		'vector<string>' : 'string[]',

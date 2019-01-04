@@ -109,22 +109,22 @@ public:
 	 */
 	[[eosio::action]]
 	void tknew(const account_name sender, const uint64_t cdraftid, 
-			   const string& name, const uint64_t issuer,
-			   const uint64_t limit, const uint8_t when, 
-			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t extokenid, const uint64_t reftoken, 
-			   const uint8_t rcalctype, const uint64_t nofdesttoken, const double_t nofdesteos );
+			const string& name, const uint64_t issuer,
+			const uint64_t limit, const uint8_t when, 
+			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
+			const uint64_t extokenid, const uint64_t reftoken, 
+			const uint8_t rcalctype, const uint64_t nofdesttoken, const double_t nofdesteos);
 
 	/**
 	 * @brief update token data
 	 */
 	[[eosio::action]]
 	void tkupdate(const account_name sender, const uint64_t cdraftid,
-			   const uint64_t tokenid,
-			   const string& name, const uint64_t limit, const uint8_t when, 
-			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
-			   const uint64_t extokenid, const uint32_t reftoken,  
-			   const uint8_t rcalctype, const uint32_t nofdesttoken, double_t nofdesteos );
+			const uint64_t tokenid,
+			const string& name, const uint64_t limit, const uint8_t when, 
+			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
+			const uint64_t extokenid, const uint32_t reftoken,  
+			const uint8_t rcalctype, const uint32_t nofdesttoken, double_t nofdesteos);
 
 	/**
 	 * @brief transfer a token 
@@ -139,8 +139,8 @@ public:
 	[[eosio::action]]
 	void tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity);
 
-	[[eosio::action]]
-	void approve2ex(const account_name sender, const uint64_t tokenid);
+	//[[eosio::action]]
+	//void approve2ex(const account_name sender, const uint64_t tokenid);
 
 	/*******************************************************************
 	  methods only called from inside of the myphersystem contract
