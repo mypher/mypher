@@ -45,6 +45,7 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 	Cipher::cdraft_data d2(self, issuer);
 	auto rec = d2.find(cdraftid);
 	eosio_assert_code(rec!=d2.end(), NOT_FOUND);
+	eosio_assert_code(Cipher::is_draft_version(issuer, rec->version), ALREADY_FORMAL);
 	// append token to cipher
 	d2.modify(rec, sender, [&](auto& dd){
 		dd.tokenlist.push_back(id);	
@@ -91,6 +92,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 		// update the id registered in cipher to new one
 		Cipher::cdraft_data cd(self, rec->issuer);
 		auto crec = cd.find(cdraftid);
+		eosio_assert_code(Cipher::is_draft_version(rec->issuer, crec->version), ALREADY_FORMAL);
 		eosio_assert_code(crec!=cd.end(), INVALID_PARAM); 
 		cd.modify(crec, sender, [&](auto& dd){
 			std::replace(dd.tokenlist.begin(), dd.tokenlist.end(), rec->tokenid, id);
@@ -123,11 +125,11 @@ void Token::check_data( const account_name sender,
 	// check if sender is login user
 	require_auth(sender);
 	// check if "type" is valid
-	eosio_assert_code(type>=0&&type<TYPE_MAX, INVALID_PARAM);
+	eosio_assert_code(type<TYPE_MAX, INVALID_PARAM);
 	// check if "when" is valid
-	eosio_assert_code(when>=0&&type<WHEN_MAX, INVALID_PARAM);
+	eosio_assert_code(when<WHEN_MAX, INVALID_PARAM);
 	// check if "disposal" is valid
-	eosio_assert_code(disposal>=0&&disposal<DISPOSAL_MAX, INVALID_PARAM);
+	eosio_assert_code(disposal<DISPOSAL_MAX, INVALID_PARAM);
 	// check is task is exists
 	if (taskid!=NUMBER_NULL) {
 		eosio_assert_code(Task::exists(taskid), INVALID_PARAM);

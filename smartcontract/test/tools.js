@@ -35,6 +35,7 @@ const connect = async d => {
 
 module.exports = {
 	active : '',
+	NN : 0xffffffff, // NUMBER_NULL
 	connect : async function(d) {
 		const acnt = [
 			{},

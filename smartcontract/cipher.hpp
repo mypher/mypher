@@ -129,7 +129,7 @@ private:
 	void check_data(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<account_name>& approvers);
+				const uint16_t nofapproval, const vector<account_name>& approvers);
 	void validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& tasklist);
 	void validate_tokenlist(const vector<uint64_t>& tokenlist);
 
