@@ -13,35 +13,25 @@ const ipfs = require('../db/ipfs');
 module.exports = {
 	conv4store : function(d) {
 		d.cipherid = cmn.st2num(d.cipherid);
-		d.ruleid = cmn.st2num(d.ruleid);
+		d.tdraftid = cmn.st2num(d.tdraftid);
 		d.rewardid = cmn.st2num(d.rewardid);
-		d.rquantity = cmn.st2num(d.rquantity);
-		d.cid = cmn.st2num(d.cid);
+		d.quantity = cmn.st2num(d.quantity);
+		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;		
 	},
 	conv4disp : function(d) {
 		d.cipherid = cmn.num2st(d.cipherid);
-		d.ruleid = cmn.num2st(d.ruleid);
+		d.tdraftid = cmn.num2st(d.tdraftid);
 		d.rewardid = cmn.num2st(d.rewardid);
-		d.rquantity = cmn.num2st(d.rquantity);
-		d.cid = cmn.num2st(d.cid);
+		d.quantity = cmn.num2st(d.quantity);
+		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;		
 	},
 
 	add : async function(d) {
 		try {
-			if (!cmn.chkTypes([
-				{p:d.name, f:cmn.isEmpty, r:true},
-				{p:d.description, f:cmn.isString},
-				{p:d.rewardid, f:cmn.isStrNumber},
-				{p:d.rquantity, f:cmn.isStrNumber},
-				{p:d.pic, f:cmn.isArray},
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
 			d = this.conv4store(d);
 		} catch (e) {
-			log.error(e);
 			throw {code:'INVALID_PARAM'};
 		}
 		let ret;
@@ -82,10 +72,9 @@ module.exports = {
 			const data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
-				table : 'task',
+				table : 'tformal',
 			}, 10000);
 			let ret = [];
-			// TODO:create index
 			data.rows.forEach( v=> {
 				if (v.name.includes(d.name)) {
 					ret.push(v);
@@ -102,11 +91,10 @@ module.exports = {
 			const data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
-				table : 'task',
+				table : 'tformal',
 			}, 10000);
 			let ret = [];
 			d = parseInt(d);
-			// TODO:create index
 			data.rows.forEach( v=> {
 				if (v.cipherid === d) {
 					ret.push(v);
@@ -124,9 +112,9 @@ module.exports = {
 			let ret = {};
 			ret = await eos.getDataWithPKey({
 				code : 'myphersystem',
-				scope : 'myphersystem',
-				table : 'task'
-			}, d.id);
+				scope : d.cipherid,
+				table : 'tdraft'
+			}, d.tdraftid);
 			if (ret===null||ret.length===0) {
 				return {code:'NOT_FOUND'};
 			}
@@ -154,23 +142,12 @@ module.exports = {
 
 	update : async function(d) {
 		try {
-			if (!cmn.chkTypes([
-				{p:d.name, f:cmn.isEmpty, r:true},
-				{p:d.description, f:cmn.isString},
-				{p:d.rewardid, f:cmn.isStrNumber},
-				{p:d.rquantity, f:cmn.isStrNumber},
-				{p:d.pic, f:cmn.isArray},
-			])) {
-				return {code:'INVALID_PARAM'};
-			}
 			d = this.conv4store(d);
 		} catch (e) {
 			log.error(e);
 			throw {code:'INVALID_PARAM'};
 		}
-
 		let ret;
-
 		try {
 			ret = await ipfs.add({
 				description : d.description
@@ -193,7 +170,6 @@ module.exports = {
 				}]
 			});
 			await cmn.waitcommit(ret);
-			// if the task is owned by any cipher, check if that task was copied because of unsharing
 			if (d.cid!=cmn.NUMBER_NULL) {
 				const cdata = await eos.getDataWithPKey({
 					code : 'myphersystem',

@@ -11,31 +11,21 @@ const ipfs = require('../db/ipfs');
 const eos = require('../db/eos');
 const bignum = require('bignum');
 
-const shift24 = bignum.pow(2,24);
-const shift12 = bignum.pow(2,12);
-
-function makeSubKey(cipherid, version, draftno) {
-	cipherid = bignum(cipherid);
-	version = bignum(version);
-	draftno = bignum(draftno);
-	return cipherid.mul(shift24).add(version.mul(shift12)).add(draftno).toString();
-}
-
 module.exports = {
-	conv4store : function(d) {
-		d.id = cmn.st2num(d.id);
+	conv4store : d => {
+		d.cdraftid = cmn.st2num(d.cdraftidid);
 		d.cipherid = cmn.st2num(d.cipherid);
 		d.version = cmn.st2num(d.version);
 		d.draftno = cmn.st2num(d.draftno);
-		d.drule_req = cmn.st2num(d.drule_req);
+		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;
 	},
-	conv4disp : function(d) {
-		d.id = cmn.num2st(d.id);
+	conv4disp : d => {
+		d.cdraftid = cmn.num2st(d.cdraftid);
 		d.cipherid = cmn.num2st(d.cipherid);
 		d.version = cmn.num2st(d.version);
 		d.draftno = cmn.num2st(d.draftno);
-		d.drule_req = cmn.num2st(d.drule_req);
+		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;
 	},
 
@@ -69,7 +59,7 @@ module.exports = {
 			}, 10000);
 			let ret = [];
 			data.rows.forEach(v => {
-				if (v.formal&&v.tags.includes(d.tag)) {
+				if (v.tags.includes(d.tag)) {
 					ret.push(v);
 				}
 			});
@@ -99,7 +89,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-			}, cformalid);
+			}, d.cipherid);
 			if (key===null||key.length===0) {
 				return {code:'INVALID_PARAM'};
 			}
@@ -166,16 +156,7 @@ module.exports = {
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
-		await cmn.sleep(500);
-		for ( let i=0; i<5; i++) {
-			try {
-				await cmn.sleep(300);
-				ret = await eos.getTransaction(ret.transaction_id, ret.processed.block_num);
-				break;
-			} catch (e) {
-				// not sent yet
-			}
-		}
+		await cmn.waitcommit(ret);
 		try {
 			// TODO:reserch another way
 			// get recent record

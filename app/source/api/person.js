@@ -23,7 +23,7 @@ module.exports = {
 					scope : 'myphersystem',
 					table : 'person',
 				}, d[i] );
-				if (data!==null&&data.length>0&&d[i]===data[0].id) {
+				if (data!==null&&data.length>0&&d[i]===data[0].personid) {
 					ret.push({id:d[i], name:data[0].name});
 				}
 			}
@@ -43,11 +43,11 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-			}, d.id );
+			}, d.personid );
 			if (ret.data!==null&&ret.data.length>0) {
 				ret.data = ret.data[0];
 			}
-			ret.sys = await eos.getEosData(d.id);
+			ret.sys = await eos.getEosData(d.personid);
 			return ret;
 		} catch (e) {
 			return cmn.parseEosError(e);	
@@ -72,7 +72,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-			}, d.id, 20 );
+			}, d.personid, 20 );
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
@@ -125,7 +125,7 @@ module.exports = {
 			let ret = [];
 			data.rows.forEach(v => {
 				ret.push({
-					id : v.id,
+					id : v.personid,
 					name : v.name,
 				});
 			});
@@ -146,7 +146,7 @@ module.exports = {
 			data.rows.forEach(v => {
 				if (v.id.includes(n) || v.name.includes(n)) {
 					ret.push({
-						id : v.id,
+						id : v.personid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -160,7 +160,7 @@ module.exports = {
 	update : async d => {
 		try {
 			if (!cmn.chkTypes([
-				{p:d.id,   f:cmn.isEosID},
+				{p:d.personid,   f:cmn.isEosID},
 				{p:d.name, f:cmn.isEmpty, r:true},
 				{p:d.tags, f:cmn.isArray}
 			])) {
@@ -168,7 +168,7 @@ module.exports = {
 			}
 
 			let data = {
-				id : d.id,
+				id : d.personid,
 				name : d.name,
 				tags : d.tags
 			};
@@ -183,7 +183,7 @@ module.exports = {
 					account : 'myphersystem',
 					name : 'pupdate',
 					authorization: [{
-						actor: d.id,
+						actor: d.personid,
 						permission: 'active',
 					}],
 					data,
