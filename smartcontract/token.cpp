@@ -5,7 +5,6 @@
 
 #include "mypher.hpp"
 #include <eosiolib/print.hpp>
-#include <eosiolib/asset.hpp>
 #include "common/validator.hpp"
 #include "cipher.hpp"
 #include "person.hpp"

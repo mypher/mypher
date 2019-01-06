@@ -108,7 +108,7 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 		dd.formal = false;
 		dd.name = rec->name;
 		dd.tags = rec->tags;
-		dd.editors = editors;
+		dd.editors.push_back(sender);
 		dd.hash = rec->hash;
 		dd.nofapproval = rec->nofapproval;
 		dd.approvers = rec->approvers;
