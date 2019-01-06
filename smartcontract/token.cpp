@@ -72,7 +72,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 
 	// if specified token is shared between some drafts, generates copy of the draft
-	if (is_shared(tokenid, rec->issuer)) {
+	if (is_shared(tokenid, rec->issuer, cdraftid)) {
 		uint64_t id = d.available_primary_key();
 		d.emplace(sender, [&](auto& dd) {
 			dd.tokenid = id;
@@ -160,12 +160,15 @@ void Token::check_data( const account_name sender,
 	}
 }
 
-bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid) {
+bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid) {
 	Cipher::cdraft_data d(SELF, cipherid);
 	eosio_assert_code(d.begin()!=d.end(), NOT_FOUND);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
+		if (it->cdraftid==cdraftid) continue;
 		auto found = std::find(it->tokenlist.begin(), it->tokenlist.end(), tokenid);
-		if (found!=it->tokenlist.end()) return true;
+		if (found!=it->tokenlist.end()) {
+			return true;
+		}
 	}
 	return false;
 }

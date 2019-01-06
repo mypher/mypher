@@ -162,7 +162,7 @@ private:
 			   const uint8_t rcalctype, const uint64_t nofdevtoken,
 			   const double_t nofdesteos );
 
-	bool is_shared(const uint64_t tokenid, const uint64_t cipherid);
+	bool is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid);
 	void distribute(const account_name sender, const uint64_t cipherid, 
 					const uint64_t tokenid, const uint64_t quantity);
 	//void transfer_currency(const account_name send, const account_name issuer, const uint32_t issuer2, const uint32_t quantity);

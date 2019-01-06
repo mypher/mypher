@@ -226,8 +226,6 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('check data',  async () => {
-			// TODO:valid tasklist
-			// TODO:valis tokenlist
 			// TODO:valid hash
 			let p = _P({});
 			let ret = await tools.push(N, p);
