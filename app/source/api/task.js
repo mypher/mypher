@@ -109,17 +109,30 @@ module.exports = {
 
 	get : async function(d) {
 		try {
-			let ret = {};
-			ret = await eos.getDataWithPKey({
+			const tdraft = await eos.getDataWithPKey({
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'tdraft'
 			}, d.tdraftid);
-			if (ret===null||ret.length===0) {
+			if (tdraft===null||tdraft.length===0) {
 				return {code:'NOT_FOUND'};
 			}
-			ret = this.conv4disp(ret[0]);
-			return ret;
+			const list = await eos.getDataWithSubKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'tformal'
+			}, 2, 'i64', d.cipherid, d.cipherid+1);
+			let tformal = null;
+			for (let i in list) {
+				if (list[i].tdraftid===d.tdraftid) {
+					tformal = list[i];
+					break;
+				}
+			}
+			return {
+				tdraft : this.conv4disp(tdraft),
+				tformal : this.conv4disp(tformal)
+			};
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
@@ -170,25 +183,21 @@ module.exports = {
 				}]
 			});
 			await cmn.waitcommit(ret);
-			if (d.cid!=cmn.NUMBER_NULL) {
-				const cdata = await eos.getDataWithPKey({
-					code : 'myphersystem',
-					scope : 'myphersystem',
-					table : 'cipher',
-				}, d.cid);
-				let ret = -1;
-				cdata[0].tasklist.some(v=> {
-					if (v===parseInt(d.id)) {
-						ret = d.id;
-						return true;
-					}
-					// search the latest id
-					ret = (ret>v) ? ret : v;
-				});
-				return ret;
-			} else {
-				return d.id;
-			}
+			const cdata = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : d.cipherid,
+				table : 'cdraft',
+			}, d.cdraftid);
+			let ret = -1;
+			cdata[0].tasklist.some(v=> {
+				if (v===parseInt(d.id)) {
+					ret = d.id;
+					return true;
+				}
+				// search the latest id
+				ret = (ret>v) ? ret : v;
+			});
+			return ret;
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
@@ -200,14 +209,14 @@ module.exports = {
 			let data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
-				table : 'task',
+				table : 'tformal',
 				limit : 0,
 			});
 			let ret = [];
 			data.rows.forEach(v => {
-				if (String(v.id).includes(n) || v.name.includes(n)) {
+				if (String(v.tformalid).includes(n) || v.name.includes(n)) {
 					ret.push({
-						id : v.id,
+						tformalid : v.tformalid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -222,17 +231,17 @@ module.exports = {
 
 	list_for_cipher : async d => {
 		try {
-			const data = await eos.getDataWithSubKey({
+			const data = await eos.getData({
 				code : 'myphersystem',
-				scope : 'myphersystem',
-				table : 'task',
-				limit : 65535
-			}, 2, 'i64', d.cipherid, d.cipherid+1);
+				scope : d.cipherid,
+				table : 'tdraft',
+				limit : 0
+			});
 			let ret =[];
 			data.forEach(v => {
-				if (d.list.includes(v.id)) {
+				if (d.list.includes(v.tdraftid)) {
 					ret.push({
-						id : v.id,
+						tdraftid : v.tdraftid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -263,19 +272,20 @@ module.exports = {
 			if (min==='') {
 				return ret;
 			}
-			let data = await eos.getData({
+			let data = await eos.getDataWithSubKey({
 				code : 'myphersystem',
 				scope : 'myphersystem',
-				table : 'task',
-				limit : 0,
-				lower_bound : min,
-				upper_bound : max + 1,
+				table : 'tformal',
+				lower_bound : d.cipherid,
+				upper_bound : d.cipherid + 1,
 			});
 			data.rows.forEach(v => {
-				ret.push({
-					id : v.id,
-			name : v.name,
-				});
+				if (d.list.includes(v.tformalid)) {
+					ret.push({
+						tformalid : v.tformalid,
+						name : v.name,
+					});
+				}
 			});
 			return ret;
 		} catch (e) {
@@ -284,44 +294,6 @@ module.exports = {
 		}
 	},
 
-	approve_task : async function(d) {
-		try {
-			d.vec = true;
-			return await eos.pushAction({
-				actions :[{
-					account : 'myphersystem',
-					name : 'taaprvtask',
-					authorization: [{
-						actor: d.sender,
-						permission: 'active',
-					}],
-					data:d,
-				}]
-			});
-		} catch (e) {
-			log.error(e);
-			return cmn.parseEosError(e);
-		}
-	},
-	cancel_approve_task : async function(d) {
-		try {
-			d.vec = false;
-			return await eos.pushAction({
-				actions :[{
-					account : 'myphersystem',
-					name : 'taaprvtask',
-					authorization: [{
-						actor: d.sender,
-						permission: 'active',
-					}],
-					data:d,
-				}]
-			});
-		} catch (e) {
-			log.error(e);
-			return cmn.parseEosError(e);
-		}
-	},
 	approve_pic : async function(d) {
 		try {
 			d.vec = true;
