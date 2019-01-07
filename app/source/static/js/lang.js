@@ -24,6 +24,7 @@ var $L = {
 		'TRIGGER_OF_EVENT' : 'イベント発生タイミング',
 		'BY_REQUEST_OF_OWNER' : '所有者の依頼によって',
 		'NONE' : 'なし',
+		'CDRAFT_ID' : 'ドラフトID', 
 		'TASK_ID' : 'タスクID',
 		'TOKEN_ID' : 'トークンID',
 		'REFERENCE_TOKEN' : '基準トークン数',

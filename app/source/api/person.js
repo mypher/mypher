@@ -125,7 +125,7 @@ module.exports = {
 			let ret = [];
 			data.rows.forEach(v => {
 				ret.push({
-					id : v.personid,
+					personid : v.personid,
 					name : v.name,
 				});
 			});
@@ -144,9 +144,9 @@ module.exports = {
 			});
 			let ret = [];
 			data.rows.forEach(v => {
-				if (v.id.includes(n) || v.name.includes(n)) {
+				if (v.personid.includes(n) || v.name.includes(n)) {
 					ret.push({
-						id : v.personid,
+						personid : v.personid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -168,7 +168,7 @@ module.exports = {
 			}
 
 			let data = {
-				id : d.personid,
+				personid : d.personid,
 				name : d.name,
 				tags : d.tags
 			};

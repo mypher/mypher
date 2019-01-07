@@ -6,7 +6,10 @@ class Cipher {
 	constructor(d) {
 		this.mode = d.mode ? d.mode : MODE.REF;
 		this.data = {
-			id : d.id
+			cipherid : d.cipherid,
+			cdraftid : d.cdraftid,
+			tokenlist : [],
+			tasklist : []
 		};
 		this.div = d.div;
 	}
@@ -17,18 +20,22 @@ class Cipher {
 	async current() {
 		let info = await Rpc.call(
 			'cipher.get',
-			[{id:this.data.id}]
+			[{
+				cipherid : this.data.cipherid,
+				cdraftid : this.data.cdraftid
+			}]
 		);
 		if (info.code!==undefined) {
 			UI.alert(info.code);
 			return;
 		}
-		this.data = info.data;
+		this.data = info;
 	}
 
 	get() {
 		return Util.getData(this.div, {
-			id : this.data.id,
+			cipherid : this.data.cipherid,
+			cdraftid : this.data.cdraftid,
 			tasklist : this.data.tasklist, 
 			tokenlist : this.data.tokenlist
 		});
@@ -61,7 +68,7 @@ class Cipher {
 			'cipher.copy',
 			[{
 				user : Account.loginUser(),
-				id : this.data.id,
+				cdraftid : this.data.cdraftid,
 				cipherid : this.data.cipherid
 			}]
 		);
@@ -69,7 +76,7 @@ class Cipher {
 			UI.alert(_L('FAILED_TO_GET_DATA'));
 			return;
 		}
-		this.data.id = newid;
+		this.data.cdraftid = newid;
 		this.mode = MODE.REF;
 		await this.draw();
 	}
@@ -80,8 +87,7 @@ class Cipher {
 			[{
 				user : Account.loginUser(),
 				cipherid : this.data.cipherid,
-				version : this.data.version,
-				draftno : this.data.draftno,
+				cdraftid : this.data.cdraftid,
 				approve : f
 			}]
 		);
@@ -170,8 +176,8 @@ class Cipher {
 					let l = [];
 					ret.forEach(v => {
 						l.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
 						});
 					});
 					elm.obj.pulldown(l);
@@ -182,8 +188,8 @@ class Cipher {
 				let ret = [];
 				l.forEach(v => {
 					ret.push({
-						key : v.id,
-						name : v.name + '（' + v.id + '）'
+						key : v.personid,
+						name : v.name + '（' + v.personid + '）'
 					});
 				});
 				return ret;
@@ -207,7 +213,7 @@ class Cipher {
 			approved : person,
 			tokenlist : {
 				col : [
-					{ width : 6, label : _L('ID'), name : 'id' },
+					{ width : 6, label : _L('ID'), name : 'tokenid' },
 					{ width : 6, label : _L('NAME2'), name : 'name' }
 				],
 				key : [],
@@ -227,8 +233,8 @@ class Cipher {
 				onselect : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						cid : this.data.id,
-						id : d.id,
+						//cid : this.data.id,
+						tokenid : d.tokenid,
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);
@@ -236,8 +242,8 @@ class Cipher {
 				onadd : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						cid : this.data.id,
-						cipherid : this.data.cipherid,
+						//cid : this.data.id,
+						//cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), token);
@@ -265,8 +271,9 @@ class Cipher {
 				onselect : (d, list) => {
 					const task = new Task({
 						div : $('#main'),
-						id : d.id,
-						cid : this.data.id,
+						cipherid : d.cipherid,
+						tdraftid : d.tdraftid,
+						//cid : this.data.id,
 						mode : MODE.REF
 					});
 					History.run(_L('TASK'), task);
@@ -274,7 +281,7 @@ class Cipher {
 				onadd : (d, list) => {
 					const task = new Task({
 						div : $('#main'),
-						cid : this.data.id,
+						//cid : this.data.id,
 						cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
@@ -375,7 +382,7 @@ Cipher.prototype.Validator = {
 		}
 		// latest formal version can be used for source.
 		if (parseInt(data.version)===parseInt(data.formalver) && 
-			parseInt(data.draftno)===parseInt(data.formaldraft)) {
+			parseInt(data.no)===parseInt(data.formaldraft)) {
 			return true;
 		}
 		return false;

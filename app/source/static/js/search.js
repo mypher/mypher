@@ -67,7 +67,7 @@ Search.prototype = {
 					{
 						width : 4,
 						label : _L('ID'),
-						name : 'id'
+						name : 'personid'
 					},
 					{
 						width : 4,
@@ -88,7 +88,7 @@ Search.prototype = {
 				} else if (code===LIST_NOTIFY.SELECT) {
 					let user = new User({
 						div : $('#main'),
-						name : sel.id
+						name : sel.personid
 					});
 					History.run(_L('USER'), user);
 				}
@@ -127,7 +127,8 @@ Search.prototype = {
 				} else if (code===LIST_NOTIFY.SELECT) {
 					const cipher = new Cipher({
 						div : $('#main'),
-						id : sel.id
+						cipherid : sel.cipherid,
+						cdraftid : sel.cdraftid
 					});
 					History.run(_L('CIPHER'), cipher);
 				}

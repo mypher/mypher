@@ -13,10 +13,10 @@ const bignum = require('bignum');
 
 module.exports = {
 	conv4store : d => {
-		d.cdraftid = cmn.st2num(d.cdraftidid);
+		d.cdraftid = cmn.st2num(d.cdraftid);
 		d.cipherid = cmn.st2num(d.cipherid);
 		d.version = cmn.st2num(d.version);
-		d.draftno = cmn.st2num(d.draftno);
+		d.no = cmn.st2num(d.no);
 		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;
 	},
@@ -24,7 +24,7 @@ module.exports = {
 		d.cdraftid = cmn.num2st(d.cdraftid);
 		d.cipherid = cmn.num2st(d.cipherid);
 		d.version = cmn.num2st(d.version);
-		d.draftno = cmn.num2st(d.draftno);
+		d.no = cmn.num2st(d.no);
 		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;
 	},
@@ -40,7 +40,7 @@ module.exports = {
 			let ret = [];
 			let ex = new RegExp(d.name);
 			data.rows.forEach(v => {
-				if (v.formal&&ex.exec(v.name)!=null) {
+				if (ex.exec(v.name)!=null) {
 					ret.push(v);
 				}
 			});
@@ -95,7 +95,8 @@ module.exports = {
 			}
 			const fml = await get(d.cipherid, key.cdraftid); 
 			ret.formalver = fml.version;
-			ret.formaldraft = fml.draftid;
+			ret.formaldraft = fml.no;
+			ret.cipherid = d.cipherid;
 			return this.conv4disp(ret);
 		} catch (e) {
 			return cmn.parseEosError(e);
@@ -165,9 +166,9 @@ module.exports = {
 				scope : d.cipherid,
 				table : 'cdraft',
 			}, 10000);
-			if (sdata instanceof Array) {
-				for (let i=sdata.length-1; i>=0; i-- ) {
-					const rec = sdata[i];
+			if (sdata && sdata.rows instanceof Array) {
+				for (let i=sdata.rows.length-1; i>=0; i-- ) {
+					const rec = sdata.rows[i];
 					if (rec.editors.length===1&&rec.editors[0]===d.user) {
 						return rec.cdraftid;
 					}

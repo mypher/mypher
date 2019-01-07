@@ -168,8 +168,8 @@ let Util = {
 			let names = await Rpc.call('person.getName', [req]);
 			if (names.code===undefined) {
 				names.forEach(elm => {
-					ret[elm.id] = elm.name;
-					Util.N[elm.id] = elm.name;
+					ret[elm.personid] = elm.name;
+					Util.N[elm.personid] = elm.name;
 				});
 			}
 		}

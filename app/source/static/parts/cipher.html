@@ -8,6 +8,11 @@
 		<label class="col-sm-3 name" ltext="ID"></label>
 		<label class="col-sm-9" field="cipherid"></label>
 	</div>
+	<!-- CDRAFTID -->
+	<div class="form-group row" name="cp_cdraftid" hide_on="add">
+		<label class="col-sm-3 name" ltext="CDRAFT_ID"></label>
+		<label class="col-sm-9" field="cdraftid"></label>
+	</div>
 	<!-- VER -->
 	<div class="form-group row" name="cp_ver" hide_on="add">
 		<label class="col-sm-3 name" ltext="VERSION"></label>
@@ -16,7 +21,7 @@
 	<!-- DRAFT -->
 	<div class="form-group row" name="cp_draft" hide_on="add">
 		<label class="col-sm-3 name" ltext="DRAFT_NO"></label>
-		<label class="col-sm-8 col-10" field="draftno"></label>
+		<label class="col-sm-8 col-10" field="no"></label>
 		<div class="col-sm-1 col-2 right" ctrl="button" proc="draft">
 			<button class="btn btn-ver btn-normal"></button>
 		</div>
@@ -42,7 +47,7 @@
 		</div>
 	</div>
 	<!-- TAGS -->
-	<div class="form-group row" name="cp_desc">
+	<div class="form-group row" name="cp_tags">
 		<label class="col-sm-3 name" ltext="TAGS"></label>
 		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
 		</div>
@@ -51,13 +56,13 @@
 	<div class="form-group row" name="cp_gov">
 		<label class="col-sm-3 name" ltext="REQ_NUM_APPROVERS"></label>
 		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="drule_req">
+			<input type="text" class="form-control" disable_on="ref" field="nofapproval">
 		</div>
 	</div>
 	<!-- RULE_AUTHER -->
 	<div class="form-group row" name="cp_gov">
 		<label class="col-sm-3 name" ltext="APPROVERS"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="authors" field="drule_auth">
+		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="authors" field="approvers">
 		</div>
 	</div>
 	<!-- BUTTON1 -->

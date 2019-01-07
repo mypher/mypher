@@ -91,7 +91,7 @@ module.exports = {
 			}, 2, 'i64', d.cipherid, d.cipherid+1);
 			let ret =[];
 			data.forEach(v => {
-				if (d.list.includes(v.id)) {
+				if (d.list.includes(v.tokenid)) {
 					ret.push(v);
 				}
 			});
@@ -101,10 +101,9 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
-
+/*
 	list_for_person : async function(d) {
 		try {
-			log.info("test");
 			let min = cmn.NUMBER_NULL;
 			let max = 0;
 			d.list.forEach(v => {
@@ -169,7 +168,7 @@ module.exports = {
 			log.error(e);
 			return cmn.parseEosError(e);
 		}
-	},
+	},*/
 
 	update : async function(d) {
 		try {
@@ -186,26 +185,21 @@ module.exports = {
 				}]
 			});
 			await cmn.waitcommit(ret);
-			// if the token is owned by any cipher, check if that task was copied because of unsharing
-			if (d.cid!=cmn.NUMBER_NULL) {
-				const cdata = await eos.getDataWithPKey({
-					code : 'myphersystem',
-					scope : 'myphersystem',
-					table : 'cipher',
-				}, d.cid);
-				let ret = -1;
-				cdata[0].tokenlist.some(v=> {
-					if (v===parseInt(d.id)) {
-						ret = d.id;
-						return true;
-					}
-					// search the latest id
-					ret = (ret>v) ? ret : v;
-				});
-				return ret;
-			} else {
-				return d.id;
-			}
+			const cdata = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'cdraft',
+			}, d.cdraftid);
+			let ret = -1;
+			cdata[0].tokenlist.some(v=> {
+				if (v===parseInt(d.tokenid)) {
+					ret = d.tokenid;
+					return true;
+				}
+				// search the latest id
+				ret = (ret>v) ? ret : v;
+			});
+			return ret;
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);
@@ -219,7 +213,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token'
-			}, d.id);
+			}, d.tokenid);
 			if (ret===null||ret.length===0) {
 				return {code:'NOT_FOUND'};
 			}
@@ -238,9 +232,9 @@ module.exports = {
 			});
 			let ret = [];
 			data.rows.forEach(v => {
-				if (String(v.id).includes(n) || v.name.includes(n)) {
+				if (String(v.tokenid).includes(n) || v.name.includes(n)) {
 					ret.push({
-						id : v.id,
+						id : v.tokenid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -262,9 +256,9 @@ module.exports = {
 			let ret = [];
 			n = parseInt(n);
 			data.rows.forEach(v => {
-				if (v.issuer2 === n) {
+				if (v.issuer === n) {
 					ret.push({
-						id : v.id,
+						id : v.tokenid,
 						name : v.name,
 					});
 				}
@@ -302,7 +296,7 @@ module.exports = {
 			});
 			data.rows.forEach(v => {
 				ret.push({
-					id : v.id,
+					id : v.tokenid,
 					name : v.name,
 				});
 			});

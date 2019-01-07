@@ -77,7 +77,6 @@ module.exports = {
 		} catch (e) {
 			throw e;
 		}
-	
 	},
 
 	getEosData : async function(name) {

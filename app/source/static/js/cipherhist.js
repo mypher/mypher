@@ -56,10 +56,12 @@ CipherHist.prototype = {
 	},
 
 	refresh : async function() {
+		const self = this;
 		const next = d => {
 			const cipher = new Cipher({
 				mode : MODE.REF,
-				id : d.id,
+				cipherid : self.data.cipherid,
+				cdraftid : d.cdraftid,
 				div : $('#main')
 			});
 			History.run(_L('CIPHER'), cipher);
@@ -69,7 +71,7 @@ CipherHist.prototype = {
 			current : {
 				col : [
 					{ width : 5, label : _L('VERSION'), name : 'version'},
-					{ width : 7, label : _L('DRAFT_NO'), name : 'draftno'}
+					{ width : 7, label : _L('DRAFT_NO'), name : 'no'}
 				],
 				key : [],
 				ondata : (d, list) => {
@@ -80,7 +82,7 @@ CipherHist.prototype = {
 			draft : {
 				col : [
 					{ width : 3, label : _L('VERSION'), name : 'version'},
-					{ width : 3, label : _L('DRAFT_NO'), name : 'draftno'},
+					{ width : 3, label : _L('DRAFT_NO'), name : 'no'},
 					{ width : 6, label : _L('EDITOR'), name : 'editors'}
 				],
 				key : [],
@@ -92,7 +94,7 @@ CipherHist.prototype = {
 			history : {
 				col : [
 					{ width : 2, label : _L('VERSION'), name : 'version'},
-					{ width : 2, label : _L('DRAFT_NO'), name : 'draftno'},
+					{ width : 2, label : _L('DRAFT_NO'), name : 'no'},
 					{ width : 2, label : _L('FORMAL'), name : 'formal'},
 					{ width : 6, label : _L('EDITOR'), name : 'editors'}
 				],
