@@ -22,7 +22,7 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 	token_data d(self, self);
 	uint64_t id = d.available_primary_key();
 	// common check
-	check_data(sender, name, limit, when, disposal, type, 
+	check_data(sender, name, issuer, limit, when, disposal, type, 
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 	// create new token
 	d.emplace(sender, [&](auto& dd) {
@@ -67,7 +67,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 	eosio_assert_code(!is_issued(tokenid), TOKEN_ALREADY_ISSUED);
 
 	// check if specified cid is valid	
-	check_data(sender, name, limit, when, disposal, type, 
+	check_data(sender, name, rec->issuer, limit, when, disposal, type, 
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 
 	// if specified token is shared between some drafts, generates copy of the draft
@@ -114,7 +114,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 }
 
 void Token::check_data( const account_name sender, 
-			   const string& name,  
+			   const string& name, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken,
@@ -131,7 +131,7 @@ void Token::check_data( const account_name sender,
 	eosio_assert_code(disposal<DISPOSAL_MAX, INVALID_PARAM);
 	// check is task is exists
 	if (taskid!=NUMBER_NULL) {
-		eosio_assert_code(Task::exists(taskid), INVALID_PARAM);
+		eosio_assert_code(Task::exists(issuer, taskid), INVALID_PARAM);
 	}
 	// check if token is exists
 	if (extokenid!=NUMBER_NULL) {
@@ -215,7 +215,7 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	case When::UNALLOW:
 		eosio_assert_code(0, NOT_FULFILL_REQUIREMENT);
 	case When::COMPLETE_TASK:
-		eosio_assert_code(Task::completed(rec->taskid), NOT_FULFILL_REQUIREMENT);
+		eosio_assert_code(Task::completed(rec->issuer, rec->taskid), NOT_FULFILL_REQUIREMENT);
 		break;
 	case When::OVER_ISSUER_OWNED_TOKEN:
 		eosio_assert_code(is_sufficient_owned_token(rec->issuer, rec->extokenid, rec->reftoken), NOT_FULFILL_REQUIREMENT);

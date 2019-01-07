@@ -123,6 +123,9 @@ public:
 	[[eosio::action]]
 	void applyforpic( const account_name sender, const uint64_t tformalid, const bool vec);
 
+	static bool exists(const uint64_t cipherid, const uint64_t tdraftid);
+	static bool completed(const uint64_t cipherid, const uint64_t tdraftid);
+
 	static bool exists(const uint64_t tformalid);
 	static bool completed(const uint64_t tformalid);
 	static void formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist);

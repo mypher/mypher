@@ -337,9 +337,45 @@ bool Task::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uin
 	return false;
 }
 
+bool Task::exists(const uint64_t cipherid, const uint64_t tdraftid) {
+	tdraft_data d(SELF, cipherid);
+	return (d.find(tdraftid)!=d.end());
+}
+
 bool Task::exists(const uint64_t tformalid) {
 	tformal_data d(SELF, SELF);
 	return (d.find(tformalid)!=d.end());
+}
+
+bool Task::completed(const uint64_t cipherid, const uint64_t tdraftid) {
+	tformal_data tfd(SELF, SELF);
+	auto tfidx = tfd.get_index<N(secondary_key)>();
+	auto tfrec = tfidx.find(cipherid);
+	for (; tfrec!=tfidx.end(); ++tfrec) {
+		if (tfrec->tdraftid==tdraftid) {
+			break;
+		}
+		if (tfrec->cipherid!=cipherid) {
+			return false;
+		}
+	}
+	// if the draft is not formal, return false
+	if (tfrec==tfidx.end()) return false;
+	Cipher::cformal_data cfd(SELF, SELF);
+	auto cfrec = cfd.find(cipherid);
+	Cipher::cdraft_data cdd(SELF, cipherid);
+	auto cdrec = cdd.find(cfrec->cdraftid);
+	uint64_t n = 0;
+	for (auto it = tfrec->approve_results.begin(); it!=tfrec->approve_results.end(); ++it) {
+		auto found = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), *it);
+		if (found!=cdrec->approvers.end()) {
+			n++;
+			if (n==cdrec->nofapproval) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 bool Task::completed(const uint64_t tformalid) {

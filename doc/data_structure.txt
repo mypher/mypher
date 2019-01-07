@@ -44,7 +44,7 @@ package Token <<Frame>> {
 		when : uint8
 		disposal : uint8
 		type : uint8
-		taskid : TFORMALID
+		taskid : TDRAFTID
 		extokenid : TOKENID
 		reftoken : uint64
 		rcalctype : uint8

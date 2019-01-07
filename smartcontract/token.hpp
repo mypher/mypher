@@ -155,7 +155,7 @@ public:
 private:
 	void check_data(
 			   const account_name sender, 
-			   const string& name, 
+			   const string& name, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken,  
