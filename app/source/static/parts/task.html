@@ -3,10 +3,20 @@
     SPDX-License-Identifier: LGPL-3.0+
 -->
 <div class="form-horizontal tk_root">
-	<!-- ID -->
+	<!-- TFORMALID -->
 	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="ID"></label>
-		<label class="col-sm-9" field="id"></label>
+		<label class="col-sm-3 name" ltext="TFORMALID"></label>
+		<label class="col-sm-9" field="tformalid"></label>
+	</div>
+	<!-- CIPHER -->
+	<div class="form-group row" name="cipherid">
+		<label class="col-sm-3 name" ltext="CIPHER"></label>
+		<div class="col-sm-9" ctrl="elm" proc="cipherid" field="cipherid" limit="1" disable_on="add,edit,ref"/>
+	</div>
+	<!-- TDRAFTID -->
+	<div class="form-group row" hide_on="add">
+		<label class="col-sm-3 name" ltext="TDRAFTID"></label>
+		<label class="col-sm-9" field="tdraftid"></label>
 	</div>
 	<!-- NAME -->
 	<div class="form-group row">
@@ -14,15 +24,6 @@
 		<div class="col-sm-9">
 			<input type="text" class="form-control" disable_on="ref" field="name">
 		</div>
-	</div>
-	<!-- OWNER -->
-	<div class="form-group row" name="cipherid">
-		<label class="col-sm-3 name" ltext="REQCIPHER"></label>
-		<div class="col-sm-9" ctrl="elm" proc="cipherid" field="cipherid" limit="1" disable_on="add,edit,ref"/>
-	</div>
-	<div class="form-group row" name="owner">
-		<label class="col-sm-3 name" ltext="REQPERSON"></label>
-		<div class="col-sm-9" ctrl="elm" proc="owner" field="owner" limit="1" disable_on="add,edit,ref"/>
 	</div>
 	<!-- DESCRIPTION -->
 	<div class="form-group row">
@@ -49,7 +50,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" ltext="QUANTITY"></span>
 				</div>
-				<input type="text" class="form-control" disable_on="ref" field="rquantity">
+				<input type="text" class="form-control" disable_on="ref" field="quantity">
 			</div>
 		</div>
 	</div>
@@ -61,7 +62,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" ltext="REQ_NUM_APPROVERS"></span>
 				</div>
-				<input type="text" class="form-control" disable_on="ref" field="nofauth">
+				<input type="text" class="form-control" disable_on="ref" field="nofapproval">
 			</div>
 			<div class="input-group col-sm-12 rowspace">
 				<label class="col-sm-3 name" ltext="APPROVERS"></label>
@@ -69,25 +70,20 @@
 			</div>
 		</div>
 	</div>
-	<!-- APPROVE_OF_TASK -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="APPROVE_OF_TASK"></label>
-		<div class="col-sm-9" ctrl="elm" proc="approve_task" field="approve_task"/>
-	</div>
 	<hr>
 	<!-- PIC -->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="PIC"></label>
 		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="pic" field="pic"/>
 	</div>
-	<!-- APPROVE_OF_PIC -->
+	<!-- APPROVAL_FOR_PIC -->
 	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="APPROVE_OF_PIC"></label>
+		<label class="col-sm-3 name" ltext="APPROVAL_FOR_PIC"></label>
 		<div class="col-sm-9" ctrl="elm" proc="approve_pic" field="approve_pic"/>
 	</div>
-	<!-- APPROVE_OF_RESULTS -->
+	<!-- APPROVAL_FOR_RESULTS -->
 	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="APPROVE_OF_RESULTS"></label>
+		<label class="col-sm-3 name" ltext="APPROVAL_FOR_RESULTS"></label>
 		<div class="col-sm-9" ctrl="elm" proc="approve_results" field="approve_results"/>
 	</div>
 	<!-- BUTTON -->

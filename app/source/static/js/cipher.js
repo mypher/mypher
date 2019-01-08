@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 class Cipher {
+	// if show the formal version, 
+	// it is not needed to specify "cdraftid"
 	constructor(d) {
 		this.mode = d.mode ? d.mode : MODE.REF;
 		this.data = {
@@ -274,6 +276,7 @@ class Cipher {
 						cipherid : d.cipherid,
 						tdraftid : d.tdraftid,
 						//cid : this.data.id,
+						editors : this.data.formal ? [] : this.data.editors,
 						mode : MODE.REF
 					});
 					History.run(_L('TASK'), task);
@@ -283,10 +286,11 @@ class Cipher {
 						div : $('#main'),
 						//cid : this.data.id,
 						cipherid : this.data.cipherid,
+						editors : this.data.formal ? [] : this.data.editors,
 						mode : MODE.NEW
 					});
 					History.run(_L('TASK'), task);
-				}	
+				}
 			},
 		});
 		this.set(this.data);
@@ -352,10 +356,6 @@ class Cipher {
 
 Cipher.prototype.Validator = {
 	isEditableVer : function(data) {
-		// if a draft is formalized yet, it is editable
-		if (!data.formalver) {
-			return true;
-		}
 		// only the case which version is bigger than latest formal version, a draft is editable
 		if (data.formalver >= data.version) {
 			return false;
@@ -395,7 +395,7 @@ Cipher.prototype.Validator = {
 		}
 		try {
 			// check if person is approver
-			if (!data.drule_auth.includes(user)) {
+			if (!data.approvers.includes(user)) {
 				return false;
 			}
 		} catch (e) {
@@ -420,7 +420,7 @@ Cipher.prototype.Validator = {
 		}
 		try {
 			// check if person is approver
-			if (!data.drule_auth.includes(user)) {
+			if (!data.approvers.includes(user)) {
 				return false;
 			}
 			// check if person approved

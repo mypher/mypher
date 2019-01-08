@@ -171,6 +171,7 @@ Search.prototype = {
 					const task = new Task({
 						div : $('#main'),
 						id : sel.id,
+						editors : [], // only formalized tasks are shown on the list
 						mode : MODE.REF
 					});
 					History.run(_L('TASK'), task);

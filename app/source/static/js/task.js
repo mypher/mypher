@@ -11,18 +11,14 @@ class Task {
 		this.data = {
 			id : d.id,
 			cipherid : d.cipherid||'',
+			tdraftid : d.tdraftid||'',
 			owner : d.cipherid ? '' : Account.user
 		};
+		this.editors = d.editors;
 	}
 
 	get() {
-		this.data = Util.getData(this.div, {
-			formal:this.data.formal||true,
-		});
-		if (!this.data.cipherid) {
-			this.data.formal = true;
-		}
-		// TODO:if data is owned by cipher, property:formal is set to cipher's state.
+		this.data = Util.getData(this.div, {});
 		return this.data;
 	}
 
@@ -38,7 +34,6 @@ class Task {
 		}
 		cipher.find('div[field]').get(0).obj.allowedit(false);
 		owner.find('div[field]').get(0).obj.allowedit(false);
-		const vali = this.Validator;
 		$('div[field="pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_task"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
@@ -79,13 +74,24 @@ class Task {
 	async current() {
 		const info = await Rpc.call(
 			'task.get',
-			[{id:this.data.id}]
+			[{
+				cipherid:this.data.cipherid,
+				tdraftid:this.data.tdraftid,
+			}]
 		);
 		if (info.code!==undefined) {
 			UI.alert(info.code);
 			return;
 		}
-		this.data = info;
+		const cipherid = this.data.cipherid;
+		this.data = info.tdraft;
+		this.data.cipherid = cipherid;
+		if (info.tformal) {
+			const d = info.tformal;
+			this.data.tformalid = d.tformalid;
+			this.data.approve_pic = d.approve_pic;
+			this.data.approve_results = d.approve_results;
+		}
 	}
 
 	initButtons() {
@@ -121,22 +127,6 @@ class Task {
 			});
 			break;
 		case MODE.REF:
-			if (vali.canApproveTask(this.data)) {
-				btns.push({
-					text : 'APPROVE_TASK',
-					click : () => {
-						this.approve_task();
-					}
-				});
-			}
-			if (vali.canCancelApproveTask(this.data)) {
-				btns.push({
-					text : 'CANCEL_APPROVE_TASK',
-					click : () => {
-						this.cancel_approve_task();
-					}
-				});
-			}
 			if (vali.canApprovePIC(this.data)) {
 				btns.push({
 					text : 'APPROVE_PIC',
@@ -185,7 +175,7 @@ class Task {
 					}
 				});
 			}
-			if (vali.canEdit(this.data)) {
+			if (vali.canEdit(this.data, this.editors)) {
 				btns.push({
 					text : 'EDIT',
 					click : () => {
@@ -220,8 +210,8 @@ class Task {
 					let l = [];
 					ret.forEach(v => {
 						l.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
 						});
 					});
 					elm.obj.pulldown(l);
@@ -232,8 +222,8 @@ class Task {
 				let ret = [];
 				l.forEach(v => {
 					ret.push({
-						key : v.id,
-						name : v.name + '（' + v.id + '）'
+						key : v.personid,
+						name : v.name + '（' + v.personid + '）'
 					});
 				});
 				return ret;
@@ -245,7 +235,7 @@ class Task {
 				click : key => {
 					const cipher = new Cipher({
 						div : $('#main'),
-						id : key,
+						cipherid : key,
 						mode : MODE.REF
 					});
 					History.run(_L('CIPHER'), cipher);
@@ -257,8 +247,8 @@ class Task {
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.cipherid,
+							name : v.name + '（' + v.cipherid + '）'
 						});
 					});
 					return ret;
@@ -273,7 +263,7 @@ class Task {
 				click : key => {
 					const token = new Token({
 						div : $('#main'),
-						id : key,
+						tokenid : key,
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);
@@ -284,8 +274,8 @@ class Task {
 						let l = [];
 						ret.forEach(v => {
 							l.push({
-								key : v.id,
-								name : v.name + '（' + v.id + '）'
+								key : v.tokenid,
+								name : v.name + '（' + v.tokenid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -296,8 +286,8 @@ class Task {
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.tokenid,
+							name : v.name + '（' + v.tokenid + '）'
 						});
 					});
 					return ret;
@@ -305,7 +295,6 @@ class Task {
 			},
 			approvers : userevt,
 			pic : userevt,
-			approve_task : userevt,
 			approve_pic : userevt,
 			approve_results : userevt,
 			button : btns
@@ -341,37 +330,7 @@ class Task {
 			return;
 		}
 		this.mode = MODE.REF;
-		this.data.id = ret;
-		this.draw();
-	}
-
-	async approve_task() {
-		const ret = await Rpc.call(
-			'task.approve_task',
-			[{
-				sender : Account.user,
-				id : this.data.id,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
-		}
-		this.draw();
-	}
-
-	async cancel_approve_task() {
-		const ret = await Rpc.call(
-			'task.cancel_approve_task',
-			[{
-				sender : Account.user,
-				id : this.data.id,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
-		}
+		this.data.tdraftid = ret;
 		this.draw();
 	}
 
@@ -380,7 +339,7 @@ class Task {
 			'task.approve_pic',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -395,7 +354,7 @@ class Task {
 			'task.cancel_approve_pic',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -410,7 +369,7 @@ class Task {
 			'task.approve_results',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -425,7 +384,7 @@ class Task {
 			'task.cancel_approve_results',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -440,7 +399,7 @@ class Task {
 			'task.apply_for_pic',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -455,7 +414,7 @@ class Task {
 			'task.cancel_apply_for_pic',
 			[{
 				sender : Account.user,
-				id : this.data.id,
+				tformalid : this.data.tformalid,
 			}]
 		);
 		if (ret.code!==undefined) {
@@ -467,7 +426,7 @@ class Task {
 };
 
 Task.prototype.Validator = {
-	NOT_AUTH_TASK : 0,
+	/*NOT_AUTH_TASK : 0,
 	NOT_SET_PIC : 1,
 	NOT_AUTH_PIC : 2,
 	NOT_AUTH_RESULTS : 3,
@@ -478,8 +437,8 @@ Task.prototype.Validator = {
 			const nofauth = data.approvers.filter(function (x, i, self) {
 				return self.indexOf(x) === i;
 			});
-			let req = data.nofauth;
-			nofauth.forEach(v => {
+			let req = data.nofapproval;
+			nofapproval.forEach(v => {
 				if (l.includes(v)) req--;
 			});
 			return (req<=0);
@@ -501,8 +460,9 @@ Task.prototype.Validator = {
 		// check if results is not authorized
 		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
 		return this.DONE;
-	},
-	canEdit : function(data) {
+	}, */
+	canEdit : function(data, editors) {
+		// TODO:**
 		if (data.owner!==Account.user) {
 			return false;
 		}

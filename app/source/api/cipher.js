@@ -81,10 +81,6 @@ module.exports = {
 				}
 				return ret[0];
 			};
-			let ret = await get(d.cipherid, d.cdraftid);
-			if (ret===null) {
-				return {code:'INVALID_PARAM'};
-			}
 			const key = await eos.getDataWithPKey({
 				code : 'myphersystem',
 				scope : 'myphersystem',
@@ -93,7 +89,11 @@ module.exports = {
 			if (key===null||key.length===0) {
 				return {code:'INVALID_PARAM'};
 			}
-			const fml = await get(d.cipherid, key.cdraftid); 
+			let ret = await get(d.cipherid, d.cdraftid || key.cdraftid);
+			if (ret===null) {
+				return {code:'INVALID_PARAM'};
+			}
+			const fml = await get(d.cipherid, key[0].cdraftid); 
 			ret.formalver = fml.version;
 			ret.formaldraft = fml.no;
 			ret.cipherid = d.cipherid;

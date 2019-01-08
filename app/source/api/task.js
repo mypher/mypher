@@ -130,8 +130,8 @@ module.exports = {
 				}
 			}
 			return {
-				tdraft : this.conv4disp(tdraft),
-				tformal : this.conv4disp(tformal)
+				tdraft : this.conv4disp(tdraft[0]),
+				tformal : tformal ? this.conv4disp(tformal) : null
 			};
 		} catch (e) {
 			log.error(e);
