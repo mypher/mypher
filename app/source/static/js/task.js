@@ -12,7 +12,6 @@ class Task {
 			id : d.id,
 			cipherid : d.cipherid||'',
 			tdraftid : d.tdraftid||'',
-			owner : d.cipherid ? '' : Account.user
 		};
 		this.editors = d.editors;
 	}
@@ -22,28 +21,14 @@ class Task {
 		return this.data;
 	}
 
-	async setenablestate() {
-		const cipher = $('div[name="cipherid"]');
-		const owner = $('div[name="owner"]');
-		if (this.data.cipherid==='') {
-			cipher.hide();
-			owner.show();
-		} else {
-			cipher.show();
-			owner.hide();
-		}
-		cipher.find('div[field]').get(0).obj.allowedit(false);
-		owner.find('div[field]').get(0).obj.allowedit(false);
-		$('div[field="pic"]').get(0).obj.allowedit(false);
-		$('div[field="approve_task"]').get(0).obj.allowedit(false);
-		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
-		$('div[field="approve_results"]').get(0).obj.allowedit(false);
-	}
-
 	async set(data) {
 		this.data = data;
 		Util.setData(this.div, this.data);
-		await this.setenablestate();
+		const cipher = $('div[name="cipherid"]');
+		cipher.find('div[field]').get(0).obj.allowedit(false);
+		$('div[field="pic"]').get(0).obj.allowedit(false);
+		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
+		$('div[field="approve_results"]').get(0).obj.allowedit(false);
 		const drawDesc = o => {
 			const v = {
 				description : o.description
@@ -254,7 +239,6 @@ class Task {
 					return ret;
 				}
 			},
-			owner : userevt,
 			tags : [{
 				click : () => {
 				}
@@ -426,83 +410,9 @@ class Task {
 };
 
 Task.prototype.Validator = {
-	/*NOT_AUTH_TASK : 0,
-	NOT_SET_PIC : 1,
-	NOT_AUTH_PIC : 2,
-	NOT_AUTH_RESULTS : 3,
-	DONE : 4,
-	getstate : async function(data) {
-		const isfulfill = l => {
-			if (!data.approvers||data.approvers.length===0) return false;z
-			const nofauth = data.approvers.filter(function (x, i, self) {
-				return self.indexOf(x) === i;
-			});
-			let req = data.nofapproval;
-			nofapproval.forEach(v => {
-				if (l.includes(v)) req--;
-			});
-			return (req<=0);
-		};
-		// check if task is authorized
-		if (data.ciphreid) {
-			const cipher = await Rpc.call(
-				'cipher.get',
-				[data.cipherid]
-			);
-			if (!cipher.data.formal) return this.NOT_AUTH_TASK;
-		} else {
-			if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_TASK;
-		}
-		// check if pic is set
-		if (data.pic.length===0) return this.NOT_SET_PIC;
-		// check if pic is not authorized
-		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_PIC;
-		// check if results is not authorized
-		if (!isfulfill(data.approve_pic)) return this.NOT_AUTH_RESULTS;
-		return this.DONE;
-	}, */
 	canEdit : function(data, editors) {
-		// TODO:**
-		if (data.owner!==Account.user) {
+		if(!editors.includes(Account.user)) {
 			return false;
-		}
-		// if results already fulfill approval requiments, approval can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		return true;
-	},
-	canApproveTask : function(data) {
-		// check if user is approver or pic
-		if (!data.approvers.includes(Account.user)) {
-			if (!data.pic.includes(Account.user)) {
-				return false;
-			}
-			// only approved pic can approves the task
-			if (!this.isFulfillApprovalReqForPIC(data)) {
-				return false;
-			}
-		}
-		// check if user approved the task
-		if (data.approve_task.includes(Account.user)) {
-			return false;
-		}
-		// if results already fulfill approval requiments, approval can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		return true;
-	},
-	canCancelApproveTask : function(data) {
-		// check if user approved the task
-		if (!data.approve_task.includes(Account.user)) {
-			return false;
-		}
-		// if task already fulfills approval requiments, only pic can cancels
-		if (this.isFulfillApprovalReqForTask(data)) {
-			if (!data.pic.includes(Account.user)) {
-				return false;
-			}
 		}
 		// if results already fulfill approval requiments, approval can't be canceled
 		if (this.isFulfillApprovalReqForResults(data)) {
@@ -511,7 +421,7 @@ Task.prototype.Validator = {
 		return true;
 	},
 	canApprovePIC : function(data) {
-		// check if user is approver
+		// check if the user is approver
 		if (!data.approvers.includes(Account.user)) {
 			return false;
 		}
@@ -519,11 +429,11 @@ Task.prototype.Validator = {
 		if (data.pic.length===0) {
 			return false;
 		}
-		// check if user approved pic
+		// check if the user already approved pic
 		if (data.approve_pic.includes(Account.user)) {
 			return false;
 		}
-		// if results already fulfill approval requiments, approval can't be canceled
+		// if results already fulfill the approval requiments, approval can't be canceled
 		if (this.isFulfillApprovalReqForResults(data)) {
 			return false;
 		}
@@ -538,7 +448,7 @@ Task.prototype.Validator = {
 		if (!data.approve_results>0) {
 			return false;
 		}
-		// if results already fulfill approval requiments, approval can't be canceled
+		// if the approval for results is completely done, the approval for PIC can't be canceled
 		if (this.isFulfillApprovalReqForResults(data)) {
 			return false;
 		}
@@ -590,24 +500,16 @@ Task.prototype.Validator = {
 		if (data.approve_results.length>0) return false;
 		return true;
 	},
-	isFulfillApprovalReqForTask : function(data) {
-		// check if task fulfills own approval requirements and all pic approved it
-		let nofapprove = 0, nofpic = 0;
-		data.approvers.forEach(v => {
-			if (data.approve_task.includes(v)) nofapprove++;
-		});
-		data.pic.forEach(v => {
-			if (data.approve_task.includes(v)) nofpic++;
-		});
-		return ((nofapprove>=data.nofauth) && (data.pic.length===nofpic));
-	},
 	isFulfillApprovalReqForPIC : function(data) {
-		// check if task fulfills approval requirements for pic
-		let nofapprove = 0;
+		// check if the pic of the task is approved by all approvers and pic themselves 
+		let nofapprove = 0, nofpic = 0;
 		data.approvers.forEach(v => {
 			if (data.approve_pic.includes(v)) nofapprove++;
 		});
-		return (nofapprove>=data.nofauth);
+		data.pic.forEach(v => {
+			if (data.approve_pic.includes(v)) nofpic++;
+		});
+		return ((nofapprove>=data.nofauth) && (data.pic.length===nofpic));
 	},
 	isFulfillApprovalReqForResults : function(data) {
 		// check if task fulfills approval requirements for results
