@@ -7,17 +7,20 @@ class Task {
 	constructor(d) {
 		this.div = d.div;
 		this.mode = d.mode;
-		this.cid = d.cid;
 		this.data = {
 			id : d.id,
-			cipherid : d.cipherid||'',
-			tdraftid : d.tdraftid||'',
+			cipherid : (d.cipherid!==undefined) ? d.cipherid : '',
+			cdraftid : (d.cdraftid!==undefined) ? d.cdraftid : '',
+			tdraftid : (d.tdraftid!==undefined) ? d.tdraftid : '',
 		};
 		this.editors = d.editors;
 	}
 
 	get() {
-		this.data = Util.getData(this.div, {});
+		this.data = Util.getData(this.div, {
+			cipherid : this.data.cipherid,
+			cdraftid : this.data.cdraftid,
+		});
 		return this.data;
 	}
 
@@ -76,6 +79,10 @@ class Task {
 			this.data.tformalid = d.tformalid;
 			this.data.approve_pic = d.approve_pic;
 			this.data.approve_results = d.approve_results;
+		} else {
+			this.data.tformalid = undefined;
+			this.data.approve_pic = [];
+			this.data.approve_results = [];
 		}
 	}
 
@@ -289,7 +296,6 @@ class Task {
 	async create() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cid;
 		const ret = await Rpc.call(
 			'task.add',
 			[data]
@@ -304,7 +310,6 @@ class Task {
 	async commit() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cid;
 		let ret = await Rpc.call(
 			'task.update',
 			[data]
@@ -459,10 +464,6 @@ Task.prototype.Validator = {
 		if (!data.approvers.includes(Account.user)) {
 			return false;
 		}
-		// if task doesn't fulfill approval requiments, results can't be approved
-		if (!this.isFulfillApprovalReqForTask(data)) {
-			return false;
-		}
 		// if pic doesn't fulfill approval resuiments, results can't be approved
 		if (!this.isFulfillApprovalReqForPIC(data)) {
 			return false;
@@ -489,6 +490,8 @@ Task.prototype.Validator = {
 		return true;
 	},
 	canApplyForPIC : function(data) {
+		// the task is not formalized can not be applied
+		if (data.tformalid===undefined) return false;
 		// if pic is already set, user can't apply for pic
 		if (data.pic.length>0) return false;
 		return true;

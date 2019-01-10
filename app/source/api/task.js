@@ -124,7 +124,7 @@ module.exports = {
 			}, 2, 'i64', d.cipherid, d.cipherid+1);
 			let tformal = null;
 			for (let i in list) {
-				if (list[i].tdraftid===d.tdraftid) {
+				if (list[i].tdraftid===parseInt(d.tdraftid)) {
 					tformal = list[i];
 					break;
 				}
@@ -238,7 +238,7 @@ module.exports = {
 				limit : 0
 			});
 			let ret =[];
-			data.forEach(v => {
+			data.rows.forEach(v => {
 				if (d.list.includes(v.tdraftid)) {
 					ret.push({
 						tdraftid : v.tdraftid,

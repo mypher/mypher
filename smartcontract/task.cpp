@@ -414,8 +414,10 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 	// formalize task list of new version
 	for (auto it=tasklist.begin(); it!=tasklist.end(); ++it) {
 		auto rec = tdd.find(*it);
+		auto newid = tfd.available_primary_key();
 		eosio_assert_code(rec!=tdd.end(), INCONSISTENT_DATA_EXISTS);
 		tfd.emplace(sender, [&](auto& dd) { 
+			dd.tformalid = newid;
 			dd.cipherid = cipherid; 
 			dd.tdraftid = rec->tdraftid; 
 			dd.name = rec->name;

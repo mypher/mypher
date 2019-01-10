@@ -170,7 +170,8 @@ Search.prototype = {
 				} else if (code===LIST_NOTIFY.SELECT) {
 					const task = new Task({
 						div : $('#main'),
-						id : sel.id,
+						cipherid : sel.cipherid,
+						tdraftid : sel.tdraftid,
 						editors : [], // only formalized tasks are shown on the list
 						mode : MODE.REF
 					});

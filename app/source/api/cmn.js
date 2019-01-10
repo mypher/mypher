@@ -379,7 +379,9 @@ module.exports = {
 		if (err===null||err.length===1) {
 			if (e.message.includes('insufficient ram')) {
 				return {code:'E9998'};
-			} else {
+			} else if (e.json.code!==undefined) {
+				return {code:'EI' + e.json.code};
+			} else {	
 				return {code:'E9999'};
 			}
 		}

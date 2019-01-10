@@ -244,7 +244,6 @@ class Cipher {
 				onadd : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						//cid : this.data.id,
 						//cipherid : this.data.cipherid,
 						mode : MODE.NEW
 					});
@@ -253,7 +252,7 @@ class Cipher {
 			},
 			tasklist : {
 				col : [
-					{ width : 6, label : _L('ID'), name : 'id' },
+					{ width : 6, label : _L('ID'), name : 'tdraftid' },
 					{ width : 6, label : _L('NAME2'), name : 'name' }
 				],
 				key : [],
@@ -273,9 +272,9 @@ class Cipher {
 				onselect : (d, list) => {
 					const task = new Task({
 						div : $('#main'),
-						cipherid : d.cipherid,
+						cipherid : this.data.cipherid,
+						cdraftid : this.data.cdraftid,
 						tdraftid : d.tdraftid,
-						//cid : this.data.id,
 						editors : this.data.formal ? [] : this.data.editors,
 						mode : MODE.REF
 					});
@@ -284,8 +283,8 @@ class Cipher {
 				onadd : (d, list) => {
 					const task = new Task({
 						div : $('#main'),
-						//cid : this.data.id,
 						cipherid : this.data.cipherid,
+						cdraftid : this.data.cdraftid,
 						editors : this.data.formal ? [] : this.data.editors,
 						mode : MODE.NEW
 					});

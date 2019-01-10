@@ -130,7 +130,7 @@ module.exports = {
 			});
 			data.rows.forEach(v => {
 				ret.push({
-					id : v.cipherid,
+					cipherid : v.cipherid,
 					name : v.name,
 				});
 			});
