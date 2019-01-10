@@ -426,8 +426,10 @@ Task.prototype.Validator = {
 		return true;
 	},
 	canApprovePIC : function(data) {
-		// check if the user is approver
-		if (!data.approvers.includes(Account.user)) {
+		// if login user does not fulfills both of following requiments, can not approve the pic
+		// - the user is the approver
+		// - the user is the pic
+		if (!data.approvers.includes(Account.user) && !data.pic.includes(Account.user)) {
 			return false;
 		}
 		// check if pic is set
@@ -451,6 +453,12 @@ Task.prototype.Validator = {
 		}
 		// check if results is approved
 		if (!data.approve_results>0) {
+			return false;
+		}
+		// check if the data fulfills all of following requirements 
+		// - the number of approvals for pic equals or overs the requirements
+		// - login user is not the pic
+		if (this.isFulfillApprovalReqForPIC(data) && !data.pic.includes(Account.user)) {
 			return false;
 		}
 		// if the approval for results is completely done, the approval for PIC can't be canceled
@@ -512,7 +520,7 @@ Task.prototype.Validator = {
 		data.pic.forEach(v => {
 			if (data.approve_pic.includes(v)) nofpic++;
 		});
-		return ((nofapprove>=data.nofauth) && (data.pic.length===nofpic));
+		return ((nofapprove>=parseInt(data.nofapproval)) && (data.pic.length===nofpic));
 	},
 	isFulfillApprovalReqForResults : function(data) {
 		// check if task fulfills approval requirements for results
@@ -520,7 +528,7 @@ Task.prototype.Validator = {
 		data.approvers.forEach(v => {
 			if (data.approve_results.includes(v)) nofapprove++;
 		});
-		return (nofapprove>=data.nofauth);
+		return (nofapprove>=parseInt(data.nofapproval));
 	},
 };
 

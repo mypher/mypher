@@ -62,7 +62,7 @@ Header = {
 				});
 				History.run(_L('CIPHER'), cipher);
 			});
-			addItem(_L('CREATE_TASK'), function() {
+		/*	addItem(_L('CREATE_TASK'), function() {
 				const task = new Task({
 					mode : MODE.NEW,
 					div : $('#main')
@@ -78,17 +78,36 @@ Header = {
 			});
 			addItem(_L('ACCOUNT'), function() {
 				Account.ref();
-			});
+			});*/
 		}
-			addItem(_L('CREATE_TASK'), function() {
+			/*addItem(_L('CREATE_TASK'), function() {
 				const task = new Task({
 					mode : MODE.NEW,
 					div : $('#main')
 				});
 				History.run(_L('TASK'), task);
-			});
+			});*/
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();
+		});
+		// for debug 
+		addItem('login with local', () => {
+			Account.open({
+				name:'local', 
+				pass:'5JSGyw1FZVDG2VEcJ7gdyqJvyqwfdoHNRzq7Rt1QLQWZNaCTgVH'
+			});
+		});
+		addItem('login with lamb', () => {
+			Account.open({
+				name:'lamb', 
+				pass:'5JgHt6eJ7dp5Mxwfo8tmTiom7Th9ukpcKeR1j4CsYvaQZsLLKCP'
+			});
+		});
+		addItem('login with tomato', () => {
+			Account.open({
+				name:'tomato', 
+				pass:'5JFhiQyRLzpJEg5gthoyqWCnJvFjKh5YbrNV1fRom6znDdZpyb3'
+			});
 		});
 	},
 

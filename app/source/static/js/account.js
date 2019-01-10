@@ -82,28 +82,10 @@ Account = {
 			let div = UI.popup(600,200);
 			let open = async () => {
 				let data = Util.getData(div, {});
-				try {
-					let ret = await Rpc.call(
-						'system.connect', 
-						[{id:data.name, pass:data.pass}]
-					);
-					if (ret.error) {
-						UI.alert(ret.error);
-						return;
-					}
-					if (ret===true) {
-						UI.closePopup();
-						Account.user = data.name;
-						localStorage.setItem(KEY, JSON.stringify(data));
-						Account.logined = true;
-						Header.refresh();
-						History.rerun();
-					} else {
-						UI.alert(_L('INVALID_ID_OR_PASS'));
-						return;
-					}
-				} catch (e) {
-					UI.alert(e.message);
+				const ret = await Account.open(data);
+				if (ret===true) {
+					UI.closePopup();
+					localStorage.setItem(KEY, JSON.stringify(data));
 				}
 			};
 			await Util.load(div, 'parts/login.html', MODE.REF, {
@@ -121,6 +103,32 @@ Account = {
 			});
 			Util.setData(div, ini);
 		}
+	},
+
+	open : async data => {
+		try {
+			let ret = await Rpc.call(
+				'system.connect', 
+				[{id:data.name, pass:data.pass}]
+			);
+			if (ret.error) {
+				UI.alert(ret.error);
+				return false;
+			}
+			if (ret===true) {
+				Account.user = data.name;
+				Account.logined = true;
+				Header.refresh();
+				History.rerun();
+			} else {
+				UI.alert(_L('INVALID_ID_OR_PASS'));
+				return false;
+			}
+			return true;
+		} catch (e) {
+			UI.alert(e.message);
+		}
+		return false;
 	},
 
 	popup : async () => {
