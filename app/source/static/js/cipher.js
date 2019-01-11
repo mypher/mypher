@@ -235,7 +235,8 @@ class Cipher {
 				onselect : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						//cid : this.data.id,
+						cipherid : this.data.cipherid,
+						cdraftid : this.data.cdraftid,
 						tokenid : d.tokenid,
 						mode : MODE.REF
 					});
@@ -244,7 +245,8 @@ class Cipher {
 				onadd : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						//cipherid : this.data.cipherid,
+						cipherid : this.data.cipherid,
+						cdraftid : this.data.cdraftid,
 						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), token);

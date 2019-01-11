@@ -10,13 +10,10 @@ class Token extends View {
 		this.div = d.div;
 		this.mode = d.mode;
 		this.data = {
-			id : d.id,
-			issuer2 : d.cipherid||'',
-			issuer : d.cipherid ? '' : Account.user
+			tokenid : d.tokenid,
+			cdraftid : d.cdraftid,
+			issuer : d.cipherid,
 		}
-		this.cdata = {
-			id : d.cid
-		};
 	}
 
 	get() {
@@ -26,18 +23,14 @@ class Token extends View {
 
 	async set(data) {
 		this.data = data;
-		const cipher = $('div[name="issuer2"]');
 		const owner = $('div[name="issuer"]');
 		if (data.issuer2==='') {
-			cipher.hide();
 			owner.show();
 		} else {
-			cipher.show();
 			owner.hide();
 		}
 		Util.setData(this.div, this.data);
 		this.grayAttr(this.data.type, this.data.when);
-		cipher.find('div[field]').get(0).obj.allowedit(false);
 		owner.find('div[field]').get(0).obj.allowedit(false);
 	}
 
@@ -57,13 +50,13 @@ class Token extends View {
 	async current() {
 		const info = await Rpc.call(
 			'token.get',
-			[{id:this.data.id}]
+			[{tokenid:this.data.tokenid}]
 		);
 		if (info.code!==undefined) {
 			UI.alert(info.code);
 			return;
 		}
-		if (this.cdata.id) {
+		/*if (this.cdata.id) {
 			const cinfo = await Rpc.call(
 				'cipher.get',
 				[{id:this.cdata.id}]
@@ -73,7 +66,7 @@ class Token extends View {
 				return;
 			}
 			this.cdata = cinfo.data;
-		}
+		}*/
 		this.data = info;
 	}
 
@@ -133,52 +126,48 @@ class Token extends View {
 		let tokenname = true;
 		let taskname = true;
 		let reftoken = true;
-		let term = true;
-		let nofdevtoken = true;
+		let nofdesttoken = true;
+		let nofdesteos = true;
 		if (Number(type)===2) { // DEVIDE_TOKEN
 			tokenname = false;
-			nofdevtoken = false;
+			nofdesttoken = false;
+		}
+		if (Number(type)===3) { // DEVIDE_EOS
+			nofdesteos = false;
 		}
 		switch (Number(when)) {
-			case 2: // BY_COMPLETION_OF_TASK
+			case 1: // BY_COMPLETION_OF_TASK
 				taskname = false;
 				break;
-			case 3: // BY_NUMBER_OF_OWNED
+			case 2: // BY_NUMBER_OF_OWNED
 				tokenname = false;
 				reftoken = false;
 				break;
-			case 5: // BY_DATE
-				term = false;
-				break;
 		}
 		const task = this.div.find('div[field="taskid"]').get(0).obj;
-		const token = this.div.find('div[field="tokenid"]').get(0).obj;
+		const token = this.div.find('div[field="extokenid"]').get(0).obj;
 		if (this.mode===MODE.REF) {
 			task.allowedit(false);
 			token.allowedit(false);
 			this.div.find('input[field="reftoken"]').prop('disabled', true);
-			if (term) {
-				this.div.find('#term').get(0).obj.disabled(true);
-			} else {
-				this.div.find('#term').get(0).obj.allowedit(false);
-			}
 			const elm = this.div.find('div[field="rcalctype"]');
-			if (nofdevtoken) {
+			if (nofdesttoken) {
 				elm.get(0).obj.enable(false);
 			} else {
 				const obj = elm.get(0).obj;
 				obj.enable(true);
-				obj.allowedit(false);;
+				obj.allowedit(false);
 			}
-			this.div.find('input[field="nofdevtoken"]').prop('disabled', true);
+			this.div.find('input[field="nofdesttoken"]').prop('disabled', true);
+			this.div.find('input[field="nofdesteos"]').prop('disabled', true);
 		} else {
 			task.disabled(taskname);
 			token.disabled(tokenname);
 			this.div.find('input[field="reftoken"]').prop('disabled', reftoken);
-			this.div.find('#term').get(0).obj.disabled(term);
 			const elm = this.div.find('div[field="rcalctype"]');
-			elm.get(0).obj.enable(!nofdevtoken);
-			this.div.find('input[field="nofdevtoken"]').prop('disabled', nofdevtoken);
+			elm.get(0).obj.enable(!nofdesttoken);
+			this.div.find('input[field="nofdesttoken"]').prop('disabled', nofdesttoken);
+			this.div.find('input[field="nofdesteos"]').prop('disabled', nofdesteos);
 		}
 	}
 
@@ -187,11 +176,11 @@ class Token extends View {
 		let init = true;
 		await Util.load(this.div, 'parts/token.html', this.mode, {
 			button : btn,
-			issuer2 : {
+			issuer : {
 				click : key => {
 					const cipher = new Cipher({
 						div : $('#main'),
-						id : key,
+						cipherid : key,
 						mode : MODE.REF
 					});
 					History.run(_L('CIPHER'), cipher);
@@ -203,31 +192,8 @@ class Token extends View {
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
-						});
-					});
-					return ret;
-				}
-			},
-			issuer : {
-				click : key => {
-					const task = new Task({
-						div : $('#main'),
-						id : key,
-						mode : MODE.REF
-					});
-					History.run(_L('TASK'), task);
-				},
-				change : elm => {
-				},
-				name : async l => {
-					l = await Rpc.call('person.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.cipherid,
+							name : v.name + '（' + v.cipherid + '）'
 						});
 					});
 					return ret;
@@ -267,8 +233,8 @@ class Token extends View {
 						let l = [];
 						ret.forEach(v => {
 							l.push({
-								key : v.id,
-								name : v.name + '（' + v.id + '）'
+								key : v.tformalid,
+								name : v.name + '（' + v.tformalid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -279,8 +245,8 @@ class Token extends View {
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.tformalid,
+							name : v.name + '（' + v.tformalid + '）'
 						});
 					});
 					return ret;
@@ -290,7 +256,7 @@ class Token extends View {
 				click : key => {
 					const token = new Token({
 						div : $('#main'),
-						id : key,
+						tokenid : key,
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);
@@ -301,8 +267,8 @@ class Token extends View {
 						let l = [];
 						ret.forEach(v => {
 							l.push({
-								key : v.id,
-								name : v.name + '（' + v.id + '）'
+								key : v.tokenid,
+								name : v.name + '（' + v.tokenid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -313,8 +279,8 @@ class Token extends View {
 					let ret = [];
 					l.forEach(v => {
 						ret.push({
-							key : v.id,
-							name : v.name + '（' + v.id + '）'
+							key : v.tokenid,
+							name : v.name + '（' + v.tokenid + '）'
 						});
 					});
 					return ret;
@@ -328,7 +294,7 @@ class Token extends View {
 	async create() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cdata.id;
+		// cdraftid
 		const ret = await Rpc.call(
 			'token.add',
 			[data]
@@ -343,7 +309,6 @@ class Token extends View {
 	async commit() {
 		const data = this.get();
 		data.sender = Account.user;
-		data.cid = this.cdata.id;
 		let ret = await Rpc.call(
 			'token.update',
 			[data]
@@ -353,7 +318,6 @@ class Token extends View {
 			return;
 		}
 		this.mode = MODE.REF;
-		this.data.id = ret;
 		this.draw();
 	}
 
@@ -362,11 +326,7 @@ class Token extends View {
 Token.prototype.Validator = {
 	canEdit : function() {
 		const self = this.parent;
-		if (self.data.issuer2) { // cipher
-			return self.cdata.editors&&self.cdata.editors.includes(Account.user);
-		} else { // individual
-			return (Account.user===self.data.issuer);
-		}
+		return self.cdata.editors&&self.cdata.editors.includes(Account.user);
 	}
 }
 

@@ -17,11 +17,10 @@ module.exports = {
 		d.disposal = cmn.st2ui8(d.disposal);
 		d.type = cmn.st2ui8(d.type);
 		d.taskid = cmn.st2num(d.taskid);
-		d.tokenid = cmn.st2num(d.tokenid);
+		d.extokenid = cmn.st2num(d.extokenid);
 		d.reftoken = cmn.st2num(d.reftoken);
 		d.rcalctype = cmn.st2ui8(d.rcalctype);
-		d.nofdevtoken = cmn.st2num(d.nofdevtoken);
-		d.issuer2 = cmn.st2num(d.issuer2);
+		d.nofdesttoken = cmn.st2num(d.nofdesttoken);
 		return d;
 	},
 	conv4disp : function(d) {
@@ -30,11 +29,10 @@ module.exports = {
 		d.disposal = cmn.ui82st(d.disposal);
 		d.type = cmn.ui82st(d.type);
 		d.taskid = cmn.num2st(d.taskid);
-		d.tokenid = cmn.num2st(d.tokenid);
+		d.extokenid = cmn.num2st(d.extokenid);
 		d.reftoken = cmn.num2st(d.reftoken);
 		d.rcalctype = cmn.ui82st(d.rcalctype);
-		d.nofdevtoken = cmn.num2st(d.nofdevtoken);
-		d.issuer2 = cmn.num2st(d.issuer2);
+		d.nofdesttoken = cmn.num2st(d.nofdesttoken);
 		return d;
 	},
 

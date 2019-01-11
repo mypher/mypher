@@ -9,8 +9,8 @@
 		</div>
 	</div>
 	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="ID"></label>
-		<label class="col-sm-9" field="id"></label>
+		<label class="col-sm-3 name" ltext="TOKENID"></label>
+		<label class="col-sm-9" field="tokenid"></label>
 	</div>
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="NAME1"></label>
@@ -18,25 +18,11 @@
 			<input type="text" class="form-control" field="name" disable_on="ref">
 		</div>
 	</div>
-	<!-- OWNER -->
-	<div class="form-group row" name="issuer2">
-		<label class="col-sm-3 name" ltext="ISSUECIPHER"></label>
-		<div class="col-sm-9" ctrl="elm" proc="issuer2" field="issuer2" limit="1"/>
-	</div>
+	<!-- ISSUER -->
 	<div class="form-group row" name="issuer">
 		<label class="col-sm-3 name" ltext="ISSUER"></label>
 		<div class="col-sm-9" ctrl="elm" proc="issuer" field="issuer" limit="1"/>
 	</div>
-<!--	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="ISSUER"></label>
-		<div class="col-sm-9" ctrl="radio" field="issuertype" proc="issuertype" disable_on="ref" sel="CIPHER:0,INDIVIDUAL:1"/>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" field="issuer" disable_on="ref">
-		</div>
-	</div>-->
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="ISSUE_LIMIT"></label>
 		<div class="col-sm-9">
@@ -69,11 +55,10 @@
 				<select class="form-control" 
 					field="when" disable_on="ref" proc="when">
 					<option value="0" ltext="NONE">
-					<option value="1" ltext="BY_OWNER">
-					<option value="2" ltext="BY_COMPLETION_OF_TASK">
-					<option value="3" ltext="BY_NUMBER_OF_OWNED">
-					<option value="4" ltext="ALWAYS">
-					<option value="5" ltext="BY_DATE">
+					<option value="1" ltext="BY_COMPLETION_OF_TASK">
+					<option value="2" ltext="BY_NUMBER_OF_OWNED">
+					<option value="3" ltext="ALWAYS">
+					<option value="4" ltext="BY_ISSUER">
 				</select>
 			</div></div>
 		</div>
@@ -90,21 +75,14 @@
 				<div class="col-sm-9" ctrl="elm" proc="task" field="taskid" limit="1"/>
 			</div>
 			<div class="input-group col-sm-12 rowspace">
-				<label class="col-sm-3 name" ltext="TOKEN"></label>
-				<div class="col-sm-9" ctrl="elm" proc="token" field="tokenid" limit="1"/>
+				<label class="col-sm-3 name" ltext="RELATED_TOKEN"></label>
+				<div class="col-sm-9" ctrl="elm" proc="token" field="extokenid" limit="1"/>
 			</div>
 			<div class="input-group col-sm-12 rowspace">
 				<div class="input-group-prepend">
 					<span class="input-group-text label-normal" ltext="REFERENCE_TOKEN"></span>
 				</div>
 				<input type="text" class="form-control" field="reftoken" disable_on="ref">
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="TERM"></span>
-					<div ctrl="date" field="term" proc="term" format=""></div>
-				</div>
-				<!--<input type="text" class="form-control" field="term" disable_on="ref">-->
 			</div>
 			<div class="input-group col-sm-12">
 				<div class="form-group rowspace" ctrl="radio" field="rcalctype" disable_on="ref" sel="SPECIFIED_NUMBER:0,ISSUED_PER_SPECIFIED:1"/>
@@ -113,7 +91,13 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text label-normal" ltext="NOF_DEVIDED_TOKEN"></span>
 				</div>
-				<input type="text" class="form-control" field="nofdevtoken" disable_on="ref">
+				<input type="text" class="form-control" field="nofdesttoken" disable_on="ref">
+			</div>
+			<div class="input-group col-sm-12 rowspace">
+				<div class="input-group-prepend">
+					<span class="input-group-text label-normal" ltext="NOF_DEVIDED_EOS"></span>
+				</div>
+				<input type="text" class="form-control" field="nofdesteos" disable_on="ref">
 			</div>
 		</div>
 	</div>
