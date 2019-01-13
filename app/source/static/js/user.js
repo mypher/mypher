@@ -6,7 +6,7 @@
 function User(d) {
 	this.mode = MODE.REF;
 	this.data = {
-		id : d.name
+		personid : d.name
 	};
 	this.div = d.div;
 }
@@ -31,9 +31,9 @@ User.prototype = {
 		try {
 			const info = await Rpc.call(
 				'person.get',
-				[{id:this.data.id}]
+				[{personid:this.data.personid}]
 			);
-			this.data = info.data||{id:this.data.id};
+			this.data = info.data||{personid:this.data.personid};
 			this.data.pkey = this.getActiveKey(info.sys);
 			this.data.sysdata = JSON.stringify(info.sys);
 			Rpc.call(
@@ -68,7 +68,7 @@ User.prototype = {
 		let btn = [];
 		switch (this.mode) {
 		case MODE.REF:
-			if (Account.isLogin(this.data.id)) {
+			if (Account.isLogin(this.data.personid)) {
 				btn.push({
 					text : 'EDIT',
 					click : () => {
@@ -108,7 +108,7 @@ User.prototype = {
 			}],
 			tokenlist : {
 				col : [
-					{ width : 1, label : _L('ID'), name : 'id' },
+					{ width : 1, label : _L('ID'), name : 'tokenid' },
 					{ width : 4, label : _L('ISSUER'), name : 'issuer' },
 					{ width : 5, label : _L('NAME2'), name : 'name' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' }
@@ -120,16 +120,16 @@ User.prototype = {
 						return;
 					}
 					const conv = o => {
-						return (o.name ? o.name : '') + '(' + o.id + ')';
+						return (o.name ? o.name : '') + '(' + o.cipherid + ')';
 					}
 					Rpc.call('token.list_for_person', [{
 						list : this.data.tokenlist,
-						person : this.data.id,
+						personid : this.data.personid,
 					}]).then(ret => {
 						let l = [];
 						ret.forEach(v => {
 							l.push({
-								id : v.id,
+								tokenid : v.tokenid,
 								issuer : conv(v.issuer),
 								name : v.name,
 								quantity : v.quantity
@@ -143,7 +143,7 @@ User.prototype = {
 				onselect : (d, list) => {
 					const token = new Token({
 						div : $('#main'),
-						id : d.id,
+						tokenid : d.tokenid,
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);

@@ -36,7 +36,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-			}, 10000);
+				limit : 0,
+			});
 			let ret = [];
 			let ex = new RegExp(d.name);
 			data.rows.forEach(v => {
@@ -56,7 +57,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-			}, 10000);
+				limit : 0,
+			});
 			let ret = [];
 			data.rows.forEach(v => {
 				if (v.tags.includes(d.tag)) {
@@ -165,7 +167,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'cdraft',
-			}, 10000);
+				limit : 0,
+			});
 			if (sdata && sdata.rows instanceof Array) {
 				for (let i=sdata.rows.length-1; i>=0; i-- ) {
 					const rec = sdata.rows[i];
@@ -280,6 +283,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'cdraft',
+				limit : 0,
 			});
 			if (data&&data.rows) {
 				return data.rows;

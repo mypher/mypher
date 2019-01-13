@@ -73,7 +73,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'tformal',
-			}, 10000);
+				limit : 0,
+			});
 			let ret = [];
 			data.rows.forEach( v=> {
 				if (v.name.includes(d.name)) {
@@ -92,7 +93,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'tformal',
-			}, 10000);
+				limit : 0,
+			});
 			let ret = [];
 			d = parseInt(d);
 			data.rows.forEach( v=> {

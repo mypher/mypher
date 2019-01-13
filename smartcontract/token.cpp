@@ -180,7 +180,7 @@ void Token::issue(const account_name sender, const uint64_t cipherid,
 	token_data d(SELF, SELF);
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	eosio_assert_code(rec->issuer==sender, TOKEN_NOT_OWNED_BY_SENDER);
+	eosio_assert_code(rec->issuer==cipherid, TOKEN_NOT_OWNED_BY_SENDER);
 	// check specified recipient
 	eosio_assert_code(Person::exists(recipient), INVALID_RECIPIENT);
 	// issue the token

@@ -376,7 +376,7 @@ module.exports = {
 
 	parseEosError : e => {
 		const err = /^assertion failure with error code: ([0-9]+)$/.exec(e.message);
-		const err2 = /^account lamb has insufficient ram; needs ([0-9]+) bytes has ([0-9]+) bytes/.exec(e.message);
+		const err2 = /^account [^ ]+ has insufficient ram; needs ([0-9]+) bytes has ([0-9]+) bytes/.exec(e.message);
 		if (err===null||err.length===1) {
 			if (err2!==null&&err2.length===3) {
 				return {code:'E9998', data:[err2[1], err2[2]]};

@@ -66,7 +66,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-			}, 10000);
+				limit : 0,
+			});
 			let ret = [];
 			data.rows.forEach( v=> {
 				if (v.name.includes(d.name)) {
@@ -99,18 +100,18 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
-/*
+
 	list_for_person : async function(d) {
 		try {
 			let min = cmn.number_null;
 			let max = 0;
-			d.list.foreach(v => {
-				v = parseint(v);
-				if (isnan(v)||v===cmn.number_null) return;
+			d.list.forEach(v => {
+				v = parseInt(v);
+				if (isNaN(v)||v===cmn.NUMBER_NULL) return;
 				min = (min<v) ? min : v;
 				max = (max>v) ? max : v;
 			});
-			const data = await eos.getdata({
+			const data = await eos.getData({
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
@@ -119,43 +120,29 @@ module.exports = {
 				upper_bound : max + 1,
 			});
 			let ret = [];
-			for (const i in data.rows) {
+			for (let i in data.rows) {
 				const v  = data.rows[i];
-				const idata = await eos.getdata({
+				const idata = await eos.getData({
 					code : 'myphersystem',
-					scope : v.id,
+					scope : v.tokenid,
 					table : 'issue',
 					limit : 1,
-					lower_bound : d.person,
+					lower_bound : d.personid,
+				});
+				//const d = cipher.getFormalFromCipherID({cipherid:v.issuer});
+				const pdata = await eos.getData({
+					code : 'myphersystem',
+					scope : 'myphersystem',
+					table : 'cformal',
+					limit : 1,
+					lower_bound : v.issuer,
 				});
 				let issuer = {};
-				if (v.issuer2!==cmn.number_null) {
-					const d = cipher.getformalfromcipherid({cipherid:v.issuer2});
-					const pdata = await eos.getdata({
-						code : 'myphersystem',
-						scope : 'myphersystem',
-						table : 'ckey',
-						limit : 1,
-						lower_bound : d.id,
-					});
-					if (pdata.rows.length===1) {
-						issuer.name = pdata.rows[0].name;
-					}
-				} else {
-					issuer.id = v.issuer;
-					const pdata = await eos.getdata({
-						code : 'myphersystem',
-						scope : 'myphersystem',
-						table : 'person',
-						limit : 1,
-						lower_bound : v.issuer,
-					});
-					if (pdata.rows.length===1) {
-						issuer.name = pdata.rows[0].name;
-					}
+				if (pdata.rows.length===1) {
+					issuer = pdata.rows[0];
 				}
 				ret.push({
-					id : v.id,
+					tokenid : v.tokenid,
 					issuer : issuer,
 					name : v.name,
 					quantity : idata.rows[0].quantity,
@@ -166,7 +153,7 @@ module.exports = {
 			log.error(e);
 			return cmn.parseEosError(e);
 		}
-	},*/
+	},
 
 	update : async function(d) {
 		try {

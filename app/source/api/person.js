@@ -15,16 +15,13 @@ module.exports = {
 		try {
 			let ret = [];
 			for ( let i in d ) {
-				if (!cmn.isEosID(d[i])) {
-					return {code:'INVALID_PARAM'};
-				}
 				let data = await eos.getDataWithPKey({
 					code : 'myphersystem',
 					scope : 'myphersystem',
 					table : 'person',
 				}, d[i] );
 				if (data!==null&&data.length>0&&d[i]===data[0].personid) {
-					ret.push({id:d[i], name:data[0].name});
+					ret.push({personid:d[i], name:data[0].name});
 				}
 			}
 			return ret;
@@ -35,9 +32,6 @@ module.exports = {
 
 	get : async d => {
 		try {
-			if (!cmn.isEosID(d.id)) {
-				return {code:'INVALID_PARAM'};
-			}
 			let ret = {};
 			ret.data = await eos.getDataWithPKey({
 				code : 'myphersystem',
@@ -84,7 +78,8 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-			}, 10000 );
+				limit : 0,
+			});
 			if (data.rows && data.rows instanceof Array) {
 				let ret = [];
 				data.rows.forEach(v=> {

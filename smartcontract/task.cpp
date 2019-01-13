@@ -32,7 +32,7 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 	eosio_assert_code(crec!=cd.end(), NOT_FOUND);
 	
 	// check if cdraftid is later than formal version
-	eosio_assert_code(Cipher::is_draft_version(cipherid, cdraftid), INVALID_PARAM);
+	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
 
 	// common check
 	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, 
@@ -71,17 +71,17 @@ void Task::taupdate( const account_name sender,
 	auto rec = d.find(tdraftid);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-
-	// check if cdraftid is later than formal version
-	eosio_assert_code(Cipher::is_draft_version(cipherid, cdraftid), INVALID_PARAM);
 	
-	// check data
-	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, pic, hash, tags);
-
 	// get linked cdraft data
 	Cipher::cdraft_data cd(self, cipherid);
 	auto crec = cd.find(cdraftid);
 	eosio_assert_code(crec!=cd.end(), INVALID_PARAM);
+
+	// check if cdraftid is later than formal version
+	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
+	
+	// check data
+	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, pic, hash, tags);
 
 	// if task is shared between some drafts, generates copy
 	if (is_shared(tdraftid, cipherid, cdraftid)) {
@@ -240,8 +240,16 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 		}
 	});
 	// send the reward to pic
-	if (tfrec->approve_results.size()>=cdrec->nofapproval) {
-		// TODO:
+	if (tfrec->approve_results.size()>=tdrec->nofapproval) {
+		eosio::print("##prepare issuing");
+		if (tdrec->rewardid!=NUMBER_NULL && tdrec->quantity>0) {
+			eosio::print("##prepare issuing2");
+			for (auto it=tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
+				Token::issue(sender, tfrec->cipherid, tdrec->rewardid, *it,
+					(uint64_t)(tdrec->quantity / tdrec->pic.size())
+				);
+			}
+		}
 	}
 }
 
@@ -299,32 +307,40 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	require_auth(sender);
 
 	// check if name is set
+	eosio::print("#1");
 	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
 	
 	// check if approver data is comformable
+	eosio::print("#2");
 	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_PARAM);
 
 	// check if approvers is invalid
+	eosio::print("#3");
 	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
 	
 	// check if pic is invalid
+	eosio::print("#4");
 	eosio_assert_code(Person::check_list(pic), INVALID_PARAM);
 	
 	// check rewardid
+	eosio::print("#5");
 	if (rewardid!=NUMBER_NULL) {
 		Validator::check_tokenowner(rewardid, cipherid);
 	}
 
 	// check if approver is set
+	eosio::print("#6");
 	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
 
 	// check if quantity is set only in case that rewardid is set
+	eosio::print("#7");
 	eosio_assert_code(
 		(rewardid != NUMBER_NULL && quantity != NUMBER_NULL) ||
 		(rewardid == NUMBER_NULL && quantity == NUMBER_NULL)
 		, INVALID_REWARD);
 	
 	// check hash
+	eosio::print("#8");
 	Validator::check_hash(hash);
 }
 
