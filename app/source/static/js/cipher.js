@@ -20,25 +20,24 @@ class Cipher {
 	}
 	
 	async current() {
-		let info = await Rpc.call(
-			'cipher.get',
-			[{
-				cipherid : this.data.cipherid,
-				cdraftid : this.data.cdraftid
-			}]
-		);
-		if (info.code!==undefined) {
-			UI.alert(info.code);
-			return;
+		try {
+			this.data = await Rpc.call(
+				'cipher.get',
+				[{
+					cipherid : this.data.cipherid,
+					cdraftid : this.data.cdraftid
+				}]
+			);
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.data = info;
 	}
 
 	get() {
 		return Util.getData(this.div, {
 			cipherid : this.data.cipherid,
 			cdraftid : this.data.cdraftid,
-			tasklist : this.data.tasklist, 
+			tasklist : this.data.tasklist,
 			tokenlist : this.data.tokenlist
 		});
 	}
@@ -61,43 +60,48 @@ class Cipher {
 		).then(info => {
 			drawDesc(info);
 		}).catch(e => {
+			UI.alert(e);
 			drawDesc({});
 		});
 	}
 
 	async newDraft() {
-		const newid = await Rpc.call(
-			'cipher.copy',
-			[{
-				user : Account.loginUser(),
-				cdraftid : this.data.cdraftid,
-				cipherid : this.data.cipherid
-			}]
-		);
-		if (newid===-1) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			return;
+		try {
+			const newid = await Rpc.call(
+				'cipher.copy',
+				[{
+					user : Account.loginUser(),
+					cdraftid : this.data.cdraftid,
+					cipherid : this.data.cipherid
+				}]
+			);
+			if (newid===-1) {
+				UI.alert(_L('FAILED_TO_GET_DATA'));
+				return;
+			}
+			this.data.cdraftid = newid;
+			this.mode = MODE.REF;
+			await this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.data.cdraftid = newid;
-		this.mode = MODE.REF;
-		await this.draw();
 	}
 
 	async approve(f) {
-		const newid = await Rpc.call(
-			'cipher.approve',
-			[{
-				user : Account.loginUser(),
-				cipherid : this.data.cipherid,
-				cdraftid : this.data.cdraftid,
-				approve : f
-			}]
-		);
-		if (newid===-1) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			return;
+		try {
+			await Rpc.call(
+				'cipher.approve',
+				[{
+					user : Account.loginUser(),
+					cipherid : this.data.cipherid,
+					cdraftid : this.data.cdraftid,
+					approve : f
+				}]
+			);
+			await this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		await this.draw();
 	}
 
 	mkBtn1() {
@@ -183,18 +187,25 @@ class Cipher {
 						});
 					});
 					elm.obj.pulldown(l);
-				});
+				}).catch(e => {
+					UI.alert(e);
+				});;
 			},
 			name : async l => {
-				l = await Rpc.call('person.name', [l]);
-				let ret = [];
-				l.forEach(v => {
-					ret.push({
-						key : v.personid,
-						name : v.name + '（' + v.personid + '）'
+				try {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
 					});
-				});
-				return ret;
+					return ret;
+				} catch (e) {
+					UI.alert(e);
+					return [];
+				}
 			}
 		};
 		await Util.load(this.div, 'parts/cipher.html', this.mode, {
@@ -229,7 +240,8 @@ class Cipher {
 						list : this.data.tokenlist,
 					}]).then(ret => {
 						list.show(ret);
-					}).catch( e=> {
+					}).catch( e => {
+						UI.alert(e);
 					});
 				},
 				onselect : (d, list) => {
@@ -237,6 +249,7 @@ class Cipher {
 						div : $('#main'),
 						cipherid : this.data.cipherid,
 						cdraftid : this.data.cdraftid,
+						editors : this.data.formal ? [] : this.data.editors,
 						tokenid : d.tokenid,
 						mode : MODE.REF
 					});
@@ -247,6 +260,7 @@ class Cipher {
 						div : $('#main'),
 						cipherid : this.data.cipherid,
 						cdraftid : this.data.cdraftid,
+						editors : this.data.formal ? [] : this.data.editors,
 						mode : MODE.NEW
 					});
 					History.run(_L('TOKEN'), token);
@@ -268,7 +282,8 @@ class Cipher {
 						list : this.data.tasklist,
 					}]).then(ret => {
 						list.show(ret);
-					}).catch( e=> {
+					}).catch( e => {
+						UI.alert(e);
 					});
 				},
 				onselect : (d, list) => {
@@ -316,17 +331,10 @@ class Cipher {
 		let data = this.get();
 		data.user = Account.user;
 		try {
-			let ret = await Rpc.call(
-				'cipher.add',
-				[data]
-			);
-			if (ret.code!==undefined) {
-				UI.alert(ret.code);
-				return;
-			}
+			await Rpc.call('cipher.add', [data]);
 			History.back();
 		} catch (e) {
-			UI.alert(e.message);
+			UI.alert(e);
 		}
 	}
 
@@ -334,18 +342,14 @@ class Cipher {
 		let data = this.get();
 		data.user = Account.user;
 		try {
-			let ret = await Rpc.call(
+			await Rpc.call(
 				'cipher.edit',
 				[data]
 			);
-			if (ret.code!==undefined) {
-				UI.alert(ret.code);
-				return;
-			}
 			this.mode = MODE.REF;
 			await this.refresh();
 		} catch (e) {
-			UI.alert(e.message);
+			UI.alert(e);
 		}
 	}
 
@@ -434,6 +438,5 @@ Cipher.prototype.Validator = {
 		return true;
 	}
 };
-
 
 //# sourceURL=cipher.js

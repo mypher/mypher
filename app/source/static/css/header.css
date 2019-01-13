@@ -24,3 +24,7 @@
 .menu-icon {
 	background-image: url('../img/menu.png');
 }
+
+#menuitem {
+	text-align:right;
+}

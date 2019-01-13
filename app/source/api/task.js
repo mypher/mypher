@@ -279,8 +279,12 @@ module.exports = {
 				lower_bound : d.cipherid,
 				upper_bound : d.cipherid + 1,
 			});
-			data.rows.forEach(v => {
-				if (d.list.includes(v.tformalid)) {
+			let dd = [];
+			d.forEach(v=> {
+				dd.push(parseInt(v));
+			});
+			data.forEach(v => {
+				if (dd.includes(v.tformalid)) {
 					ret.push({
 						tformalid : v.tformalid,
 						name : v.name,

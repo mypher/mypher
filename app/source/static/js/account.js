@@ -107,14 +107,10 @@ Account = {
 
 	open : async data => {
 		try {
-			let ret = await Rpc.call(
+			const ret = await Rpc.call(
 				'system.connect', 
 				[{id:data.name, pass:data.pass}]
 			);
-			if (ret.error) {
-				UI.alert(ret.error);
-				return false;
-			}
 			if (ret===true) {
 				Account.user = data.name;
 				Account.logined = true;
@@ -126,7 +122,7 @@ Account = {
 			}
 			return true;
 		} catch (e) {
-			UI.alert(e.message);
+			UI.alert(e);
 		}
 		return false;
 	},

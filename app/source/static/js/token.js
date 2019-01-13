@@ -13,22 +13,22 @@ class Token extends View {
 			tokenid : d.tokenid,
 			cdraftid : d.cdraftid,
 			issuer : d.cipherid,
+			editors : d.editors,
 		}
 	}
 
 	get() {
-		this.data = Util.getData(this.div, {});
+		this.data = Util.getData(this.div, {
+			editors : this.data.editors,
+			cdraftid : this.data.cdraftid,
+		});
 		return this.data;
 	}
 
 	async set(data) {
 		this.data = data;
 		const owner = $('div[name="issuer"]');
-		if (data.issuer2==='') {
-			owner.show();
-		} else {
-			owner.hide();
-		}
+		owner.show();
 		Util.setData(this.div, this.data);
 		this.grayAttr(this.data.type, this.data.when);
 		owner.find('div[field]').get(0).obj.allowedit(false);
@@ -48,26 +48,17 @@ class Token extends View {
 	}
 
 	async current() {
-		const info = await Rpc.call(
-			'token.get',
-			[{tokenid:this.data.tokenid}]
-		);
-		if (info.code!==undefined) {
-			UI.alert(info.code);
-			return;
-		}
-		/*if (this.cdata.id) {
-			const cinfo = await Rpc.call(
-				'cipher.get',
-				[{id:this.cdata.id}]
+		try {
+			const info = await Rpc.call(
+				'token.get',
+				[{tokenid:this.data.tokenid}]
 			);
-			if (cinfo.code!==undefined) {
-				UI.alert(info.code);
-				return;
-			}
-			this.cdata = cinfo.data;
-		}*/
-		this.data = info;
+			info.cdraftid = this.data.cdraftid;
+			info.editors = this.data.editors;
+			this.data = info;
+		} catch (e) {
+			UI.alert(e);
+		}
 	}
 
 	initButton() {
@@ -188,15 +179,20 @@ class Token extends View {
 				change : elm => {
 				},
 				name : async l => {
-					l = await Rpc.call('cipher.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.cipherid,
-							name : v.name + '（' + v.cipherid + '）'
+					try {
+						l = await Rpc.call('cipher.name', [l]);
+						let ret = [];
+						l.forEach(v => {
+							ret.push({
+								key : v.cipherid,
+								name : v.name + '（' + v.cipherid + '）'
+							});
 						});
-					});
-					return ret;
+						return ret;
+					} catch (e) {
+						UI.alert(e);
+						return [];
+					}
 				}
 			},
 			type : {
@@ -238,18 +234,25 @@ class Token extends View {
 							});
 						});
 						elm.obj.pulldown(l);
+					}).catch(e => {
+						UI.alert(e);
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('task.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.tformalid,
-							name : v.name + '（' + v.tformalid + '）'
+					try {
+						l = await Rpc.call('task.name', [l]);
+						let ret = [];
+						l.forEach(v => {
+							ret.push({
+								key : v.tformalid,
+								name : v.name + '（' + v.tformalid + '）'
+							});
 						});
-					});
-					return ret;
+						return ret;
+					} catch (e) {
+						UI.alert(e);
+						return [];
+					}
 				}
 			},
 			token : {
@@ -272,18 +275,25 @@ class Token extends View {
 							});
 						});
 						elm.obj.pulldown(l);
+					}).catch (e => {
+						UI.alert(e);
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('token.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.tokenid,
-							name : v.name + '（' + v.tokenid + '）'
+					try {
+						l = await Rpc.call('token.name', [l]);
+						let ret = [];
+						l.forEach(v => {
+							ret.push({
+								key : v.tokenid,
+								name : v.name + '（' + v.tokenid + '）'
+							});
 						});
-					});
-					return ret;
+						return ret;
+					} catch (e) {
+						UI.alert(e);
+						return [];
+					}
 				}
 			}
 		});
@@ -292,33 +302,26 @@ class Token extends View {
 	}
 
 	async create() {
-		const data = this.get();
-		data.sender = Account.user;
-		// cdraftid
-		const ret = await Rpc.call(
-			'token.add',
-			[data]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			const data = this.get();
+			data.sender = Account.user;
+			await Rpc.call('token.add', [data]);
+			History.back();
+		} catch (e) {
+			UI.alert(e);
 		}
-		History.back();
 	}
 
 	async commit() {
-		const data = this.get();
-		data.sender = Account.user;
-		let ret = await Rpc.call(
-			'token.update',
-			[data]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			const data = this.get();
+			data.sender = Account.user;
+			await Rpc.call('token.update', [data]);
+			this.mode = MODE.REF;
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.mode = MODE.REF;
-		this.draw();
 	}
 
 };
@@ -326,7 +329,7 @@ class Token extends View {
 Token.prototype.Validator = {
 	canEdit : function() {
 		const self = this.parent;
-		return self.cdata.editors&&self.cdata.editors.includes(Account.user);
+		return self.data.editors&&self.data.editors.includes(Account.user);
 	}
 }
 

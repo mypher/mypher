@@ -102,15 +102,15 @@ module.exports = {
 /*
 	list_for_person : async function(d) {
 		try {
-			let min = cmn.NUMBER_NULL;
+			let min = cmn.number_null;
 			let max = 0;
-			d.list.forEach(v => {
-				v = parseInt(v);
-				if (isNaN(v)||v===cmn.NUMBER_NULL) return;
+			d.list.foreach(v => {
+				v = parseint(v);
+				if (isnan(v)||v===cmn.number_null) return;
 				min = (min<v) ? min : v;
 				max = (max>v) ? max : v;
 			});
-			const data = await eos.getData({
+			const data = await eos.getdata({
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
@@ -121,7 +121,7 @@ module.exports = {
 			let ret = [];
 			for (const i in data.rows) {
 				const v  = data.rows[i];
-				const idata = await eos.getData({
+				const idata = await eos.getdata({
 					code : 'myphersystem',
 					scope : v.id,
 					table : 'issue',
@@ -129,9 +129,9 @@ module.exports = {
 					lower_bound : d.person,
 				});
 				let issuer = {};
-				if (v.issuer2!==cmn.NUMBER_NULL) {
-					const d = cipher.getFormalFromCipherID({cipherid:v.issuer2});
-					const pdata = await eos.getData({
+				if (v.issuer2!==cmn.number_null) {
+					const d = cipher.getformalfromcipherid({cipherid:v.issuer2});
+					const pdata = await eos.getdata({
 						code : 'myphersystem',
 						scope : 'myphersystem',
 						table : 'ckey',
@@ -143,7 +143,7 @@ module.exports = {
 					}
 				} else {
 					issuer.id = v.issuer;
-					const pdata = await eos.getData({
+					const pdata = await eos.getdata({
 						code : 'myphersystem',
 						scope : 'myphersystem',
 						table : 'person',
@@ -232,7 +232,7 @@ module.exports = {
 			data.rows.forEach(v => {
 				if (String(v.tokenid).includes(n) || v.name.includes(n)) {
 					ret.push({
-						id : v.tokenid,
+						tokenid : v.tokenid,
 						name : v.name,
 						tags : v.tags
 					});
@@ -256,7 +256,7 @@ module.exports = {
 			data.rows.forEach(v => {
 				if (v.issuer === n) {
 					ret.push({
-						id : v.tokenid,
+						tokenid : v.tokenid,
 						name : v.name,
 					});
 				}
@@ -294,7 +294,7 @@ module.exports = {
 			});
 			data.rows.forEach(v => {
 				ret.push({
-					id : v.tokenid,
+					tokenid : v.tokenid,
 					name : v.name,
 				});
 			});

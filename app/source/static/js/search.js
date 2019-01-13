@@ -94,8 +94,7 @@ Search.prototype = {
 				}
 			});
 		} catch (e) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			console.log(e);
+			UI.alert(e);
 		}
 	},
 
@@ -134,8 +133,7 @@ Search.prototype = {
 				}
 			});
 		} catch (e) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			console.log(e);
+			UI.alert(e);
 		}
 	},
 
@@ -179,8 +177,7 @@ Search.prototype = {
 				}
 			});
 		} catch (e) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			console.log(e);
+			UI.alert(e);
 		}
 	},
 
@@ -210,15 +207,16 @@ Search.prototype = {
 				} else if (code===LIST_NOTIFY.SELECT) {
 					const token = new Token({
 						div : $('#main'),
-						id : sel.id,
+						tokenid : sel.tokenid,
+						cipherid : sel.issuer,
+						esitors : [],
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);
 				}
 			});
 		} catch (e) {
-			UI.alert(_L('FAILED_TO_GET_DATA'));
-			console.log(e);
+			UI.alert(e);
 		}
 	},
 };

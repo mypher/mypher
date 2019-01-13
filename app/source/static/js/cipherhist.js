@@ -29,30 +29,33 @@ CipherHist.prototype = {
 	},
 
 	current : async function() {
-		let list = await Rpc.call(
-			'cipher.hist',
-			[{cipherid:this.data.cipherid}]
-		);
-		this.data = {
-			cipherid : this.data.cipherid,
-			formal :[],
-			draft : [],
-			history : []
-		}
-		for (let i=list.length-1; i>=0; i--) {
-			const o = list[i];
-			if (this.data.formal.length===0) {
-				if (o.formal) {
-					this.data.formal.push(o);
-				} else {
-					this.data.draft.push(o);
-				}
-			} else {
-				o.formal = o.formal ? '✓' : '';
-				this.data.history.push(o);
+		try {
+			const list = await Rpc.call(
+				'cipher.hist',
+				[{cipherid:this.data.cipherid}]
+			);
+			this.data = {
+				cipherid : this.data.cipherid,
+				formal :[],
+				draft : [],
+				history : []
 			}
+			for (let i=list.length-1; i>=0; i--) {
+				const o = list[i];
+				if (this.data.formal.length===0) {
+					if (o.formal) {
+						this.data.formal.push(o);
+					} else {
+						this.data.draft.push(o);
+					}
+				} else {
+					o.formal = o.formal ? '✓' : '';
+					this.data.history.push(o);
+				}
+			}
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.data.list;
 	},
 
 	refresh : async function() {
@@ -113,8 +116,5 @@ CipherHist.prototype = {
 		});
 	}
 };
-
-
-
 
 //# sourceURL=cipherhist.js

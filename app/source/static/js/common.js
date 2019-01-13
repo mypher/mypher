@@ -14,7 +14,6 @@ System = {
 	}
 };
 
-
 Rpc = {
 	SV_URL : '',
 	getId : () => {
@@ -44,7 +43,11 @@ Rpc = {
 				if (ret.error) {
 					reject(ret.error);
 				} else {
-					resolve(ret.result);
+					if (ret.result.code) {
+						reject(_L(ret.result.code, ret.result.data));
+					} else {
+						resolve(ret.result);
+					}
 				}
 			}, ret => {
 				UI.alert(_L('ERROR_RAISED'));
@@ -54,8 +57,8 @@ Rpc = {
 };
 
 var UI = {
-	alert : function(msg) {
-		var l = _L(msg);
+	alert : function(msg, data) {
+		var l = _L(msg, data);
 		var div = UI.popup(400, 150);
 		div.text(l ? l : msg);
 	},

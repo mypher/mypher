@@ -45,6 +45,7 @@ class Task {
 		).then(info => {
 			drawDesc(info);
 		}).catch(e => {
+			UI.alert(e);
 			drawDesc({});
 		});
 	}
@@ -60,29 +61,29 @@ class Task {
 	}
 
 	async current() {
-		const info = await Rpc.call(
-			'task.get',
-			[{
-				cipherid:this.data.cipherid,
-				tdraftid:this.data.tdraftid,
-			}]
-		);
-		if (info.code!==undefined) {
-			UI.alert(info.code);
-			return;
-		}
-		const cipherid = this.data.cipherid;
-		this.data = info.tdraft;
-		this.data.cipherid = cipherid;
-		if (info.tformal) {
-			const d = info.tformal;
-			this.data.tformalid = d.tformalid;
-			this.data.approve_pic = d.approve_pic;
-			this.data.approve_results = d.approve_results;
-		} else {
-			this.data.tformalid = undefined;
-			this.data.approve_pic = [];
-			this.data.approve_results = [];
+		try {
+			const info = await Rpc.call(
+				'task.get',
+				[{
+					cipherid:this.data.cipherid,
+					tdraftid:this.data.tdraftid,
+				}]
+			);
+			const cipherid = this.data.cipherid;
+			this.data = info.tdraft;
+			this.data.cipherid = cipherid;
+			if (info.tformal) {
+				const d = info.tformal;
+				this.data.tformalid = d.tformalid;
+				this.data.approve_pic = d.approve_pic;
+				this.data.approve_results = d.approve_results;
+			} else {
+				this.data.tformalid = undefined;
+				this.data.approve_pic = [];
+				this.data.approve_results = [];
+			}
+		} catch (e) {
+			UI.alert(e);
 		}
 	}
 
@@ -207,18 +208,25 @@ class Task {
 						});
 					});
 					elm.obj.pulldown(l);
+				}).catch(e => {
+					UI.alert(e);
 				});
 			},
 			name : async l => {
-				l = await Rpc.call('person.name', [l]);
-				let ret = [];
-				l.forEach(v => {
-					ret.push({
-						key : v.personid,
-						name : v.name + '（' + v.personid + '）'
+				try {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
 					});
-				});
-				return ret;
+					return ret;
+				} catch (e) {
+					UI.alert(e);
+					return [];
+				}
 			}
 		};
 		const btns = this.initButtons()
@@ -235,15 +243,20 @@ class Task {
 				change : elm => {
 				},
 				name : async l => {
-					l = await Rpc.call('cipher.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.cipherid,
-							name : v.name + '（' + v.cipherid + '）'
+					try {
+						l = await Rpc.call('cipher.name', [l]);
+						let ret = [];
+						l.forEach(v => {
+							ret.push({
+								key : v.cipherid,
+								name : v.name + '（' + v.cipherid + '）'
+							});
 						});
-					});
-					return ret;
+						return ret;
+					} catch (e) {
+						UI.alert(e);
+						return [];
+					}
 				}
 			},
 			tags : [{
@@ -270,18 +283,25 @@ class Task {
 							});
 						});
 						elm.obj.pulldown(l);
+					}).catch(e => {
+						UI.alert(e);
 					});
 				},
 				name : async l => {
-					l = await Rpc.call('token.name', [l]);
-					let ret = [];
-					l.forEach(v => {
-						ret.push({
-							key : v.tokenid,
-							name : v.name + '（' + v.tokenid + '）'
+					try {
+						l = await Rpc.call('token.name', [l]);
+						let ret = [];
+						l.forEach(v => {
+							ret.push({
+								key : v.tokenid,
+								name : v.name + '（' + v.tokenid + '）'
+							});
 						});
-					});
-					return ret;
+						return ret;
+					} catch(e) {
+						UI.alert(e);
+						return [];
+					}
 				}
 			},
 			approvers : userevt,
@@ -296,121 +316,117 @@ class Task {
 	async create() {
 		const data = this.get();
 		data.sender = Account.user;
-		const ret = await Rpc.call(
-			'task.add',
-			[data]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call('task.add', [data]);
+			History.back();
+		} catch (e) {
+			UI.alert(e);
 		}
-		History.back();
 	}
 
 	async commit() {
-		const data = this.get();
-		data.sender = Account.user;
-		let ret = await Rpc.call(
-			'task.update',
-			[data]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			const data = this.get();
+			data.sender = Account.user;
+			this.data.tdraftid = await Rpc.call(
+				'task.update',
+				[data]
+			);
+			this.mode = MODE.REF;
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.mode = MODE.REF;
-		this.data.tdraftid = ret;
-		this.draw();
 	}
 
 	async approve_pic() {
-		const ret = await Rpc.call(
-			'task.approve_pic',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.approve_pic',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 
 	async cancel_approve_pic() {
-		const ret = await Rpc.call(
-			'task.cancel_approve_pic',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.cancel_approve_pic',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 
 	async approve_results() {
-		const ret = await Rpc.call(
-			'task.approve_results',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.approve_results',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 
 	async cancel_approve_results() {
-		const ret = await Rpc.call(
-			'task.cancel_approve_results',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.cancel_approve_results',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 
 	async apply_for_pic() {
-		const ret = await Rpc.call(
-			'task.apply_for_pic',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.apply_for_pic',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 
 	async cancel_apply_for_pic() {
-		const ret = await Rpc.call(
-			'task.cancel_apply_for_pic',
-			[{
-				sender : Account.user,
-				tformalid : this.data.tformalid,
-			}]
-		);
-		if (ret.code!==undefined) {
-			UI.alert(ret.code);
-			return;
+		try {
+			await Rpc.call(
+				'task.cancel_apply_for_pic',
+				[{
+					sender : Account.user,
+					tformalid : this.data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
 		}
-		this.draw();
 	}
 };
 

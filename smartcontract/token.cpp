@@ -21,12 +21,10 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 
 	token_data d(self, self);
 	uint64_t id = d.available_primary_key();
-	eosio::print("###Token::tknew");
 	// common check
 	check_data(sender, name, issuer, limit, when, disposal, type, 
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 	// create new token
-	eosio::print("###Token::tknew11111");
 	d.emplace(sender, [&](auto& dd) {
 		dd.tokenid = id;
 		dd.name = name;
