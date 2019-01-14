@@ -56,6 +56,24 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
+	use : async function(d) {
+		try {
+			d = await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'tkuse',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+			return {}
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+	},
 
 	list : async function(d) {
 		try {

@@ -137,6 +137,13 @@ var $L = {
 		'OWNED_TOKEN' : '所有トークン',
 		'TFORMALID' : '公式タスクID',
 		'TDRAFTID' : 'ドラフトタスクID',
+		'USE_EX'  : '使用/交換',
+		'TOKEN_USE' : 'トークン使用',
+		'OWNED_QUANTITY' : '保有量',
+		'USE_QUANTITY' : '使用量',
+		'WAY_TO_USE' : '使用方法',
+		'USE' : '使用',
+		'RECIPIENT' : '受取人',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

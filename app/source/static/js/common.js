@@ -311,22 +311,32 @@ let Util = {
 			key : proc.key
 		};
 		const cb = (code, d, list) => {
-			if (code===LIST_NOTIFY.DATA) {
+			switch (code) {
+			case LIST_NOTIFY.DATA:
 				if (proc.ondata) {
 					return proc.ondata(d, list);
 				}
-			} else if (code===LIST_NOTIFY.SELECT) {
+				break;
+			case LIST_NOTIFY.SELECT:
 				if (proc.onselect) {
 					return proc.onselect(d, list);
 				}
-			} else if (code===LIST_NOTIFY.CREATE) {
+				break;
+			case LIST_NOTIFY.CREATE:
 				if (proc.onadd) {
 					return proc.onadd(d, list);
 				}
-			} else if (code===LIST_NOTIFY.GETDATA) {
+				break;
+			case LIST_NOTIFY.GETDATA:
 				if (proc.ongetdata) {
 					return proc.ongetdata(d, list);
 				}
+				break;
+			case LIST_NOTIFY.BUTTON:
+				if (proc.onbutton) {
+					return proc.onbutton(d, list);
+				}
+				break;
 			}
 		};
 		elm.obj = new List(data, cb);

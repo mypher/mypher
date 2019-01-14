@@ -53,6 +53,7 @@ bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 
 void Cipher::cnew(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
+				const multisig,
 				const vector<string>& tags, const string& hash,
 				uint16_t nofapproval, const vector<account_name>& approvers) {
 	// check data

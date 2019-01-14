@@ -99,6 +99,7 @@ User.prototype = {
 			});
 			break;
 		}
+		const self = this;
 		await Util.load(this.div, 'parts/user.html', this.mode, {
 			button :btn,
 			tags :[{
@@ -109,9 +110,10 @@ User.prototype = {
 			tokenlist : {
 				col : [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
-					{ width : 4, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 5, label : _L('NAME2'), name : 'name' },
-					{ width : 2, label : _L('QUANTITY'), name : 'quantity' }
+					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 4, label : _L('NAME2'), name : 'name' },
+					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
+					{ width : 2, label : _L(''), btn : 'USE_EX' },
 				],
 				key : [],
 				ondata : (d, list) => {
@@ -147,6 +149,18 @@ User.prototype = {
 						mode : MODE.REF
 					});
 					History.run(_L('TOKEN'), token);
+				},
+				onbutton : (d, list) => {
+					const tu = new TokenUse({
+						div : $('#main'),
+						personid : self.data.personid,
+						person : self.data.name,
+						tokenid : d.val.tokenid,
+						token : d.val.name,
+						quantity : d.val.quantity,
+						mode : MODE.EDIT,
+					});
+					History.run(_L('TOKEN_USE'), tu);
 				},
 				onadd : () => {}
 			},

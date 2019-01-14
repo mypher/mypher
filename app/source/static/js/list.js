@@ -7,7 +7,8 @@ let LIST_NOTIFY = {
 	CREATE : 1,
 	DATA : 2,
 	SELECT : 3,
-	GETDATA : 4
+	GETDATA : 4,
+	BUTTON : 5,
 };
 
 function List(type, cb) {
@@ -69,7 +70,12 @@ List.prototype = {
 			];
 			for ( var j=0; j<col.length; j++ ) {
 				html.push('<div class="col-' + col[j].width + '"><div>');
-				html.push(data[i][col[j].name]);
+				if (col[j].btn) {
+					html.push('<div class="lstbtn" key="' + i + '" btn="' 
+						+ col[j].btn + '">' + _L(col[j].btn)+ '</div>');
+				} else {
+					html.push(data[i][col[j].name]);
+				}
 				html.push('</div></div>');
 			}
 			html.push('</div>');
@@ -78,6 +84,12 @@ List.prototype = {
 			row.click(function() {
 				var val = $(this).attr('key');
 				self.cb(LIST_NOTIFY.SELECT, data[val], self);
+			});
+			row.find('.lstbtn').click(function() {
+				const val = data[$(this).attr('key')];
+				const btn = $(this).attr('btn');
+				self.cb(LIST_NOTIFY.BUTTON, { val, btn }, self);
+				return false;
 			});
 		}
 	}

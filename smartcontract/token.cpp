@@ -239,6 +239,7 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	case Type::DISTRIBUTE_CRYPTOCURRENCY:
 		eosio_assert_code(0, NOT_IMPLEMENT_YET);
 	}
+	eosio::print("##token::use is not implemented");
 }
 
 void Token::distribute(const account_name sender, const uint64_t cipherid,  

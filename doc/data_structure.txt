@@ -28,6 +28,7 @@ package Cipher <<Frame>> {
 		--
 		-ciperid : CIPHERID
 		cdraftid : CDRAFTID
+		multisig : name
 		name : string
 		tags : string[]
 	}

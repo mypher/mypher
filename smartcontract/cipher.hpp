@@ -30,12 +30,13 @@ public:
 	struct [[eosio::table]] cformal {
 	 	uint64_t		cipherid;
 		uint64_t		cdraftid;
+		name			multisig;
 		string			name;
 		vector<string>	tags;
 
 		uint64_t primary_key() const { return cipherid; }
 		
-		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(name)(tags))
+		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(multisig)(name)(tags))
 	};
 
 	/**
@@ -88,6 +89,7 @@ public:
 	[[eosio::action]]
 	void cnew(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
+				const account_name multisig,
 				const vector<string>& tags, const string& hash,
 				uint16_t nofapproval, const vector<account_name>& approvers);
 	/**
