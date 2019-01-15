@@ -29,6 +29,10 @@
 .row > .name {
 	color:#28c;
 }
+.row > .discraimer {
+	color:#f00;
+}
+
 .row > label {
 	word-wrap:break-word;
 }

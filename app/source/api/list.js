@@ -13,7 +13,8 @@ module.exports = {
 		person : require('./person'),
 		cipher : require('./cipher'),
 		token : require('./token'),
-		task : require('./task')
+		task : require('./task'),
+		multisig : require('./multisig')
 	},
 	call : async function (cn, mn, params, auth) {
 		log.debug('api.call:' + cn + ':' + mn);

@@ -16,6 +16,7 @@ _ = {
 		System.loadModule('token');
 		System.loadModule('task');
 		System.loadModule('tokenuse');
+		System.loadModule('multisig');
 		Header.init($('#head')).then(() => {
 			_.showSearch();
 		});

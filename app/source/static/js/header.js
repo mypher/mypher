@@ -69,6 +69,14 @@ Header = {
 				});
 				History.run(_L('ACCOUNT'), user);
 			});
+			addItem(_L('MULTISIG'), function() {
+				const multisig = new MultiSig({
+					div : $('#main'),
+					name : Account.user,
+					mode : MODE.NEW,
+				});
+				History.run(_L('MULTISIG'), multisig);
+			});
 		}
 		addItem(_L(Account.logined ? 'LOGOUT' : 'LOGIN'), function() {
 			Account.loginout();

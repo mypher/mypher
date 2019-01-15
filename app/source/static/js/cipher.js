@@ -170,7 +170,7 @@ class Cipher {
 		const btn1 = this.mkBtn1();
 		const person =  {
 			click : key => {
-				let user = new User({
+				const user = new User({
 					div : $('#main'),
 					name : key 
 				});
