@@ -72,7 +72,7 @@ Header = {
 			addItem(_L('MULTISIG'), function() {
 				const multisig = new MultiSig({
 					div : $('#main'),
-					name : Account.user,
+					personid : Account.user,
 					mode : MODE.NEW,
 				});
 				History.run(_L('MULTISIG'), multisig);

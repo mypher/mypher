@@ -85,7 +85,11 @@ class MultiSig extends View {
 	async create() {
 		try {
 			this.data = Util.getData(this.div, this.data);
-			UI.alert(1);
+			this.data.prikey = undefined;
+			this.Validator.check(this.data);
+			const l = await Rpc.call('multisig.create', [this.data]);
+			this.mode = MODE.REF;
+			this.refresh();
 		} catch (e) {
 			UI.alert(e);
 		}
@@ -118,6 +122,24 @@ class MultiSig extends View {
 };
 
 MultiSig.prototype.Validator = {
+	check : function(data) {
+		const threshold = parseInt(data.threshold);
+		if (isNaN(threshold)) {
+			throw 'INVALID_PARAM';
+		}
+		if (data.coowner.length<threshold) {
+			throw 'INVALID_PARAM';
+		}
+		if (!data.id||!data.id.length) {
+			throw 'INVALID_PARAM';
+		}
+		if (data.coowner.length===0) {
+			throw 'INVALID_PARAM';
+		}
+		if (!data.pubkey||!data.pubkey.length) {
+			throw 'INVALID_PARAM';
+		}
+	}
 };
 
 //# sourceURL=multisig.js

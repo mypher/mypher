@@ -7,6 +7,7 @@
 
 const childProcess = require('child_process');
 const eos = require('../db/eos');
+const log = require('../cmn/logger')('api.cmn');
 
 let an = /^[abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_]*$/;
 module.exports = {

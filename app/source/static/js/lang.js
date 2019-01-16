@@ -150,6 +150,7 @@ var $L = {
 		'COOWNER' : '共同所有者',
 		'KEYCREATE' : '生成',
 		'PRI_DISCRAIMER' : '秘密鍵はどこにも保存されません。メモを取る等で、ご自分で保管ください。',
+		'NOF_REQ_AUTH' : '必要承認者数',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',
