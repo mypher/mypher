@@ -85,7 +85,8 @@ class MultiSig extends View {
 	async create() {
 		try {
 			this.data = Util.getData(this.div, this.data);
-			this.data.prikey = undefined;
+			//this.data.prikey = undefined;
+			this.data.personid = Account.user;
 			this.Validator.check(this.data);
 			const l = await Rpc.call('multisig.create', [this.data]);
 			this.mode = MODE.REF;

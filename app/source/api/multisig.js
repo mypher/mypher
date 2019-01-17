@@ -60,32 +60,45 @@ module.exports = {
 				// if the wallet is already unlocked 
 				log.debug(e);
 			}
+			await cmn.cmd('cleos wallet import --private-key ' + d.prikey);
 			// create account
+			const unit = 'SYS';
 			let line = [
-				'cleos create account', d.personid, d.id, d.pubkey, d.pubkey
+				'cleos system newaccount',
+				d.personid, '--transfer', d.id, d.pubkey, 
+				'--stake-net "1.0000', unit, '" --stake-cpu "1.0000', unit, 
+				'" --buy-ram-kbytes 8'
 			].join(' ');
-			ret = await cmn.cmd(line);
-			if (ret.includes('Error')) {
-				log.error(ret);
+			try {
+				await cmn.cmd(line);
+			} catch (e) {
+				log.debug(e);
+				if (e.includes('no balance object found')) {
+					return {code:'INSUFFICIENT_FUNDS'};
+				}
 				return {code:'FAILED_TO_CREATE_ACCOUNT'};
 			}
 			const makeJson = type => {
 				let json = {
-					threshold : d.threshold,
+					threshold : parseInt(d.threshold),
 					keys : [],
 					accounts : [],
 					waits : []
 				};
+				let coowner = {};
 				d.coowner.forEach(v => {
+					coowner[v] = true;
+				});
+				for ( let n in coowner ) {
 					json.accounts.push({
 						permission : {
-							actor : v,
+							actor : n,
 							permisson : type
 						},
 						weight : 1
 					});
-				});
-				return JSON.stringity(json);
+				}
+				return JSON.stringify(json);
 			};
 			// set the active permission
 			line = [
@@ -104,7 +117,7 @@ module.exports = {
 			line = [
 				'cleos set account permission', d.id,
 				'owner',
-				makeJson('owner'),
+				"'" + makeJson('owner') + "'",
 				'-p',
 				d.id + '@owner'
 			].join(' ');
