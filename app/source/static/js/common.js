@@ -487,6 +487,14 @@ let Util = {
 	padZero : (v, l) => {
 		v = '00000000' + v;
 		return v.substr(v.length-l, l);
+	},
+	isEosID : v => {
+		try {
+			const regex = /(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/;
+			return (v.match(regex)!==null)
+		} catch (e) {
+			return false;
+		}
 	}
 };
 

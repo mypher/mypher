@@ -73,7 +73,7 @@ Header = {
 				const multisig = new MultiSig({
 					div : $('#main'),
 					personid : Account.user,
-					mode : MODE.NEW,
+					mode : MODE.REF,
 				});
 				History.run(_L('MULTISIG'), multisig);
 			});

@@ -61,13 +61,28 @@ class MultiSig extends View {
 					}
 				}
 			},
-			keygen : [{
-				text : 'KEYCREATE',
+			button : this.makeBtn(),
+		});
+		this.set(this.data);
+	}
+
+	async makeBtn() {
+		switch (this.mode) {
+		case MODE.REF:
+			return [{
+				text : 'SEARCH',
 				click : async () => {
-					this.genKey();
+					this.search();
 				}
-			}],
-			button : [{
+			},{
+				text : 'CREATE',
+				click : async () => {
+					this.mode = MODE.NEW;
+					this.refresh();
+				}
+			}];
+		case MODE.NEW:
+			return [{
 				text : 'CREATE',
 				click : async () => {
 					this.create();
@@ -77,30 +92,34 @@ class MultiSig extends View {
 				click : async () => {
 					History.back();
 				}
-			}],
-		});
-		this.set(this.data);
+			}];
+		}
+		return [];
 	}
 
-	async create() {
+	async search() {
 		try {
 			this.data = Util.getData(this.div, this.data);
-			//this.data.prikey = undefined;
-			this.data.personid = Account.user;
-			this.Validator.check(this.data);
-			const l = await Rpc.call('multisig.create', [this.data]);
-			this.mode = MODE.REF;
+			const l = await Rpc.call('multisig.search', [this.data]);
+			this.data = l;
 			this.refresh();
 		} catch (e) {
 			UI.alert(e);
 		}
 	}
 
-	async genKey() {
+	async create() {
 		try {
-			const ret = await Rpc.call('multisig.genkey', [{sender:Account.user}]);
-			$('[field="pubkey"]').eq(0).val(ret.pubkey);
-			$('[field="prikey"]').eq(0).val(ret.prikey);
+			if (!Account.user) {
+				UI.alert(_L('USER_NOT_LOGIN'));
+				return;
+			}
+			this.data = Util.getData(this.div, this.data);
+			this.data.personid = Account.user;
+			this.Validator.check(this.data);
+			const l = await Rpc.call('multisig.create', [this.data]);
+			this.mode = MODE.REF;
+			this.refresh();
 		} catch (e) {
 			UI.alert(e);
 		}
@@ -131,13 +150,10 @@ MultiSig.prototype.Validator = {
 		if (data.coowner.length<threshold) {
 			throw 'INVALID_PARAM';
 		}
-		if (!data.id||!data.id.length) {
+		if (!Util.isEosID(data.id)) {
 			throw 'INVALID_PARAM';
 		}
 		if (data.coowner.length===0) {
-			throw 'INVALID_PARAM';
-		}
-		if (!data.pubkey||!data.pubkey.length) {
 			throw 'INVALID_PARAM';
 		}
 	}
