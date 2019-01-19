@@ -131,5 +131,35 @@ module.exports = {
 		} catch (e) {
 			return {code:e};
 		}
+	},
+
+	search : async d => {
+		try {
+			const data = await cmn.cmd('cleos get account ' + d.id);
+			let line = data.split('\n');
+			let ret = {
+				threshold : 0,
+				coowner : [],
+				id : d.id,
+			};
+			line.some(v=> {
+				if (/^[ ]*active/.exec(v)===null) return false;
+				let r = /([0-9]*):[ ]*(.*)/.exec(v);
+				if (r!==null && r.length===3) {
+					ret.threshold = r[1];
+					r = r[2].split(',');
+					r.forEach(v=> {
+						let vv = /[ ]*([0-9]+) ([^@]*)/.exec(v);
+						if (vv!==null && vv.length===3) {
+							ret.coowner.push(vv[2]);
+						}
+					});
+				}
+				return true;
+			});
+			return ret;
+		} catch (e) {
+			return {code:e};
+		}
 	}
 };

@@ -8,8 +8,8 @@ class MultiSig extends View {
 		super();
 		this.data = {
 			personid : d.personid,
-			mode : d.mode,
 		};
+		this.mode = d.mode;
 		this.div = d.div;
 	}
 
@@ -66,7 +66,7 @@ class MultiSig extends View {
 		this.set(this.data);
 	}
 
-	async makeBtn() {
+	makeBtn() {
 		switch (this.mode) {
 		case MODE.REF:
 			return [{
@@ -78,6 +78,7 @@ class MultiSig extends View {
 				text : 'CREATE',
 				click : async () => {
 					this.mode = MODE.NEW;
+					this.data = {};
 					this.refresh();
 				}
 			}];
@@ -127,12 +128,7 @@ class MultiSig extends View {
 
 	async set(data) {
 		this.data = data;
-		Util.setData(this.div, {
-			token : this.data.token + '(' + this.data.tokenid + ')',
-			quantity : this.data.quantity,
-			way2use : 0,
-			use_quantity : 0,
-		});
+		Util.setData(this.div, data);
 	}
 
 	async draw() {
