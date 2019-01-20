@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -30,7 +30,7 @@ public:
 	struct [[eosio::table]] cformal {
 	 	uint64_t		cipherid;
 		uint64_t		cdraftid;
-		name			multisig;
+		account_name	multisig;
 		string			name;
 		vector<string>	tags;
 

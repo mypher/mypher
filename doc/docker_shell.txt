@@ -1,0 +1,51 @@
+@startuml
+skinparam {
+	defaultFontName Geneva
+}
+start
+fork
+	-[#blue]->script 
+	for unit test;
+	:prepare environments for the unit test;
+fork again
+	-[#red]->script 
+	for generating test image;
+	:prepare environments for the unit test;
+fork again
+	-[#green]->script 
+	for the production;
+	:prepare environments for the production;
+end fork
+:execute "mongod" (wait 10s);
+:execute "node main.js";
+if (was the wallet key already generated?) then (yes)
+	:execute "cleos wallet create";
+else (no)
+	:execute "cleos wallet unlock";
+endif
+:prepare environments for ipfs;
+:execute "ipfs daemon";
+if (is the producer name eosio?) then (yes)
+	:start nodeos for eosio;
+	:wait the preparation for nodeos;
+	:prepare the base contracts if not generated yet;
+else
+	:start nodeos for normal user;
+	:wait the preparation for nodeos;
+endif
+fork
+	-[#blue]->script 
+	for unit test;
+	:infinite loop;
+fork again
+	-[#red]->script 
+	for generating test image;
+	:generate test user;
+	:prepare test environments;
+fork again
+	-[#green]->script 
+	for the production;
+	:infinite loop;
+end fork
+end
+@enduml

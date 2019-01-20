@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -144,7 +144,7 @@ var $L = {
 		'WAY_TO_USE' : '使用方法',
 		'USE' : '使用',
 		'RECIPIENT' : '受取人',
-		'MULTISIG' : '共同口座',
+		'MULTISIG' : '共有口座',
 		'COOWNER' : '共同所有者',
 		'NOF_REQ_AUTH' : '必要承認者数',
 

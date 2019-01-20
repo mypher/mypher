@@ -1,5 +1,5 @@
 #!/bin/bash 
-# Copyright (C) 2018 The Mypher Authors
+# Copyright (C) 2018-2019 The Mypher Authors
 #
 # SPDX-License-Identifier: LGPL-3.0+
 #
@@ -88,7 +88,7 @@ if [ ! -e /keys/wallet.txt ]; then
 else
 	cleos wallet open
 	WPASS=`cat /keys/wallet.txt`
-	cleos wallet unlock --password ${WPASS:1:53}
+	cleos wallet unlock --password ${WPASS}
 fi
 
 echo "###############################"

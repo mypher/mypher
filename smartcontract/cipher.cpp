@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -53,11 +53,13 @@ bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 
 void Cipher::cnew(const account_name sender, 
 				const string& name, const vector<account_name>& editors,
-				const multisig,
+				const account_name multisig,
 				const vector<string>& tags, const string& hash,
 				uint16_t nofapproval, const vector<account_name>& approvers) {
 	// check data
 	check_data(sender, name, editors, tags, hash, nofapproval, approvers);
+
+	eosio_assert_code(is_account(multisig), INVALID_MULTISIG);
 
 	cformal_data d1(self, self);
 	uint64_t cipherid = d1.available_primary_key();
@@ -68,6 +70,7 @@ void Cipher::cnew(const account_name sender,
 	d1.emplace(sender, [&](auto& dd) {
 	 	dd.cipherid = cipherid;
 		dd.cdraftid = cdraftid;
+		dd.multisig = multisig;
 		dd.name = name;
 		dd.tags = tags;
 	});
@@ -85,6 +88,9 @@ void Cipher::cnew(const account_name sender,
 		dd.nofapproval = nofapproval;
 		dd.approvers = approvers;
 	});
+
+	// create account
+
 }
 
 void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {

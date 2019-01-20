@@ -1,25 +1,25 @@
 <!--
-    Copyright (C) 2018 The Mypher Authors
+    Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
 <div class="form-horizontal">
 	<!-- ID -->
-	<div class="form-group row" name="cp_id" hide_on="add">
+	<div class="form-group row" hide_on="add">
 		<label class="col-sm-3 name" ltext="ID"></label>
 		<label class="col-sm-9" field="cipherid"></label>
 	</div>
 	<!-- CDRAFTID -->
-	<div class="form-group row" name="cp_cdraftid" hide_on="add">
+	<div class="form-group row" hide_on="add">
 		<label class="col-sm-3 name" ltext="CDRAFT_ID"></label>
 		<label class="col-sm-9" field="cdraftid"></label>
 	</div>
 	<!-- VER -->
-	<div class="form-group row" name="cp_ver" hide_on="add">
+	<div class="form-group row" hide_on="add">
 		<label class="col-sm-3 name" ltext="VERSION"></label>
 		<label class="col-sm-9" field="version"></label>
 	</div>
 	<!-- DRAFT -->
-	<div class="form-group row" name="cp_draft" hide_on="add">
+	<div class="form-group row" hide_on="add">
 		<label class="col-sm-3 name" ltext="DRAFT_NO"></label>
 		<label class="col-sm-8 col-10" field="no"></label>
 		<div class="col-sm-1 col-2 right" ctrl="button" proc="draft">
@@ -28,41 +28,48 @@
 	</div>
 	<hr hide_on="add">
 	<!-- EDITOR -->
-	<div class="form-group row" name="cp_editor">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="DRAFT_EDIT_MEMBER"></label>
 		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="editors" field="editors"/>
 	</div>
 	<!-- NAME -->
-	<div class="form-group row" name="cp_name">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="NAME1"></label>
 		<div class="col-sm-9">
 			<input type="text" class="form-control" disable_on="ref" field="name">
 		</div>
 	</div>
 	<!-- DESCRIPTION -->
-	<div class="form-group row" name="cp_desc">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="PURPOSE"></label>
 		<div class="col-sm-9">
 			<textarea class="form-control" disable_on="ref" field="purpose"></textarea>
 		</div>
 	</div>
 	<!-- TAGS -->
-	<div class="form-group row" name="cp_tags">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="TAGS"></label>
 		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
 		</div>
 	</div>
 	<!-- RULE_REQ -->
-	<div class="form-group row" name="cp_gov">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="REQ_NUM_APPROVERS"></label>
 		<div class="col-sm-9">
 			<input type="text" class="form-control" disable_on="ref" field="nofapproval">
 		</div>
 	</div>
 	<!-- RULE_AUTHER -->
-	<div class="form-group row" name="cp_gov">
+	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="APPROVERS"></label>
 		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="authors" field="approvers">
+		</div>
+	</div>
+	<!-- MULTISIG -->
+	<div class="form-group row">
+		<label class="col-sm-3 name" ltext="MULTISIG"></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" disable_on="ref" field="multisig">
 		</div>
 	</div>
 	<!-- BUTTON1 -->

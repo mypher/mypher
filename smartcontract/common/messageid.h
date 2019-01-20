@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -26,6 +26,7 @@
 #define PIC_IS_NOT_SENDER 18
 #define INVALID_REWARD 19
 #define INCONSISTENT_DATA_EXISTS 20
+#define INVALID_MULTISIG 21
 #define NOT_IMPLEMENT_YET 99999
 
 #endif // COMMON_MESSAGEID_H
