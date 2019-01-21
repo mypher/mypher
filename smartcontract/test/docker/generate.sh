@@ -1,5 +1,5 @@
 #!/bin/bash 
-# Copyright (C) 2018 The Mypher Authors
+# Copyright (C) 2018-2019 The Mypher Authors
 #
 # SPDX-License-Identifier: LGPL-3.0+
 #
@@ -27,9 +27,15 @@ docker run \
 	mypher \
 	/bin/bash -c "/testscripts/init.sh" &
 
-sleep 70
+sleep 5
+docker logs -f mypher_eosio | 
+while read -r line
+do 
+	if [[ ${line} =~ "***done***" ]]; then
+		echo "generating testimage..."
+		docker commit mypher_eosio mypher_test
+		docker stop mypher_eosio
+		echo "generating testing image is successfully completed."
+	fi
+done
 
-echo "generating testimage..."
-docker commit mypher_eosio mypher_test
-docker stop mypher_eosio
-echo "done."

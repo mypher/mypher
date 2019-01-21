@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -16,13 +16,13 @@ false : () => {
 		const N = 'cnew';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				name : 'test111',
-				editors : ['test1', 'test2'],
+				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',
 				nofapproval : 2,
-				approvers : ['test1', 'test2']
+				approvers : ['mypherutest1', 'mypherutest2']
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
@@ -38,11 +38,11 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "editors"',  async () => {
-			let ret = await tools.push(N, _P({editors:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({editors:['mypherutest1', 'mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({editors:['a', 'test2']}));
+			ret = await tools.push(N, _P({editors:['a', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({editors:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({editors:['mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is not set',  async () => {
@@ -50,11 +50,11 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "approvers"',  async () => {
-			let ret = await tools.push(N, _P({approvers:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({approvers:['mypherutest1', 'mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['a', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['a', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is 0',  async () => {
@@ -83,10 +83,10 @@ false : () => {
 				formal : 1,
 				name : 'test111',
 				tags : ['aaa', 'えい'],
-				editors : ['test1', 'test2'],
+				editors : ['mypherutest1', 'mypherutest2'],
 				hash : '',
 				nofapproval : 2,
-				approvers : ['test1', 'test2'],
+				approvers : ['mypherutest1', 'mypherutest2'],
 				approved : [],
 				tasklist : [],
 				tokenlist : [] 
@@ -102,7 +102,7 @@ false : () => {
 		const N = 'cnewdraft';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 0,
 			};
@@ -155,13 +155,13 @@ false : () => {
 				cdraftid : 1,
 				version : 2,
 				no : 1,
-				sender : 'test1',
+				sender : 'mypherutest1',
 				name : 'changed',
-				editors : ['test1', 'test3'],
+				editors : ['mypherutest1', 'mypherutest3'],
 				tags : ['abc', '漢字', 'i'],
 				hash : '',
 				nofapproval : 2,
-				approvers : ['test1', 'test2', 'test3'],
+				approvers : ['mypherutest1', 'mypherutest2', 'mypherutest3'],
 				tasklist : [],
 				tokenlist : []
 			};
@@ -178,11 +178,11 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "editors"',  async () => {
-			let ret = await tools.push(N, _P({editors:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({editors:['mypherutest1', 'mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({editors:['a', 'test2']}));
+			ret = await tools.push(N, _P({editors:['a', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({editors:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({editors:['mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is not set',  async () => {
@@ -190,11 +190,11 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "approvers"',  async () => {
-			let ret = await tools.push(N, _P({approvers:['test1', 'mamamama', 'test2']}));
+			let ret = await tools.push(N, _P({approvers:['mypherutest1', 'mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['a', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['a', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['mamamama', 'test2']}));
+			ret = await tools.push(N, _P({approvers:['mamamama', 'mypherutest2']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is 0',  async () => {
@@ -202,9 +202,9 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('invalid "nofapproval"',  async () => {
-			let ret = await tools.push(N, _P({approvers:['test1', 'test2'], nofapproval:3}));
+			let ret = await tools.push(N, _P({approvers:['mypherutest1', 'mypherutest2'], nofapproval:3}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['test1', 'test2'], nofapproval:2}));
+			ret = await tools.push(N, _P({approvers:['mypherutest1', 'mypherutest2'], nofapproval:2}));
 			tools.checkIfSent(ret);
 			ret = await tools.push(N, _P({nofapproval:2}));
 			tools.checkIfSent(ret);
@@ -241,7 +241,7 @@ false : () => {
 			let ret = {
 				cipherid : 0,
 				cdraftid : 1,
-				sender : 'test3',
+				sender : 'mypherutest3',
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
@@ -253,7 +253,7 @@ false : () => {
 		});
 		it('sender is not approver',  async () => {
 			assert.equal(await tools.connect(4), true);
-			const ret = await tools.push(N, _P({sender:'test4'}));
+			const ret = await tools.push(N, _P({sender:'mypherutest4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('cipherid not found',  async () => {
@@ -275,7 +275,7 @@ false : () => {
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
 			assert.equal(draft[1].approved.length, 1);
-			assert.equal(draft[1].approved[0], 'test3');
+			assert.equal(draft[1].approved[0], 'mypherutest3');
 		});
 		it('already approved',  async () => {
 			let ret = await tools.push(N, _P({}));
@@ -283,7 +283,7 @@ false : () => {
 		});
 		it('check if approved is cleared after updating',  async () => {
 			let p = await tools.getHead({n:'cdraft',s:0, c:2});
-			Object.assign(p[1],{cipherid:0, sender:'test3', name:'123456'}); 
+			Object.assign(p[1],{cipherid:0, sender:'mypherutest3', name:'123456'}); 
 			ret = await tools.push('cupdate', p[1]);
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
@@ -296,16 +296,16 @@ false : () => {
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
 			assert.equal(draft[1].approved.length, 1);
-			assert.equal(draft[1].approved[0], 'test3');
+			assert.equal(draft[1].approved[0], 'mypherutest3');
 		});
 		it('fulfill the requirement of approval', async () => {
 			assert.equal(await tools.connect(2), true);
-			let ret = await tools.push(N, _P({'sender':'test2'}));
+			let ret = await tools.push(N, _P({'sender':'mypherutest2'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			const draft = await tools.getHead({n:'cdraft',s:0, c:2});
 			assert.equal(draft[1].approved.length, 2);
-			assert.equal(draft[1].approved[1], 'test2');
+			assert.equal(draft[1].approved[1], 'mypherutest2');
 			assert.equal(draft[1].formal, 1);
 			assert.equal(draft[1].version, 2);
 			const formal = await tools.getHead({n:'cformal',s:'myphersystem', c:2});
@@ -313,7 +313,7 @@ false : () => {
 		});
 		it('approve formaled version', async () => {
 			assert.equal(await tools.connect(1), true);
-			const ret = await tools.push(N, _P({sender:'test1', cdraftid:2}));
+			const ret = await tools.push(N, _P({sender:'mypherutest1', cdraftid:2}));
 			assert.equal(ret,tools.message(3));
 		});
 	});
@@ -323,14 +323,14 @@ false : () => {
 			let ret = {
 				cipherid : 0,
 				cdraftid : 3,
-				sender : 'test1',
+				sender : 'mypherutest1',
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
 			return ret;
 		};
 		it('preparation', async () => {
-			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:1});
+			let ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:1});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
@@ -344,12 +344,12 @@ false : () => {
 		});
 		it('already formal',  async () => {
 			assert.equal(await tools.connect(2), true);
-			const ret = await tools.push(N, _P({sender:'test2',cdraftid:1}));
+			const ret = await tools.push(N, _P({sender:'mypherutest2',cdraftid:1}));
 			assert.equal(ret,tools.message(3));
 		});
 		it('sender is not approver',  async () => {
 			assert.equal(await tools.connect(4), true);
-			const ret = await tools.push(N, _P({sender:'test4'}));
+			const ret = await tools.push(N, _P({sender:'mypherutest4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('sender does not approved yet',  async () => {
@@ -373,13 +373,13 @@ false : () => {
 	describe('just create the data which is of premise of next testing', () => {
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				name : 'test111',
-				editors : ['test1', 'test2'],
+				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',
 				nofapproval : 2,
-				approvers : ['test1', 'test2']
+				approvers : ['mypherutest1', 'mypherutest2']
 			};
 			Object.assign(ret, p);
 			console.log(JSON.stringify(ret));
@@ -393,27 +393,27 @@ false : () => {
 		});
 		it('create a couple of draft', async () => {
 			assert.equal(await tools.connect(1), true);
-			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			let ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:0});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:0});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
 		it('approve a draft', async () => {
-			let ret = await tools.push('capprove', {sender:'test1', cipherid:0, cdraftid:1}); 
+			let ret = await tools.push('capprove', {sender:'mypherutest1', cipherid:0, cdraftid:1}); 
 			tools.checkIfSent(ret);
 			assert.equal(await tools.connect(2), true);
-			ret = await tools.push('capprove', {sender:'test2', cipherid:0, cdraftid:1}); 
+			ret = await tools.push('capprove', {sender:'mypherutest2', cipherid:0, cdraftid:1}); 
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
 		it('create a new draft', async () => {
 			assert.equal(await tools.connect(1), true);
-			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:0});
+			let ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:0});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
-			ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:1});
+			ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:1});
 			tools.checkIfSent(ret);
 		});
 		it('output generated data', async () => {

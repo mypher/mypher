@@ -25,10 +25,17 @@ else (no)
 endif
 :prepare environments for ipfs;
 :execute "ipfs daemon";
-if (is the producer name eosio?) then (yes)
-	:start nodeos for eosio;
+if (is the producer name myphersystem?) then (yes)
+	if (does it needed to start as eosio?) then (yes)
+		:start nodeos for eosio;
+	else (no)
+		:start nodeos for myphersystem;
+	endif
 	:wait the preparation for nodeos;
-	:prepare the base contracts if not generated yet;
+	if (does it needed to start as eosio?) then (yes)
+		:prepare contracts for eosio is not generated yet;
+	endif
+	:prepare the contract for myphersystem;
 else
 	:start nodeos for normal user;
 	:wait the preparation for nodeos;

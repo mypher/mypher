@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -39,10 +39,10 @@ module.exports = {
 	connect : async function(d) {
 		const acnt = [
 			{},
-			{ id : 'test1', pass : '5JUUfwj41YsaNjmiMEQdCyuCsXenxDdfCEuJLBng9985wfaf19V' },
-			{ id : 'test2', pass : '5Hz1SxDgsKG9rA5wyoPCp9d59VEzoNhnNzzjbuJP5YgQDyvgEeQ' },
-			{ id : 'test3', pass : '5JDR2gXH2fvecAzcaxK19Cqgivk8ojHNwWzAwArUHPszLgiVXSq' },
-			{ id : 'test4', pass : '5J6wBifS6gy4Sx97mhudtuWfbJw6vbXdnBggdunw5i5ArbwPqev' }
+			{ id : 'mypherutest1', pass : '5JUUfwj41YsaNjmiMEQdCyuCsXenxDdfCEuJLBng9985wfaf19V' },
+			{ id : 'mypherutest2', pass : '5Hz1SxDgsKG9rA5wyoPCp9d59VEzoNhnNzzjbuJP5YgQDyvgEeQ' },
+			{ id : 'mypherutest3', pass : '5JDR2gXH2fvecAzcaxK19Cqgivk8ojHNwWzAwArUHPszLgiVXSq' },
+			{ id : 'mypherutest4', pass : '5J6wBifS6gy4Sx97mhudtuWfbJw6vbXdnBggdunw5i5ArbwPqev' }
 		];
 		this.active = acnt[d].id;
 		return await connect(acnt[d]);

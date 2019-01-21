@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -14,7 +14,7 @@ false : () => {
 		const N = 'cnewdraft';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 3,
 			};
@@ -38,7 +38,7 @@ false : () => {
 		const N = 'tknew';
 		const _P = p => {
 			let ret = {
-				sender : 'test1', 
+				sender : 'mypherutest1', 
 				cdraftid : 5,
 				name : '1234567', 
 				issuer : 0,
@@ -156,7 +156,7 @@ false : () => {
 		const N = 'tkupdate';
 		const _P = p => {
 			let ret = {
-				sender : 'test1', 
+				sender : 'mypherutest1', 
 				cdraftid : 5,
 				tokenid : 0,
 				name : '1234567', 
@@ -258,7 +258,7 @@ false : () => {
 			await tools.sleep(500);
 		});
 		it('the preparation for shared pattern', async () => {
-			const ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:5});
+			const ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:5});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
@@ -275,13 +275,13 @@ false : () => {
 			assert.equal(ret[6].tokenlist[0], 0);
 		});
 		it('the preparation for next testing', async () => {
-			const ret = await tools.push('capprove', {sender:'test1',cipherid:0,cdraftid:6});
+			const ret = await tools.push('capprove', {sender:'mypherutest1',cipherid:0,cdraftid:6});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
 		it('...continuation', async () => {
 			assert.equal(await tools.connect(2), true);
-			let ret = await tools.push('capprove', {sender:'test2',cipherid:0,cdraftid:6});
+			let ret = await tools.push('capprove', {sender:'mypherutest2',cipherid:0,cdraftid:6});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			ret = await tools.getHead({n:'cformal', s:'myphersystem' , c:10});
@@ -297,9 +297,9 @@ false : () => {
 		const N = 'tktransfer';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tokenid : 0, 
-				recipient : 'test2', 
+				recipient : 'mypherutest2', 
 				quantity : 1,
 			};
 			Object.assign(ret, p);
@@ -311,7 +311,7 @@ false : () => {
 		const N = 'tkuse';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tokenid : 0, 
 				quantity : 1,
 			};

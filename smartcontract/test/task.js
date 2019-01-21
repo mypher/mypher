@@ -1,4 +1,4 @@
-// Copyright (C) 2018 The Mypher Authors
+// Copyright (C) 2018-2019 The Mypher Authors
 //
 // SPDX-License-Identifier: LGPL-3.0+
 //
@@ -24,14 +24,14 @@ false : () => {
 		const N = 'tanew';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 3,
 				name : 'testta',
 				rewardid : 0xffffffff,
 				quantity : 0xffffffff,
 				nofapproval : 2,
-				approvers : ['test1','test2','test3'],
+				approvers : ['mypherutest1','mypherutest2','mypherutest3'],
 				pic : [],
 				hash : '',
 				tags : ['aaa','bbb'],
@@ -66,21 +66,21 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is invalid',  async () => {
-			let ret = await tools.push(N, _P({approvers:['test', 'test1']}));
+			let ret = await tools.push(N, _P({approvers:['test', 'mypherutest1']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['test1', 'test']}));
+			ret = await tools.push(N, _P({approvers:['mypherutest1', 'test']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['test1', 'test', 'test2', 'test3']}));
+			ret = await tools.push(N, _P({approvers:['mypherutest1', 'test', 'mypherutest2', 'mypherutest3']}));
 			assert.equal(ret,tools.message(2));
 			ret = await tools.push(N, _P({approvers:[], nofapproval:0}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"pic" is invalid', async () => {
-			let ret = await tools.push(N, _P({pic:['test', 'test1']}));
+			let ret = await tools.push(N, _P({pic:['test', 'mypherutest1']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({pic:['test1', 'test']}));
+			ret = await tools.push(N, _P({pic:['mypherutest1', 'test']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({pic:['test1', 'test', 'test2', 'test3']}));
+			ret = await tools.push(N, _P({pic:['mypherutest1', 'test', 'mypherutest2', 'mypherutest3']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"rewardid" is invalid', async () => {
@@ -105,7 +105,7 @@ false : () => {
 		const N = 'taupdate';
 		const _P = p => {
 			let ret = {
-				sender  : 'test1',
+				sender  : 'mypherutest1',
 				cipherid  : 0,
 				cdraftid : 3,
 				tdraftid  : 0,
@@ -113,8 +113,8 @@ false : () => {
 				rewardid : 0xffffffff,
 				quantity : 0xffffffff,
 				nofapproval : 1,
-				approvers : ['test1', 'test3'],
-				pic : ['test1', 'test3'],
+				approvers : ['mypherutest1', 'mypherutest3'],
+				pic : ['mypherutest1', 'mypherutest3'],
 				hash : '',
 				tags : ['aaa','ddd', 'eee'],
 			};
@@ -151,21 +151,21 @@ false : () => {
 			assert.equal(ret,tools.message(2));
 		});
 		it('"approvers" is invalid',  async () => {
-			let ret = await tools.push(N, _P({approvers:['test', 'test1']}));
+			let ret = await tools.push(N, _P({approvers:['test', 'mypherutest1']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['test1', 'test']}));
+			ret = await tools.push(N, _P({approvers:['mypherutest1', 'test']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({approvers:['test1', 'test', 'test2', 'test3']}));
+			ret = await tools.push(N, _P({approvers:['mypherutest1', 'test', 'mypherutest2', 'mypherutest3']}));
 			assert.equal(ret,tools.message(2));
 			ret = await tools.push(N, _P({approvers:[], nofapproval:0}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"pic" is invalid', async () => {
-			let ret = await tools.push(N, _P({pic:['test', 'test1']}));
+			let ret = await tools.push(N, _P({pic:['test', 'mypherutest1']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({pic:['test1', 'test']}));
+			ret = await tools.push(N, _P({pic:['mypherutest1', 'test']}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({pic:['test1', 'test', 'test2', 'test3']}));
+			ret = await tools.push(N, _P({pic:['mypherutest1', 'test', 'mypherutest2', 'mypherutest3']}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"rewardid" is invalid', async () => {
@@ -187,7 +187,7 @@ false : () => {
 		});
 		it('check updated task that is shared', async ()=> {
 			// share the cipher
-			let ret = await tools.push('cnewdraft', {sender:'test1', cipherid:0, cdraftid:3});
+			let ret = await tools.push('cnewdraft', {sender:'mypherutest1', cipherid:0, cdraftid:3});
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			let p = _P({});
@@ -206,11 +206,11 @@ false : () => {
 		it('formal version can not be updated', async ()=> {
 			assert.equal(await tools.connect(1), true);
 			// approve the cipher
-			let ret = await tools.push('capprove', {sender:'test1', cipherid:0, cdraftid:3}); 
+			let ret = await tools.push('capprove', {sender:'mypherutest1', cipherid:0, cdraftid:3}); 
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			assert.equal(await tools.connect(2), true);
-			ret = await tools.push('capprove', {sender:'test2', cipherid:0, cdraftid:3}); 
+			ret = await tools.push('capprove', {sender:'mypherutest2', cipherid:0, cdraftid:3}); 
 			tools.checkIfSent(ret);
 		});
 		it('...continuation', async ()=> {
@@ -227,7 +227,7 @@ false : () => {
 		const N = 'taaprvpic';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : true
 			};
@@ -258,7 +258,7 @@ false : () => {
 			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
 			assert.equal(ret.length, 1);
 			assert.equal(ret[0].approve_pic.length, 1);
-			assert.equal(ret[0].approve_pic[0], 'test1');
+			assert.equal(ret[0].approve_pic[0], 'mypherutest1');
 		});
 		it('duplicate approval', async () => {
 			let ret = await tools.push(N, _P({}));
@@ -274,7 +274,7 @@ false : () => {
 		});
 		it('an approval from a person is not approver', async () => {
 			assert.equal(await tools.connect(4), true);
-			let ret = await tools.push(N, _P({sender:'test4'}));
+			let ret = await tools.push(N, _P({sender:'mypherutest4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('in review', async() => {
@@ -285,7 +285,7 @@ false : () => {
 		const N = 'taaprvrslt';
 		const _P = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : true
 			};
@@ -307,7 +307,7 @@ false : () => {
 		});
 		it('an approval from a person is not approver', async () => {
 			assert.equal(await tools.connect(4), true);
-			let ret = await tools.push(N, _P({sender:'test4'}));
+			let ret = await tools.push(N, _P({sender:'mypherutest4'}));
 			assert.equal(ret,tools.message(5));
 		});
 		it('pic is not approved yet', async () => {
@@ -317,7 +317,7 @@ false : () => {
 		});
 		it('prepare for next testing', async () => {
 			let p = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : true
 			};
@@ -326,13 +326,13 @@ false : () => {
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			assert.equal(await tools.connect(2), true);
-			p.sender = 'test2';
+			p.sender = 'mypherutest2';
 			ret = await tools.push(n, p);
 			tools.checkIfSent(ret);
 		});
 		it('...continuation', async () => {
 			const p = {
-				sender : 'test3',
+				sender : 'mypherutest3',
 				tformalid : 0,
 				vec : true
 			};
@@ -359,7 +359,7 @@ false : () => {
 		it('try to cancel the approval for pic and cancel the approval for resutls', async () => {
 			// try to cancel the approval for pic
 			const p = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : false 
 			};
@@ -380,7 +380,7 @@ false : () => {
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 			assert.equal(await tools.connect(2), true);
-			ret = await tools.push(N, _P({sender:'test2'}));
+			ret = await tools.push(N, _P({sender:'mypherutest2'}));
 			tools.checkIfSent(ret);
 		});
 		it('...continuation', async () => {
@@ -388,8 +388,8 @@ false : () => {
 			ret = await tools.getHead({n:'tformal', s:'myphersystem' , c:5});
 			assert.equal(ret.length, 1);
 			assert.equal(ret[0].approve_results.length, 2);
-			assert.equal(ret[0].approve_results[0], 'test1');
-			assert.equal(ret[0].approve_results[1], 'test2');
+			assert.equal(ret[0].approve_results[0], 'mypherutest1');
+			assert.equal(ret[0].approve_results[1], 'mypherutest2');
 		});
 		it('cancel the approval in the case that the task is already approved ', async () => {
 			assert.equal(await tools.connect(1), true);
@@ -402,15 +402,15 @@ false : () => {
 		const N_new = 'tanew';
 		const P_new = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 3,
 				name : 'testta',
 				rewardid : 0xffffffff,
 				quantity : 0xffffffff,
 				nofapproval : 2,
-				approvers : ['test1','test2','test3'],
-				pic : ['test3'],
+				approvers : ['mypherutest1','mypherutest2','mypherutest3'],
+				pic : ['mypherutest3'],
 				hash : '',
 				tags : ['aaa','bbb'],
 			};
@@ -421,7 +421,7 @@ false : () => {
 		const N_pic = 'taaprvpic';
 		const P_pic = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : true
 			};
@@ -432,7 +432,7 @@ false : () => {
 		const N_rslt = 'taaprvrslt';
 		const P_rslt = p => {
 			let ret = {
-				sender : 'test1',
+				sender : 'mypherutest1',
 				tformalid : 0,
 				vec : true
 			};
@@ -443,7 +443,7 @@ false : () => {
 		const N_cipher = 'capprove';
 		const P_cipher = p => {
 			let ret = {
-				sender  : 'test1',
+				sender  : 'mypherutest1',
 				cipherid  : 0,
 				cdraftid : 3,
 			};
@@ -464,37 +464,37 @@ false : () => {
 		});
 		it('...continuation', async ()=> {
 			assert.equal(await tools.connect(2), true);
-			ret = await tools.push(N_cipher, P_cipher({sender:'test2'}));
+			ret = await tools.push(N_cipher, P_cipher({sender:'mypherutest2'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
-		it('approve the pic by test1', async () => {
+		it('approve the pic by mypherutest1', async () => {
 			assert.equal(await tools.connect(1), true);
 			const ret = await tools.push(N_pic, P_pic({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
-		it('approve the pic by test2', async () => {
+		it('approve the pic by mypherutest2', async () => {
 			assert.equal(await tools.connect(2), true);
-			const ret = await tools.push(N_pic, P_pic({sender:'test2'}));
+			const ret = await tools.push(N_pic, P_pic({sender:'mypherutest2'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
-		it('approve the pic by test3', async () => {
+		it('approve the pic by mypherutest3', async () => {
 			assert.equal(await tools.connect(3), true);
-			const ret = await tools.push(N_pic, P_pic({sender:'test3'}));
+			const ret = await tools.push(N_pic, P_pic({sender:'mypherutest3'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
-		it('approve results by test1', async () => {
+		it('approve results by mypherutest1', async () => {
 			assert.equal(await tools.connect(1), true);
 			const ret = await tools.push(N_rslt, P_rslt({}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
-		it('approve results by test2', async () => {
+		it('approve results by mypherutest2', async () => {
 			assert.equal(await tools.connect(2), true);
-			const ret = await tools.push(N_rslt, P_rslt({sender:'test2'}));
+			const ret = await tools.push(N_rslt, P_rslt({sender:'mypherutest2'}));
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
 		});
