@@ -21,6 +21,7 @@ false : () => {
 				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',
+				multisig : 'multisigacnt',
 				nofapproval : 2,
 				approvers : ['mypherutest1', 'mypherutest2']
 			};
@@ -36,6 +37,10 @@ false : () => {
 		it('"editors" is not set',  async () => {
 			const ret = await tools.push(N, _P({editors:[]}));
 			assert.equal(ret,tools.message(2));
+		});
+		it('invalid "multisig"',  async () => {
+			const ret = await tools.push(N, _P({multisig:'multisigaaaa'}));
+			assert.equal(ret,tools.message(21));
 		});
 		it('invalid "editors"',  async () => {
 			let ret = await tools.push(N, _P({editors:['mypherutest1', 'mamamama', 'mypherutest2']}));
@@ -378,6 +383,7 @@ false : () => {
 				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',
+				multisig : 'multisigacnt',
 				nofapproval : 2,
 				approvers : ['mypherutest1', 'mypherutest2']
 			};

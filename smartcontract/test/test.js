@@ -11,9 +11,9 @@ const task = require('./task');
 const token = require('./token');
 const eos = require('./eos');
 
-const pass_cipher = true;
+const pass_cipher = false;
 const pass_task = true;
-const pass_token = false;
+const pass_token = true;
 
 describe('hooks', () => {
 
