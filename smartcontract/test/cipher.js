@@ -86,6 +86,7 @@ false : () => {
 				version : 1,
 				no : 1,
 				formal : 1,
+				multisig : 'multisigacnt',
 				name : 'test111',
 				tags : ['aaa', 'えい'],
 				editors : ['mypherutest1', 'mypherutest2'],

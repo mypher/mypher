@@ -23,8 +23,8 @@ mkdir ${BASE}/data/ipfs
 cp envfile/swarm.key ${BASE}/data/ipfs/swarm.key_
 cp nodeenv/base_config.ini ${BASE}/data/config/
 cp nodeenv/mypher_config.ini ${BASE}/data/config/
-if [ "$1" = "eosio" ]; then
-	cp nodeenv/eosio.user ${BASE}/data/keys/
+if [ "$1" = "myphersystem" ]; then
+	cp nodeenv/myphersystem.user ${BASE}/data/keys/
 	echo "export GENESIS=true" >> ${BASE}/data/config/mypher_config.ini
 	echo "enable-stale-production = true" >> ${BASE}/data/config/base_config.ini
 else
