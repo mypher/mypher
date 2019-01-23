@@ -36,7 +36,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			let ex = new RegExp(d.name);
@@ -57,7 +57,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach(v => {
@@ -98,6 +98,7 @@ module.exports = {
 			const fml = await get(d.cipherid, key[0].cdraftid); 
 			ret.formalver = fml.version;
 			ret.formaldraft = fml.no;
+			ret.multisig = key[0].multisig;
 			ret.cipherid = d.cipherid;
 			return this.conv4disp(ret);
 		} catch (e) {
@@ -126,7 +127,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'cformal',
-				limit : 0,
+				limit : -1,
 				lower_bound : min,
 				upper_bound : max + 1,
 			});
@@ -167,7 +168,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'cdraft',
-				limit : 0,
+				limit : -1,
 			});
 			if (sdata && sdata.rows instanceof Array) {
 				for (let i=sdata.rows.length-1; i>=0; i-- ) {
@@ -283,7 +284,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'cdraft',
-				limit : 0,
+				limit : -1,
 			});
 			if (data&&data.rows) {
 				return data.rows;

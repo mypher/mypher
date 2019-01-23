@@ -78,7 +78,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-				limit : 0,
+				limit : -1,
 			});
 			if (data.rows && data.rows instanceof Array) {
 				let ret = [];
@@ -113,7 +113,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-				limit : 0,
+				limit : -1,
 				lower_bound : min,
 				upper_bound : max + 'a',
 			});
@@ -135,7 +135,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'person',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach(v => {

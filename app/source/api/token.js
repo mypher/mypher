@@ -84,7 +84,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach( v=> {
@@ -133,7 +133,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-				limit : 0,
+				limit : -1,
 				lower_bound : min,
 				upper_bound : max + 1,
 			});
@@ -231,7 +231,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach(v => {
@@ -254,7 +254,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			n = parseInt(n);
@@ -293,7 +293,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'token',
-				limit : 0,
+				limit : -1,
 				lower_bound : min,
 				upper_bound : max + 1,
 			});

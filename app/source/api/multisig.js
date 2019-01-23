@@ -40,7 +40,7 @@ module.exports = {
 			])) {
 				return {code:'INVALID_PARAM'};
 			}
-			const keys = genkey();
+			const keys = await genkey();
 			// TODO:check if the below processes is needed
 			// - wallet imports
 
@@ -159,7 +159,8 @@ module.exports = {
 			});
 			return ret;
 		} catch (e) {
-			return {code:e};
+			console.log(e);
+			return {code:'NOT_FOUND'};
 		}
 	}
 };

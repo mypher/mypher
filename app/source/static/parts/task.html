@@ -42,15 +42,24 @@
 	<div class="form-group row">
 		<label class="col-sm-3 name" ltext="REWARD"></label>
 		<div class="col-sm-9">
-			<div class="input-group col-sm-12 rowspace">
+			<div class="row">
 				<label class="col-sm-3 name" ltext="TOKEN"></label>
-				<div class="col-sm-9" ctrl="elm" proc="rewardid" field="rewardid" limit="1"/>
-			</div>
-			<div class="input-group form-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" ltext="QUANTITY"></span>
+				<div class="col-sm-4" ctrl="elm" proc="rewardid" field="rewardid" limit="1"/>
+				<div class="input-group form-group col-sm-5">
+					<div class="input-group-prepend">
+						<span class="input-group-text" ltext="QUANTITY"></span>
+					</div>
+					<input type="text" class="form-control" disable_on="ref" field="noftoken">
 				</div>
-				<input type="text" class="form-control" disable_on="ref" field="quantity">
+			</div>
+			<div class="row">
+				<label class="col-sm-3 name" ltext="CRYPTOCURRENCY"></label>
+				<div class="input-group form-group col-sm-9">
+					<div class="input-group-prepend">
+						<span class="input-group-text" ltext="QUANTITY"></span>
+					</div>
+					<input type="text" class="form-control" disable_on="ref" field="amount">
+				</div>
 			</div>
 		</div>
 	</div>

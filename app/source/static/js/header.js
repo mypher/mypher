@@ -82,23 +82,30 @@ Header = {
 			Account.loginout();
 		});
 		// for debug 
-		addItem('login with local', () => {
+		addItem('login with testuser1111', () => {
 			Account.open({
-				name:'local', 
+				name:'testuser1111', 
 				pass:'5JSGyw1FZVDG2VEcJ7gdyqJvyqwfdoHNRzq7Rt1QLQWZNaCTgVH'
 			});
 		});
-		addItem('login with lamb', () => {
+		addItem('login with testuser2222', () => {
 			Account.open({
-				name:'lamb', 
+				name:'testuser2222', 
 				pass:'5JgHt6eJ7dp5Mxwfo8tmTiom7Th9ukpcKeR1j4CsYvaQZsLLKCP'
 			});
 		});
-		addItem('login with tomato', () => {
+		addItem('login with testuser3333', () => {
 			Account.open({
-				name:'tomato', 
+				name:'testuser3333', 
 				pass:'5JFhiQyRLzpJEg5gthoyqWCnJvFjKh5YbrNV1fRom6znDdZpyb3'
 			});
+		});
+		addItem('check the layout of task', () => {
+			const task = new DebugLayout({
+				name : 'task',
+				mode : MODE.REF
+			});
+			History.run('check the layout of Task', task);
 		});
 	},
 

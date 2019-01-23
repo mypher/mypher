@@ -51,7 +51,8 @@ public:
 		uint64_t tdraftid;
 		string name;
 		uint64_t rewardid;
-		uint64_t quantity;
+		uint64_t noftoken;
+		double_t amount;
 		uint64_t nofapproval;
 		vector<account_name> approvers;
 		vector<account_name> pic;
@@ -59,7 +60,7 @@ public:
 		vector<string> tags;
 
 		uint64_t primary_key() const { return tdraftid; }
-		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(quantity)
+		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(noftoken)(amount)
 						(nofapproval)(approvers)(pic)(hash)(tags) )
 	};
 
@@ -85,8 +86,8 @@ public:
 	 */
 	[[eosio::action]]
 	void tanew(	const account_name sender, const uint64_t cipherid, uint64_t cdraftid,
-				const string& name, const uint64_t rewardid, const uint64_t quantity, 
-				const uint8_t nofapproval, 
+				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
+				const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -99,8 +100,8 @@ public:
 	void taupdate( const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
 				const uint64_t tdraftid, 
 				const string& name,  
-				const uint64_t rewardid, const uint64_t quantity, 
-				const uint8_t nofapproval, 
+				const uint64_t rewardid, const uint64_t noftoken, 
+				const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);
@@ -135,7 +136,7 @@ private:
 	void check_data( 
 				const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t quantity, const uint8_t nofapproval, 
+				const uint64_t noftoken, const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);

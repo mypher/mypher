@@ -15,7 +15,8 @@ module.exports = {
 		d.cipherid = cmn.st2num(d.cipherid);
 		d.tdraftid = cmn.st2num(d.tdraftid);
 		d.rewardid = cmn.st2num(d.rewardid);
-		d.quantity = cmn.st2num(d.quantity);
+		d.noftoken = cmn.st2num(d.noftoken);
+		d.amount = cmn.st2float(d.amount);
 		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;		
 	},
@@ -23,7 +24,8 @@ module.exports = {
 		d.cipherid = cmn.num2st(d.cipherid);
 		d.tdraftid = cmn.num2st(d.tdraftid);
 		d.rewardid = cmn.num2st(d.rewardid);
-		d.quantity = cmn.num2st(d.quantity);
+		d.noftoken = cmn.num2st(d.noftoken);
+		d.amount = cmn.num2st(d.amount);
 		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;		
 	},
@@ -73,7 +75,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'tformal',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach( v=> {
@@ -93,7 +95,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'tformal',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			d = parseInt(d);
@@ -212,7 +214,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : 'myphersystem',
 				table : 'tformal',
-				limit : 0,
+				limit : -1,
 			});
 			let ret = [];
 			data.rows.forEach(v => {
@@ -237,7 +239,7 @@ module.exports = {
 				code : 'myphersystem',
 				scope : d.cipherid,
 				table : 'tdraft',
-				limit : 0
+				limit :-1 
 			});
 			let ret =[];
 			data.rows.forEach(v => {

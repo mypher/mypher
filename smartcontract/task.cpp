@@ -16,8 +16,8 @@ using namespace std;
 namespace mypher {
 
 void Task::tanew(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
-				const string& name, const uint64_t rewardid, const uint64_t quantity, 
-				const uint8_t nofapproval, 
+				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
+				const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -35,7 +35,7 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
 
 	// common check
-	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, 
+	check_data(sender, cipherid, name, rewardid, noftoken, amount, nofapproval, approvers, 
 				pic, hash, tags);
 	
 	// create new draft of task
@@ -43,7 +43,8 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 		dd.tdraftid = newid;
 		dd.name = name;
 		dd.rewardid = rewardid;
-		dd.quantity = quantity;
+		dd.noftoken = noftoken;
+		dd.amount = amount;
 		dd.nofapproval = nofapproval;
 		dd.approvers = approvers;
 		dd.pic = pic;
@@ -61,8 +62,8 @@ void Task::taupdate( const account_name sender,
 				const uint64_t cipherid, const uint64_t cdraftid,
 				const uint64_t tdraftid, 
 				const string& name,  
-				const uint64_t rewardid, const uint64_t quantity, 
-				const uint8_t nofapproval, 
+				const uint64_t rewardid, const uint64_t noftoken, 
+				const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
@@ -81,7 +82,7 @@ void Task::taupdate( const account_name sender,
 	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
 	
 	// check data
-	check_data(sender, cipherid, name, rewardid, quantity, nofapproval, approvers, pic, hash, tags);
+	check_data(sender, cipherid, name, rewardid, noftoken, amount, nofapproval, approvers, pic, hash, tags);
 
 	// if task is shared between some drafts, generates copy
 	if (is_shared(tdraftid, cipherid, cdraftid)) {
@@ -90,7 +91,8 @@ void Task::taupdate( const account_name sender,
 			dd.tdraftid = newid;
 			dd.name = name;
 			dd.rewardid = rewardid;
-			dd.quantity = quantity;
+			dd.noftoken = noftoken;
+			dd.amount = amount;
 			dd.nofapproval = nofapproval;
 			dd.approvers = approvers;
 			dd.pic = pic;
@@ -106,7 +108,8 @@ void Task::taupdate( const account_name sender,
 		d.modify(rec, sender, [&](auto& dd){
 			dd.name = name;
 			dd.rewardid = rewardid;
-			dd.quantity = quantity;
+			dd.noftoken = noftoken;
+			dd.amount = amount;
 			dd.nofapproval = nofapproval;
 			dd.approvers = approvers;
 			dd.pic = pic;
@@ -242,11 +245,11 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	// send the reward to pic
 	if (tfrec->approve_results.size()>=tdrec->nofapproval) {
 		eosio::print("##prepare issuing");
-		if (tdrec->rewardid!=NUMBER_NULL && tdrec->quantity>0) {
+		if (tdrec->rewardid!=NUMBER_NULL && tdrec->noftoken>0) {
 			eosio::print("##prepare issuing2");
 			for (auto it=tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
 				Token::issue(sender, tfrec->cipherid, tdrec->rewardid, *it,
-					(uint64_t)(tdrec->quantity / tdrec->pic.size())
+					(uint64_t)(tdrec->noftoken / tdrec->pic.size())
 				);
 			}
 		}
@@ -298,7 +301,7 @@ void Task::applyforpic( const account_name sender, const uint64_t tformalid, con
 
 void Task::check_data( const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t quantity, const uint8_t nofapproval, 
+				const uint64_t noftoken, const double_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
@@ -307,40 +310,32 @@ void Task::check_data( const account_name sender, const uint64_t cipherid,
 	require_auth(sender);
 
 	// check if name is set
-	eosio::print("#1");
 	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
 	
 	// check if approver data is comformable
-	eosio::print("#2");
 	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_PARAM);
 
 	// check if approvers is invalid
-	eosio::print("#3");
 	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
 	
 	// check if pic is invalid
-	eosio::print("#4");
 	eosio_assert_code(Person::check_list(pic), INVALID_PARAM);
 	
 	// check rewardid
-	eosio::print("#5");
 	if (rewardid!=NUMBER_NULL) {
 		Validator::check_tokenowner(rewardid, cipherid);
 	}
 
 	// check if approver is set
-	eosio::print("#6");
 	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
 
-	// check if quantity is set only in case that rewardid is set
-	eosio::print("#7");
+	// check if noftoken is set only in case that rewardid is set
 	eosio_assert_code(
-		(rewardid != NUMBER_NULL && quantity != NUMBER_NULL) ||
-		(rewardid == NUMBER_NULL && quantity == NUMBER_NULL)
+		(rewardid != NUMBER_NULL && noftoken != NUMBER_NULL) ||
+		(rewardid == NUMBER_NULL && noftoken == NUMBER_NULL)
 		, INVALID_REWARD);
 	
 	// check hash
-	eosio::print("#8");
 	Validator::check_hash(hash);
 }
 

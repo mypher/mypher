@@ -363,6 +363,11 @@ module.exports = {
 		return isNaN(id) ? apicmn.NUMBER_NULL : id;
 	},
 
+	st2float : v => {
+		const v = parseFloat(v);
+		return isNaN(v) ? apicmn.NUMBER_NULL : v;
+	},
+
 	ui82st : v => {
 		if (v===255) {
 			return '';

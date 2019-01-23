@@ -214,26 +214,28 @@ let Util = {
 					let elm = l.eq(i);
 					let proc = elm.attr('proc');
 					proc = proc ? btns[proc] : null;
-					switch (elm.attr('ctrl')) {
-					case 'tag':
-						Util.initTag(elm, mode, proc);
-						break;
-					case 'elm':
-						Util.initElmList(elm, mode, proc);
-						break;
-					case 'list':
-						Util.initList(elm, mode, proc);
-						break;
-					case 'date':
-						Util.initDate(elm, mode, proc);
-						break;
-					case 'radio':
-						Util.initRadio(elm, mode, proc);
-						break;
-					case 'button':
-						Util.initButton(elm.find('button'), proc);
-						break;
-					}
+					try {
+						switch (elm.attr('ctrl')) {
+						case 'tag':
+							Util.initTag(elm, mode, proc);
+							break;
+						case 'elm':
+							Util.initElmList(elm, mode, proc);
+							break;
+						case 'list':
+							Util.initList(elm, mode, proc);
+							break;
+						case 'date':
+							Util.initDate(elm, mode, proc);
+							break;
+						case 'radio':
+							Util.initRadio(elm, mode, proc);
+							break;
+						case 'button':
+							Util.initButton(elm.find('button'), proc);
+							break;
+						}
+					} catch (e) {}
 				}
 				l = div.find('select[proc]');
 				for (let i=0; i<l.length; i++) {
