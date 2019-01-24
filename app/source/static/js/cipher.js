@@ -310,6 +310,29 @@ class Cipher {
 			},
 		});
 		this.set(this.data);
+		const inp_multisig = $('input[field="multisig"]:eq(0)');
+		inp_multisig.blur(async () => {
+			try {
+				if (inp_multisig.val()==='') {
+					if (this.data.multisig!=='') {
+						this.data = this.get();
+						this.data.nofapproval='';
+						this.data.approvers = [];
+						this.data.multisig = '';
+						this.set(this.data);
+						return;
+					}
+				}
+				const d = await Rpc.call('multisig.search', [{id:inp_multisig.val()}]);
+				this.data = this.get();
+				this.data.nofapproval = d.threshold;
+				this.data.approvers = d.coowner;
+				this.set(this.data);
+			} catch (e) {
+				UI.alert(_L('NOT_FOUND'));
+				inp_multisig.val(this.data.multisig);
+			}
+		});
 	}
 
 	async hist() {

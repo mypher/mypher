@@ -364,7 +364,7 @@ module.exports = {
 	},
 
 	st2float : v => {
-		const v = parseFloat(v);
+		v = parseFloat(v);
 		return isNaN(v) ? apicmn.NUMBER_NULL : v;
 	},
 

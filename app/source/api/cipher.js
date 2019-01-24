@@ -9,7 +9,7 @@ const log = require('../cmn/logger')('api.cipher');
 const cmn = require('./cmn');
 const ipfs = require('../db/ipfs');
 const eos = require('../db/eos');
-const bignum = require('bignum');
+const multisig = require('./multisig');
 
 module.exports = {
 	conv4store : d => {
@@ -211,6 +211,15 @@ module.exports = {
 			return {code:e};
 		}
 		try {
+			// TODO:need to move below logic to the smartcontract
+			if (d.multisig) {
+				const dmultisig = await multisig.search({id:d.multisig});
+				if (d.nofapproval===undefined) {
+					return {code:'INVALID_PARAM'};
+				}
+				d.nofapproval = dmultisig.threshold;
+				d.approvers = dmultisig.coowner;
+			}
 			d.sender = d.user;
 			d = this.conv4store(d);
 			return await eos.pushAction({
