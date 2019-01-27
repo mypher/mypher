@@ -1,0 +1,27 @@
+@startuml
+skinparam {
+	defaultFontName Geneva
+}
+
+actor pic
+entity task
+entity account
+actor coowner1
+actor coowner2
+actor coowner3
+
+pic -> task : apply
+owner1 -> task : approve the pic
+owner2 -> task : approve the pic
+pic -> task : approve the pic
+
+pic -> task : request the review for results
+pic -> account : payme
+owner1 -> task : approve the results
+owner1 -> account : approve
+owner3 -> task : approve the results
+owner3 -> account : approve
+
+pic -> account : exec
+
+@enduml
