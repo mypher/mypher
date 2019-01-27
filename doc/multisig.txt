@@ -68,7 +68,7 @@ activate eos
 eos -> task : update
 deactivate eos
 deactivate app
-note right : no one approved yet
+note right : no one approved yet. to approve the P.I.C,\nit needed to get the approvals specified above and the approval of P.I.C.
 
 coowner1 -> app : approve the P.I.C.
 activate app
