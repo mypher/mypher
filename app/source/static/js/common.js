@@ -209,9 +209,73 @@ let Util = {
 					reject();
 					return;
 				}
-				let l = div.find('div[ctrl]');
+				// make ctrl
+				let l = div.find('div[formtype]');
 				for (let i=0; i<l.length; i++) {
-					let elm = l.eq(i);
+					const elm = l.eq(i);
+					let e2 = null;
+					const attrs = {};
+					for (let j=0; j<elm[0].attributes.length; j++) {
+						const v = elm[0].attributes[j];
+						attrs[v.name] = v.value;
+					}
+					for (let v in attrs) {
+						elm.removeAttr(v);
+					}
+					const slinner = $('<div/>').addClass('slinner').append(
+						$('<div/>').addClass('label').text(_L(attrs['ltext']))
+					);
+					elm.addClass(attrs['formtype']).append(slinner);
+					const proc = elm.attr('proc');
+					switch (attrs['ctrl']) {
+					case 'elm':
+						e2 = $('<div/>');
+						Util.initElmList(e2, mode, proc);
+						break;
+					case 'editright':
+						e2 = $('<input/>').attr('field', attrs['field'])
+							.attr('disable_on', attrs['disable_on']).addClass('editright');
+						break;
+					case 'editleft':
+						e2 = $('<input/>').attr('field', attrs['field'])
+							.attr('disable_on', attrs['disable_on']).addClass('editleft');
+						break;
+					case 'textarea':
+						e2 = $('<textarea/>').attr('field', attrs['field'])
+							.attr('disable_on', attrs['disable_on']).addClass('editleft');
+						break;
+					case 'tag':
+						e2 = $('<div/>');
+						Util.initTag(e2, mode, proc);
+						break;
+					case 'list':
+						e2 = $('<div/>');
+						Util.initList(e2, mode, proc);
+						break;
+					case 'date':
+						e2 = $('<div/>');
+						Util.initDate(e2, mode, proc);
+						break;
+					case 'radio':
+						e2 = $('<div/>');
+						Util.initRadio(e2, mode, proc);
+						break;
+					case 'select':
+						e2 = $('<div/>');
+						Util.initSelect(e2, mode, proc, attrs);
+						break;
+					case 'button':
+						e2 = $('<div/>');
+						Util.initButton(e2.find('button'), proc);
+						break;
+					}
+					if (e2!==null) {
+						slinner.append($('<div/>').addClass('slinner2').append(e2));
+					}
+				}
+				l = div.find('div[ctrl]');
+				for (let i=0; i<l.length; i++) {
+					const elm = l.eq(i);
 					let proc = elm.attr('proc');
 					proc = proc ? btns[proc] : null;
 					try {
@@ -231,7 +295,13 @@ let Util = {
 						case 'radio':
 							Util.initRadio(elm, mode, proc);
 							break;
+						case 'select':
+							Util.initSelect(elm, mode, proc, attrs);
+							break;
 						case 'button':
+							for (let j=0; j<5; j++) {
+								elm.append($('<button/>').addClass('btn'));
+							}
 							Util.initButton(elm.find('button'), proc);
 							break;
 						}
@@ -240,7 +310,10 @@ let Util = {
 				l = div.find('select[proc]');
 				for (let i=0; i<l.length; i++) {
 					let elm = l.eq(i);
-					elm.change(btns[elm.attr('proc')].change);
+					const func = btns[elm.attr('proc')];
+					if (func&&func.change) {
+						elm.change(btns[elm.attr('proc')].change);
+					}
 				}
 				div.find('*[disable_on]').prop('disabled', false);
 				div.find("*[hide_on]").css('display', '');
@@ -266,7 +339,7 @@ let Util = {
 					div.find('[type="radio"][disable_on*=rf2]').parent().click(()=> { return false; });
 					break;
 				}
-				l = div.find('*[ltext]');
+				l = div.find('h2[ltext],span[ltext]');
 				for (let i=0; i<l.length; i++) {
 					let elm = l.eq(i);
 					elm.text(_L(elm.attr('ltext')));
@@ -306,46 +379,54 @@ let Util = {
 	},
 	initList : function(list, mode, proc) {
 		const elm = list.get(0);
-		const data = {
-			div : list.eq(0),
-			type : mode,
-			col : proc.col,
-			key : proc.key
-		};
-		const cb = (code, d, list) => {
-			switch (code) {
-			case LIST_NOTIFY.DATA:
-				if (proc.ondata) {
-					return proc.ondata(d, list);
+		let data = {};
+		let cb = () => {};
+		if (proc) {
+			data = {
+				div : list.eq(0),
+				type : mode,
+				col : proc.col,
+				key : proc.key
+			};
+			cb = (code, d, list) => {
+				switch (code) {
+				case LIST_NOTIFY.DATA:
+					if (proc.ondata) {
+						return proc.ondata(d, list);
+					}
+					break;
+				case LIST_NOTIFY.SELECT:
+					if (proc.onselect) {
+						return proc.onselect(d, list);
+					}
+					break;
+				case LIST_NOTIFY.CREATE:
+					if (proc.onadd) {
+						return proc.onadd(d, list);
+					}
+					break;
+				case LIST_NOTIFY.GETDATA:
+					if (proc.ongetdata) {
+						return proc.ongetdata(d, list);
+					}
+					break;
+				case LIST_NOTIFY.BUTTON:
+					if (proc.onbutton) {
+						return proc.onbutton(d, list);
+					}
+					break;
 				}
-				break;
-			case LIST_NOTIFY.SELECT:
-				if (proc.onselect) {
-					return proc.onselect(d, list);
-				}
-				break;
-			case LIST_NOTIFY.CREATE:
-				if (proc.onadd) {
-					return proc.onadd(d, list);
-				}
-				break;
-			case LIST_NOTIFY.GETDATA:
-				if (proc.ongetdata) {
-					return proc.ongetdata(d, list);
-				}
-				break;
-			case LIST_NOTIFY.BUTTON:
-				if (proc.onbutton) {
-					return proc.onbutton(d, list);
-				}
-				break;
-			}
-		};
+			};
+		}
 		elm.obj = new List(data, cb);
 	},
 	initRadio : function(div, mode, proc) {
 		const elm = div.get(0);
 		elm.obj = new Radio(div, mode, proc);
+	},
+	initSelect : function(div, mode, proc, attrs) {
+		const elm = div.get(0);
+		elm.obj = new Select(div, mode, proc, attrs);
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
@@ -968,6 +1049,45 @@ DateCtrl.prototype = {
 		}
 	}
 };
+
+function Select(div, mode, proc, attrs) {
+	this.div = div;
+	this.mode = mode;
+	this.proc = {
+		change : proc ? (proc.change||function(){}) : function(){}
+	};
+	const select = $('<select/>');
+	div.append(select);
+	const field = attrs['field'];
+	let disable_on = attrs['disable_on']||'';
+	disable_on = disable_on.split(',');
+	let sel = attrs['sel'].split(',');
+	sel.forEach(v => {
+		v = v.split(':');
+		const option = $('<option/>').attr({
+					'value' : v[1],
+					'ltext' : v[0],
+				});
+		select.append(option);
+	});
+	this.div.click(()=> {
+		return this.canedit;
+	});
+	const disable = disable_on.some(v => {
+		if (v==='add' && mode===MODE.ADD) return true;
+		if (v==='edit' && mode===MODE.EDIT) return true;
+		if (v==='ref' && mode===MODE.REF) return true;
+		if (v==='rf2' && mode===MODE.REF2) return true;
+	});
+	this.allowedit(!disable);
+}
+
+Select.prototype = {
+	allowedit : function(v) {
+		this.canedit = v;
+	}
+}
+
 
 function Radio(div, mode, proc) {
 	this.div = div;

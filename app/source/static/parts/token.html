@@ -2,52 +2,20 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="ISSUER" field="issuer" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="TOKENID" field="tokenid" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="long" ltext="NAME1" field="name" ctrl="editleft" disable_on="ref"/>
+	<div formtype="short" ltext="ISSUE_LIMIT" field="ilimit" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+	<h2 ltext="FUNCTION"/>
+	<div formtype="long" ltext="TYPE" ctrl="select" field="type" disable_on="ref" proc="type" sel="0:NONE,1:QRCODE,2:DEVIDE_TOKEN,3:DEVIDE_SYS"/>
+	<div formtype="long" ltext="WHEN" ctrl="select" field="when" disable_on="ref" proc="when" sel="0:NONE,1:BY_COMPLETION_OF_TASK,2:BY_NUMBER_OF_OWNED,3:ALWAYS,4:BY_ISSUER"/>
+</div>
+
 <div class="form-horizontal tr_root">
-	<div class="row section">
-		<div class="col-sm-3 name">
-			<h5 ltext="BASIC_INFO"></h5>
-		</div>
-	</div>
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="TOKENID"></label>
-		<label class="col-sm-9" field="tokenid"></label>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="NAME1"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" field="name" disable_on="ref">
-		</div>
-	</div>
-	<!-- ISSUER -->
-	<div class="form-group row" name="issuer">
-		<label class="col-sm-3 name" ltext="ISSUER"></label>
-		<div class="col-sm-9" ctrl="elm" proc="issuer" field="issuer" limit="1"/>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="ISSUE_LIMIT"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" field="limit" disable_on="ref">
-		</div>
-	</div>
-	<div class="row section">
-		<div class="col-sm-3 name">
-			<h5 ltext="FUNCTION"></h5>
-		</div>
-	</div>
-	<div class="row">
-		<label class="col-sm-3 name" ltext="TYPE"></label>
-		<div class="col-sm-9">
-			<div class="row form-group"><div class="col-sm-12">
-				<select class="form-control" 
-					field="type" disable_on="ref" proc="type">
-					<option value="0" ltext="NONE">
-					<option value="1" ltext="QRCODE">
-					<option value="2" ltext="DEVIDE_TOKEN">
-					<option value="3" ltext="DEVIDE_SYS">
-				</select>
-			</div></div>
-		</div>
-	</div>
 	<div class="row">
 		<label class="col-sm-3 name" ltext="WHEN"></label>
 		<div class="col-sm-9">

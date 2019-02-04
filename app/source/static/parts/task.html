@@ -2,114 +2,41 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal tk_root">
-	<!-- TFORMALID -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="TFORMALID"></label>
-		<label class="col-sm-9" field="tformalid"></label>
-	</div>
-	<!-- CIPHER -->
-	<div class="form-group row" name="cipherid">
-		<label class="col-sm-3 name" ltext="CIPHER"></label>
-		<div class="col-sm-9" ctrl="elm" proc="cipherid" field="cipherid" limit="1" disable_on="add,edit,ref"/>
-	</div>
-	<!-- TDRAFTID -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="TDRAFTID"></label>
-		<label class="col-sm-9" field="tdraftid"></label>
-	</div>
-	<!-- NAME -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="NAME1"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="name">
-		</div>
-	</div>
-	<!-- DESCRIPTION -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="DESC"></label>
-		<div class="col-sm-9">
-			<textarea class="form-control" disable_on="ref" field="description"></textarea>
-		</div>
-	</div>
-	<!-- TAGS -->
-	<div class="form-group row" name="cp_desc">
-		<label class="col-sm-3 name" ltext="TAGS"></label>
-		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
-		</div>
-	</div>
-	<!-- REWARD -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="REWARD"></label>
-		<div class="col-sm-9">
-			<div class="row">
-				<label class="col-sm-3 name" ltext="TOKEN"></label>
-				<div class="col-sm-4" ctrl="elm" proc="rewardid" field="rewardid" limit="1"/>
-				<div class="input-group form-group col-sm-5">
-					<div class="input-group-prepend">
-						<span class="input-group-text" ltext="QUANTITY"></span>
-					</div>
-					<input type="text" class="form-control" disable_on="ref" field="noftoken">
-				</div>
-			</div>
-			<div class="row">
-				<label class="col-sm-3 name" ltext="CRYPTOCURRENCY"></label>
-				<div class="input-group form-group col-sm-9">
-					<div class="input-group-prepend">
-						<span class="input-group-text" ltext="QUANTITY"></span>
-					</div>
-					<input type="text" class="form-control" disable_on="ref" field="amount">
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- RULE -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="RULE"></label>
-		<div class="col-sm-9">
-			<div class="input-group form-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" ltext="REQ_NUM_APPROVERS"></span>
-				</div>
-				<input type="text" class="form-control" disable_on="ref" field="nofapproval">
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<label class="col-sm-3 name" ltext="APPROVERS"></label>
-				<div class="col-sm-9" ctrl="elm" proc="approvers" field="approvers"/>
-			</div>
-		</div>
-	</div>
-	<hr>
-	<!-- PIC -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="PIC"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="pic" field="pic"/>
-	</div>
-	<!-- APPROVAL_FOR_PIC -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="APPROVAL_FOR_PIC"></label>
-		<div class="col-sm-9" ctrl="elm" proc="approve_pic" field="approve_pic"/>
-	</div>
-	<!-- APPROVAL_FOR_RESULTS -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="APPROVAL_FOR_RESULTS"></label>
-		<div class="col-sm-9" ctrl="elm" proc="approve_results" field="approve_results"/>
-	</div>
-	<!-- BUTTON -->
-	<div class="form-group row">
-		<div class="col-sm-12 right" ctrl="button" proc="button">
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-		</div>
-	</div>
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="CIPHER" field="cipherid" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="TFORMALID" field="tformalid" ctrl="editleft"/>
+	<div formtype="short" ltext="TDRAFTID" field="tdraftid" ctrl="editleft"/>
+	<div formtype="long" ltext="NAME1" field="name" ctrl="editleft" disable_on="ref"/>
+	<div formtype="long" ltext="DESC" field="description" ctrl="textarea" disable_on="ref"/>
+	<div formtype="long" ltext="TAGS" field="tags" ctrl="tag" proc="tags" disable_on="ref"/>
+	<div class="clause"/>
+	
+	<h2 ltext="REWARD"/>
+	<div formtype="short" ltext="TOKEN" field="rewardid" limit="1" ctrl="elm" proc="rewardid" disable_on="ref"/>
+	<div formtype="short" ltext="QUANTITY" field="noftoken" ctrl="editleft" disable_on="ref"/>
+	<div formtype="short" ltext="CRYPTOCURRENCY" field="amount" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+	
+	<h2 ltext="RULE_OF_APPROVAL"/>
+	<div formtype="long" ltext="APPROVERS" field="approvers" ctrl="elm" proc="approvers" disable_on="ref"/>
+	<div formtype="short" ltext="REQ_NUM_APPROVERS" field="nofapproval" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+
+	<h2 ltext="RULE_OF_PAYMENT"/>
+	<div formtype="long" ltext="EOS_APPROVERS" field="eos_approvers" ctrl="elm" proc="eos_approvers" disable_on="ref"/>
+	<div formtype="short" ltext="NOF_EOS_APPROVERS" field="nof_eos_approvers" ctrl="editleft" disable_on="ref"/>
+	
+	<div class="clause"/>
+	
+	<h2 ltext="PROGRESS"/>
+	<div formtype="short" ltext="PIC" field="pic" limit="1" ctrl="elm" proc="pic" disable_on="ref"/>
+	<br class="sep"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PIC" field="approve_pic" ctrl="elm" proc="approve_pic" disable_on="ref"/>
+	<div formtype="long" ltext="APPROVAL_FOR_RESULTS" field="approve_results" ctrl="elm" proc="approve_results" disable_on="ref"/>
+	<div class="clause"/>
+	
+	<div ctrl="button" proc="button"/>
+
 </div>

@@ -147,6 +147,12 @@ var $L = {
 		'MULTISIG' : '共有口座',
 		'COOWNER' : '共同所有者',
 		'NOF_REQ_AUTH' : '必要承認者数',
+		'RULE_OF_APPROVAL' : '承認ルール',
+		'BASIC_INFORMATION' : '基本情報',
+		'RULE_OF_PAYMENT' : '暗号通貨支払ルール',
+		'EOS_APPROVERS' : '支払口座共有者',
+		'NOF_EOS_APPROVERS' : '支払い必要承認数',
+		'PROGRESS' : '進捗',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

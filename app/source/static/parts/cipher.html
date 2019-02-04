@@ -2,111 +2,36 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal">
-	<!-- ID -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="ID"></label>
-		<label class="col-sm-9" field="cipherid"></label>
-	</div>
-	<!-- CDRAFTID -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="CDRAFT_ID"></label>
-		<label class="col-sm-9" field="cdraftid"></label>
-	</div>
-	<!-- VER -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="VERSION"></label>
-		<label class="col-sm-9" field="version"></label>
-	</div>
-	<!-- DRAFT -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="DRAFT_NO"></label>
-		<label class="col-sm-8 col-10" field="no"></label>
-		<div class="col-sm-1 col-2 right" ctrl="button" proc="draft">
-			<button class="btn btn-ver btn-normal"></button>
-		</div>
-	</div>
-	<hr hide_on="add">
-	<!-- EDITOR -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="DRAFT_EDIT_MEMBER"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="editors" field="editors"/>
-	</div>
-	<!-- NAME -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="NAME1"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="name">
-		</div>
-	</div>
-	<!-- DESCRIPTION -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="PURPOSE"></label>
-		<div class="col-sm-9">
-			<textarea class="form-control" disable_on="ref" field="purpose"></textarea>
-		</div>
-	</div>
-	<!-- TAGS -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="TAGS"></label>
-		<div class="col-sm-9" ctrl="tag" proc="tags" field="tags">
-		</div>
-	</div>
-	<!-- MULTISIG -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="MULTISIG"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="multisig">
-		</div>
-	</div>
-	<!-- RULE_REQ -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="REQ_NUM_APPROVERS"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="nofapproval">
-		</div>
-	</div>
-	<!-- RULE_AUTHER -->
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="APPROVERS"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="authors" field="approvers">
-		</div>
-	</div>
-	<!-- BUTTON1 -->
-	<div class="form-group row" name="cp_button1" hide_on="ref">
-		<div class="col-sm-12 right" ctrl="button" proc="button1">
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-		<hr hide_on="add">
-		</div>
-	</div>
-	<!-- TOKEN -->
-	<div class="form-group row" name="cp_token" hide_on="add">
-		<label class="col-sm-3 name" ltext="TOKEN"></label>
-		<div class="col-sm-9" ctrl="list" proc="tokenlist">
-		</div>
-	</div>
-	<!-- TASK -->
-	<div class="form-group row" name="cp_task" hide_on="add">
-		<label class="col-sm-3 name" ltext="TASK"></label>
-		<div class="col-sm-9" ctrl="list" proc="tasklist">
-		</div>
-	</div>
-	<!-- APPROVED -->
-	<div class="form-group row" name="cp_approve" hide_on="add,edit">
-		<label class="col-sm-3 name" ltext="APPROVE"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="approved" field="approved">
-		</div>
-	</div>
-	<!-- BUTTON2 -->
-	<div class="form-group row" name="cp_button2" hide_on="add">
-		<div class="col-sm-12 right" ctrl="button" proc="button2">
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-		</div>
-	</div>
 
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="ID" field="cipherid" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="CDRAFT_ID" field="cdraftid" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="VERSION" field="version" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="DRAFT_NO" field="no" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div class="long right">
+		<button class="btn btn-ver btn-normal"></button>
+	</div>
+	<div formtype="long" ltext="DRAFT_EDIT_MEMBER" field="editors" ctrl="elm" proc="editors" disable_on="ref"/>
+	<div formtype="long" ltext="NAME1" field="name" ctrl="editleft" disable_on="ref"/>
+	<div formtype="long" ltext="PURPOSE" field="purpose" ctrl="textarea" disable_on="ref"/>
+	<div formtype="long" ltext="TAGS" field="tags" ctrl="tag" proc="tags" disable_on="ref"/>
+	<div formtype="short" ltext="MULTISIG" field="multisig" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+	<h2 ltext="RULE_OF_APPROVAL"/>
+	<div formtype="long" ltext="APPROVERS" field="approvers" ctrl="elm" proc="authors" disable_on="ref"/>
+	<div formtype="short" ltext="REQ_NUM_APPROVERS" field="nofapproval" ctrl="editleft" disable_on="ref"/>
+	<div ctrl="button" proc="button1" hide_on="ref"/>
+	<div class="clause"/>
+	<h2 ltext="TOKEN"/>
+	<div formtype="long" ctrl="list" proc="tokenlist"/>
+	<div class="clause"/>
+	<h2 ltext="TASK"/>
+	<div formtype="long" ctrl="list" proc="tasklist"/>
+	<div class="clause"/>
+	<h2 ltext="APPROVE"/>
+	<div ltext="APPROVE" formtype="long" field="approved" ctrl="elm" proc="approved" disable_on="ref"/>
+	<div ctrl="button" proc="button2" hide_on="ref"/>
+	<div class="clause"/>
 </div>
+

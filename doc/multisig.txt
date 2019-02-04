@@ -14,6 +14,7 @@ end box
 box "eos"
 	control "smart contracts" As eos
 	entity task
+	entity cipher
 end box
 
 box "cipher"
@@ -45,7 +46,7 @@ coowner1 -> app : approve the plan
 activate app
 app -> eos : update
 activate eos
-eos -> task : update
+eos -> cipher : update
 deactivate eos
 deactivate app
 note right : (1/2)
@@ -54,10 +55,11 @@ approver2 -> app : approve the plan
 activate app
 app -> eos : update
 activate eos
-eos -> task : update
+eos -> cipher : update
+note right : (2/2)the plan is approved
+eos -> task : set to formal 
 deactivate eos
 deactivate app
-note right : (2/2)the plan is approved
 
 == reqruitment ==
 

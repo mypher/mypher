@@ -2,24 +2,18 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal">
+<div>
 	<!-- SEARCH -->
-	<div class="form-group row">
-		<div class="col-sm-12" ctrl="radio" field="type" sel="USER:0,CIPHER:1,TASK:2,TOKEN:3"/>
-		<div class="col-sm-12">
-			<br>
+	<div ctrl="radio" field="type" sel="USER:0,CIPHER:1,TASK:2,TOKEN:3"/>
+	<br class="sep"/>
+	<div ctrl="radio" field="type2" sel="NAME2:0,TAGS:1"/>
+	<br class="sep"/>
+	<div class="long">
+		<div class="innermain">
+			<input type="text" class="form-control" field="name">
 		</div>
-		<div class="col-sm-12" ctrl="radio" field="type2" sel="NAME2:0,TAGS:1"/>
-		<div class="col-sm-12">
-			<br>
-		</div>
-		<div class="col-sm-12">
-			<div class="input-group" ctrl="button" proc="search">
-				<input type="text" class="form-control" field="name">
-				<div class="input-group-append">
-					<button class="btn btn-search"></button>
-				</div>
-			</div>
+		<div class="innersub">
+			<button class="btn btn-search"></button>
 		</div>
 	</div>
 	<!-- RESULT -->

@@ -3,6 +3,137 @@
     SPDX-License-Identifier: LGPL-3.0+
 */
 
+html, body {
+	height:100%;
+}
+
+
+.main_frame {
+	margin:12px;
+}
+
+.short {
+	box-sizing: border-box;
+	display:table;
+	padding:4px;
+}
+
+.long {
+	box-sizing: border-box;
+	display:table;
+	padding:4px;
+}
+
+.editright {
+	text-align:right;
+	padding-right:16px;
+}
+
+
+.slinner {
+	border-bottom: 1px solid #24aff3;
+	margin: 4px 4px 0px 4px;
+	height:30px;
+	display:table;
+	width:100%;
+}
+
+.inner1 {
+	display:table;
+}
+
+.innermain {
+	display:table-cell;
+	width:100%;
+}
+.innersub {
+	display:table-cell;
+}
+
+.short > .slinner > .label, .long > .slinner > .label {
+	color : #28c;
+	display:table-cell;
+	margin-right:12px;
+	width:1%;
+	white-space:nowrap;
+	padding-right:24px;
+	vertical-align:top;
+}
+
+.slinner > .slinner2 {
+	display:table-cell;
+	padding-bottom:2px;
+	height:100%;
+}
+
+.slinner > .slinner2 > input {
+	border:0px;
+	width:100%;
+}
+
+.slinner > .slinner2 > textarea {
+	border:1px dashed #eee;
+	width:100%;
+}
+
+.slinner > .editright {
+}
+
+.slinner > .editleft {
+}
+
+.addition {
+	border:2px dashed #eee;
+	margin:12px;
+}
+
+.sep {
+	line-height:40px;
+	clear:left
+}
+
+.clause::before {
+	clear:both;
+}
+.clause {
+	clear:left;
+	height:40px;
+}
+
+@media (max-width: 576px) {
+
+.short {
+	width:100%;
+}
+
+.long {
+	width:100%;
+}
+
+}
+
+@media (min-width: 576px) {
+
+.short {
+	width:50%;
+	float:left;
+}
+
+.long {
+	width:100%;
+}
+
+}
+
+
+h2 {
+	font-size: 1.4rem;
+	background-color: #24aff3;
+	padding: 8px;
+	color: #fff;
+	border-radius: .25rem;
+}
+
 .popup {
 	border:1px solid #888;
 	box-shadow: 1px 1px 1px 1px #aaa;
@@ -91,7 +222,7 @@ td {
 
 .btn-search {
 	background: url(../img/search.png) center no-repeat;
-	height:100%;
+	height:38px;
 	width:48px;
 	background-color:#30b0f0;
 }
@@ -172,6 +303,8 @@ td {
 
 .elmdisallow {
 	border : 1px dashed #ddd;
+	width : 100%;
+	height: 100%;
 }
 .elmdisabled {
 	background-color:#e9ecef;

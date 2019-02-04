@@ -100,12 +100,12 @@ Header = {
 				pass:'5JFhiQyRLzpJEg5gthoyqWCnJvFjKh5YbrNV1fRom6znDdZpyb3'
 			});
 		});
-		addItem('check the layout of task', () => {
+		addItem('check the layout', () => {
 			const task = new DebugLayout({
-				name : 'task',
+				name : 'token',
 				mode : MODE.REF
 			});
-			History.run('check the layout of Task', task);
+			History.run('check the layout', task);
 		});
 	},
 
