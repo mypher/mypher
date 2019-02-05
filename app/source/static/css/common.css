@@ -3,10 +3,16 @@
     SPDX-License-Identifier: LGPL-3.0+
 */
 
-html, body {
-	height:100%;
+
+select {
+	height:calc(2.25rem + 2px);
+	width:100%;
 }
 
+.btn {
+	font-size:0.8rem;
+	line-height:0.8rem;
+}
 
 .main_frame {
 	margin:12px;

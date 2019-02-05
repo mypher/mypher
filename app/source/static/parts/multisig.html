@@ -2,31 +2,10 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal">
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="ID"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" field="id">
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="COOWNER"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="elm" proc="coowner" field="coowner" disable_on="ref">
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="NOF_REQ_AUTH"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" field="threshold" disable_on="ref">
-		</div>
-	</div>
-	<div class="form-group row">
-		<div class="col-sm-12 right" ctrl="button" proc="button">
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-			<button type="button" class="btn btn-normal"></button>
-		</div>
-	</div>
+<div>
+	<div formtype="long" ctrl="editleft" ltext="ID" field="id"/>
+	<div formtype="long" ctrl="elm" ltext="COOWNER" disable_on="ref" proc="coowner" field="coowner" disable_on="ref"/>
+	<div formtype="long" ctrl="editleft" ltext="NOF_REQ_AUTH" field="threshold" disable_on="ref"/>
+	<div formtype="long" ctrl="button" proc="button"/>
+	<br class="clause"/>
 </div>

@@ -203,6 +203,17 @@ let Util = {
 	},
 	load : async (div, file, mode, btns) => {
 		div.empty();
+		const makeAttrs = elm => {
+			const attrs = {};
+			for (let j=0; j<elm[0].attributes.length; j++) {
+				const v = elm[0].attributes[j];
+				attrs[v.name] = v.value;
+			}
+			for (let v in attrs) {
+				elm.removeAttr(v);
+			}
+			return attrs;
+		};
 		return Util.promise(function(resolve, reject) {
 			div.load(file, function(res, status) {
 				if (status==='error') {
@@ -214,14 +225,7 @@ let Util = {
 				for (let i=0; i<l.length; i++) {
 					const elm = l.eq(i);
 					let e2 = null;
-					const attrs = {};
-					for (let j=0; j<elm[0].attributes.length; j++) {
-						const v = elm[0].attributes[j];
-						attrs[v.name] = v.value;
-					}
-					for (let v in attrs) {
-						elm.removeAttr(v);
-					}
+					const attrs = makeAttrs(elm);
 					const slinner = $('<div/>').addClass('slinner').append(
 						$('<div/>').addClass('label').text(_L(attrs['ltext']))
 					);
@@ -258,7 +262,7 @@ let Util = {
 						break;
 					case 'radio':
 						e2 = $('<div/>');
-						Util.initRadio(e2, mode, proc);
+						Util.initRadio(e2, mode, proc, attrs);
 						break;
 					case 'select':
 						e2 = $('<div/>');
@@ -276,10 +280,11 @@ let Util = {
 				l = div.find('div[ctrl]');
 				for (let i=0; i<l.length; i++) {
 					const elm = l.eq(i);
-					let proc = elm.attr('proc');
+					const attrs = makeAttrs(elm);
+					let proc = attrs['proc'];
 					proc = proc ? btns[proc] : null;
 					try {
-						switch (elm.attr('ctrl')) {
+						switch (attrs['ctrl']) {
 						case 'tag':
 							Util.initTag(elm, mode, proc);
 							break;
@@ -293,7 +298,7 @@ let Util = {
 							Util.initDate(elm, mode, proc);
 							break;
 						case 'radio':
-							Util.initRadio(elm, mode, proc);
+							Util.initRadio(elm, mode, proc, attrs);
 							break;
 						case 'select':
 							Util.initSelect(elm, mode, proc, attrs);
@@ -339,7 +344,7 @@ let Util = {
 					div.find('[type="radio"][disable_on*=rf2]').parent().click(()=> { return false; });
 					break;
 				}
-				l = div.find('h2[ltext],span[ltext]');
+				l = div.find('option[ltext],h2[ltext],span[ltext]');
 				for (let i=0; i<l.length; i++) {
 					let elm = l.eq(i);
 					elm.text(_L(elm.attr('ltext')));
@@ -353,13 +358,14 @@ let Util = {
 		div.obj = new DateCtrl(elm);
 	},
 	initButton : function(btns, arr) {
-		var len = btns.length;
-		var start = len - arr.length;
-		for ( var i=0; i<start; i++ ) {
+		const len = btns.length;
+		arr = arr ? arr : [];
+		const start = len - arr.length;
+		for ( let i=0; i<start; i++ ) {
 			btns.eq(i).css('display', 'none');
 		}
-		for ( var i=0; i<arr.length; i++) {
-			var elm = btns.eq(start + i).css('display', '');
+		for ( let i=0; i<arr.length; i++) {
+			const elm = btns.eq(start + i).css('display', '');
 			if (arr[i].text) {
 				elm.text(_L(arr[i].text));
 			}
@@ -420,9 +426,9 @@ let Util = {
 		}
 		elm.obj = new List(data, cb);
 	},
-	initRadio : function(div, mode, proc) {
+	initRadio : function(div, mode, proc, attrs) {
 		const elm = div.get(0);
-		elm.obj = new Radio(div, mode, proc);
+		elm.obj = new Radio(div, mode, proc, attrs);
 	},
 	initSelect : function(div, mode, proc, attrs) {
 		const elm = div.get(0);
@@ -1065,8 +1071,8 @@ function Select(div, mode, proc, attrs) {
 	sel.forEach(v => {
 		v = v.split(':');
 		const option = $('<option/>').attr({
-					'value' : v[1],
-					'ltext' : v[0],
+					'value' : v[0],
+					'ltext' : v[1],
 				});
 		select.append(option);
 	});
@@ -1089,26 +1095,26 @@ Select.prototype = {
 }
 
 
-function Radio(div, mode, proc) {
+function Radio(div, mode, proc, attrs) {
 	this.div = div;
 	this.mode = mode;
 	this.proc = {
 		change : proc ? (proc.change||function(){}) : function(){}
 	};
 	div.addClass('btn-group btn-group-toggle')/*.attr('data-toggle','buttons')*/;
-	const field = div.attr('field');
-	let disable_on = div.attr('disable_on')||'';
+	const field = attrs['field'];
+	let disable_on = attrs['disable_on']||'';
 	disable_on = disable_on.split(',');
-	let sel = div.attr('sel').split(',');
+	let sel = attrs['sel'].split(',');
 	sel.forEach(v => {
 		v = v.split(':');
 		const label = $('<label class="btn btn-normal"/>')
 				.append($('<input/>').attr({
 					'type' : 'radio',
 					'autocomplete' : 'off',
-					'value' : v[1],
+					'value' : v[0],
 					'field' : field,
-				})).append($('<span/>').attr('ltext',v[0]));
+				})).append($('<span/>').attr('ltext',v[1]));
 		div.append(label);
 	});
 	this.div.click(()=> {

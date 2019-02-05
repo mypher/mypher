@@ -11,70 +11,24 @@
 	<div formtype="short" ltext="ISSUE_LIMIT" field="ilimit" ctrl="editleft" disable_on="ref"/>
 	<div class="clause"/>
 	<h2 ltext="FUNCTION"/>
-	<div formtype="long" ltext="TYPE" ctrl="select" field="type" disable_on="ref" proc="type" sel="0:NONE,1:QRCODE,2:DEVIDE_TOKEN,3:DEVIDE_SYS"/>
-	<div formtype="long" ltext="WHEN" ctrl="select" field="when" disable_on="ref" proc="when" sel="0:NONE,1:BY_COMPLETION_OF_TASK,2:BY_NUMBER_OF_OWNED,3:ALWAYS,4:BY_ISSUER"/>
+	<div formtype="short" ltext="TYPE" ctrl="select" field="type" disable_on="ref" proc="type" sel="0:NONE,1:QRCODE,2:DEVIDE_TOKEN,3:DEVIDE_SYS"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="WHEN" ctrl="select" field="when" disable_on="ref" proc="when" sel="0:NONE,1:BY_COMPLETION_OF_TASK,2:BY_NUMBER_OF_OWNED,3:ALWAYS,4:BY_ISSUER"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="AFTER_USE" ctrl="radio" field="disposal" disable_on="ref" sel="0:COLLECT,1:NOT_COLLECT"/>
+	<div class="clause"/>
+	<h2 ltext="ATTRIBUTES"/>
+	<div formtype="short" ltext="TASK" ctrl="elm" proc="task" field="taskid" limit="1"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="RELATED_TOKEN" ctrl="elm" proc="token" field="extokenid" limit="1"/>
+	<div formtype="short" ltext="REFERENCE_TOKEN" ctrl="editleft" field="reftoken" disable_on="ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="DEVIDE_TYPE" ctrl="radio" field="rcalctype" disable_on="ref" sel="0:SPECIFIED_NUMBER,1:ISSUED_PER_SPECIFIED"/>
+	<div formtype="short" ltext="NOF_DEVIDED_TOKEN" ctrl="editleft" field="nofdesttoken" disable_on="ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="NOF_DEVIDED_EOS" ctrl="editleft" field="nofdesteos" disable_on="ref"/>
+	<div ctrl="button" proc="button"/>
+	<br class="sep"/>
+	
 </div>
 
-<div class="form-horizontal tr_root">
-	<div class="row">
-		<label class="col-sm-3 name" ltext="WHEN"></label>
-		<div class="col-sm-9">
-			<div class="row form-group"><div class="col-sm-12">
-				<select class="form-control" 
-					field="when" disable_on="ref" proc="when">
-					<option value="0" ltext="NONE">
-					<option value="1" ltext="BY_COMPLETION_OF_TASK">
-					<option value="2" ltext="BY_NUMBER_OF_OWNED">
-					<option value="3" ltext="ALWAYS">
-					<option value="4" ltext="BY_ISSUER">
-				</select>
-			</div></div>
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="AFTER_USE"></label>
-		<div class="col-sm-9" ctrl="radio" field="disposal" disable_on="ref" sel="COLLECT:0,NOT_COLLECT:1"/>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="ATTRIBUTES"></label>
-		<div class="col-sm-9 form-group leftnospace" ctrl="button" proc="attributes">
-			<div class="input-group col-sm-12 rowspace">
-				<label class="col-sm-3 name" ltext="TASK"></label>
-				<div class="col-sm-9" ctrl="elm" proc="task" field="taskid" limit="1"/>
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<label class="col-sm-3 name" ltext="RELATED_TOKEN"></label>
-				<div class="col-sm-9" ctrl="elm" proc="token" field="extokenid" limit="1"/>
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="REFERENCE_TOKEN"></span>
-				</div>
-				<input type="text" class="form-control" field="reftoken" disable_on="ref">
-			</div>
-			<div class="input-group col-sm-12">
-				<div class="form-group rowspace" ctrl="radio" field="rcalctype" disable_on="ref" sel="SPECIFIED_NUMBER:0,ISSUED_PER_SPECIFIED:1"/>
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="NOF_DEVIDED_TOKEN"></span>
-				</div>
-				<input type="text" class="form-control" field="nofdesttoken" disable_on="ref">
-			</div>
-			<div class="input-group col-sm-12 rowspace">
-				<div class="input-group-prepend">
-					<span class="input-group-text label-normal" ltext="NOF_DEVIDED_EOS"></span>
-				</div>
-				<input type="text" class="form-control" field="nofdesteos" disable_on="ref">
-			</div>
-		</div>
-	</div>
-	<!-- BUTTON -->
-	<div class="form-group row">
-		<div class="col-sm-12 right" ctrl="button" proc="button">
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-		</div>
-	</div>
-</div>

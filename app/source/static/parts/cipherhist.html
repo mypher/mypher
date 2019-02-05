@@ -2,29 +2,10 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal area">
-	<!-- FORMAL -->
-	<div class="form-group row" name="cp_formal">
-		<label class="col-sm-3 name" ltext="CURRENT1"></label>
-		<div class="col-sm-9" ctrl="list" proc="current">
-		</div>
-	</div>
-	<!-- DRAFT -->
-	<div class="form-group row" name="cp_draft">
-		<label class="col-sm-3 name" ltext="DRAFT1"></label>
-		<div class="col-sm-9" ctrl="list" proc="draft">
-		</div>
-	</div>
-	<!-- HISTORY -->
-	<div class="form-group row" name="cp_history">
-		<label class="col-sm-3 name" ltext="HISTORY1"></label>
-		<div class="col-sm-9" ctrl="list" proc="history">
-		</div>
-	</div>
-	<!-- BUTTON -->
-	<div class="form-group row" name="cp_button">
-		<div class="col-sm-12 right" ctrl="button" proc="button">
-			<button type="button" class="btn btn-normal"></button>
-		</div>
-	</div>
+<div>
+	<div formtype="long" ctrl="list" ltext="CURRENT1" proc="current"/>
+	<div formtype="long" ctrl="list" ltext="DRAFT1" proc="draft"/>
+	<div formtype="long" ctrl="list" ltext="HISTORY1" proc="history"/>
+	<div formtype="long" ctrl="button" proc="button"/>
 </div>
+

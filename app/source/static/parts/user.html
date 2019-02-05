@@ -2,61 +2,17 @@
     Copyright (C) 2018-2019 The Mypher Authors
     SPDX-License-Identifier: LGPL-3.0+
 -->
-<div class="form-horizontal">
-	<!-- ACCOUNT -->
-	<div class="form-group row">
-		<label class="col-sm-12"><h4 ltext="ACCOUNT"></h4></label>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="USER"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="personid">
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="NAME2"></label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" disable_on="ref" field="name">
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="DESC"></label>
-		<div class="col-sm-9">
-			<textarea class="form-control" disable_on="ref" field="desc"></textarea>
-		</div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="ATTRIBUTES"></label>
-		<div class="col-sm-9" disable_on="ref" ctrl="tag" proc="tags" field="tags">
-		</div>
-	</div>
-	<!-- WALLET -->
-	<div class="form-group row">
-		<label class="col-sm-12"><h4 ltext="WALLET"></h4></label>
-		<div class="col-sm-12" name="wallet"></div>
-	</div>
-	<div class="form-group row">
-		<label class="col-sm-3 name" ltext="PUB_KEY_ACTIVE"></label>
-		<label class="col-sm-9" field="pkey"></label>
-	</div>
-	<!-- TOKEN -->
-	<div class="form-group row" hide_on="add">
-		<label class="col-sm-3 name" ltext="OWNED_TOKEN"></label>
-		<div class="col-sm-9" ctrl="list" proc="tokenlist">
-		</div>
-	</div>
-	<div class="form-group row">
-		<div class="col-sm-12">
-			<textarea class="form-control" field="sysdata" disabled rows=15></textarea>
-		</div>
-	</div>
-	<!-- BUTTON -->
-	<div class="form-group row">
-		<div class="col-sm-12 right" ctrl="button" proc="button">
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-			<button class="btn btn-normal btn-md"></button>
-		</div>
-	</div>
+<div>
+	<h2 ltext="ACCOUNT"/>
+	<div formtype="short" ltext="USER" ctrl="editleft" disable_on="ref" field="personid"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="NAME2" ctrl="editleft" disable_on="ref" field="name"/>
+	<div formtype="long" ltext="DESC" ctrl="textarea" disable_on="ref" field="desc"/>
+	<div formtype="long" ltext="ATTRIBUTES" disable_on="ref" ctrl="tag" proc="tags" field="tags"/>
+	<h2 ltext="WALLET"/>
+	<div class="long" name="wallet"/>
+	<div formtype="long" ltext="PUB_KEY_ACTIVE" ctrl="editleft" field="pkey"/>
+	<div formtype="long" ltext="OWNED_TOKEN" ctrl="list" hide_on="add" proc="tokenlist"/>
+	<div formtype="long" ctrl="textarea" field="sysdata" disabled rows=15/>
+	<div formtype="long" ctrl="button" proc="button"/>
 </div>

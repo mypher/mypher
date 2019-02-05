@@ -33,6 +33,7 @@ var $L = {
 		'ATTRIBUTES' : '属性',
 		'RELATED_TOKEN' : '関連トークン',
 		'NOF_DEVIDED_TOKEN' : 'トークン分配数',
+		'DEVIDE_TYPE' : '分配方法',
 		'NOF_DEVIDED_EOS' : 'EOS分配数',
 		'TRANSFERED_CONTENT' : '分配・配布内容',
 		'TARGET_CONTENT' : '対象物',

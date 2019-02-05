@@ -102,7 +102,7 @@ Header = {
 		});
 		addItem('check the layout', () => {
 			const task = new DebugLayout({
-				name : 'token',
+				name : 'user',
 				mode : MODE.REF
 			});
 			History.run('check the layout', task);
