@@ -206,6 +206,7 @@ td {
 	color: #fff;
 	background-color: #30b0f0;
 	border-color: #30b0f0;
+	margin:0px 2px;
 }
 
 .btn-disabled {
@@ -251,7 +252,7 @@ td {
 
 .tag {
 	float: left;
-	padding: 4px 22px 4px 22px;
+	padding: 0px 22px 4px 22px;
 	background: url(../img/glyphicons-66-tag2.png);
 	background-repeat: no-repeat;
 	background-position: left;
@@ -264,7 +265,7 @@ td {
 
 .taginp {
 	border: 0px;
-	padding: 4px;
+	padding: 0px 4px;
 	margin: 0px;
 	outline:none;
 	z-index:1;
@@ -305,6 +306,8 @@ td {
 
 .elmallow {
 	border : 1px dashed #30b0f0;
+	height : 100%;
+	padding-left:8px;
 }
 
 .elmdisallow {

@@ -207,7 +207,9 @@ let Util = {
 			const attrs = {};
 			for (let j=0; j<elm[0].attributes.length; j++) {
 				const v = elm[0].attributes[j];
-				attrs[v.name] = v.value;
+				if (v.name!=='hide_on') {
+					attrs[v.name] = v.value;
+				}
 			}
 			for (let v in attrs) {
 				elm.removeAttr(v);
@@ -226,11 +228,15 @@ let Util = {
 					const elm = l.eq(i);
 					let e2 = null;
 					const attrs = makeAttrs(elm);
-					const slinner = $('<div/>').addClass('slinner').append(
-						$('<div/>').addClass('label').text(_L(attrs['ltext']))
-					);
+					const slinner = $('<div/>').addClass('slinner');
+					if (attrs['ltext']) {
+						slinner.append(
+							$('<div/>').addClass('label').text(_L(attrs['ltext']))
+						);
+					}
 					elm.addClass(attrs['formtype']).append(slinner);
-					const proc = elm.attr('proc');
+					let proc = attrs['proc'];
+					proc = proc ? btns[proc] : null;
 					switch (attrs['ctrl']) {
 					case 'elm':
 						e2 = $('<div/>');
@@ -270,6 +276,9 @@ let Util = {
 						break;
 					case 'button':
 						e2 = $('<div/>');
+						for (let j=0; j<5; j++) {
+							e2.append($('<button/>').addClass('btn btn-normal'));
+						}
 						Util.initButton(e2.find('button'), proc);
 						break;
 					}
@@ -305,8 +314,11 @@ let Util = {
 							break;
 						case 'button':
 							for (let j=0; j<5; j++) {
-								elm.append($('<button/>').addClass('btn'));
+								elm.append($('<button/>').addClass('btn btn-normal'));
 							}
+							Util.initButton(elm.find('button'), proc);
+							break;
+						case 'button2':
 							Util.initButton(elm.find('button'), proc);
 							break;
 						}
@@ -602,7 +614,7 @@ function Tag(div, mode, proc) {
 		}
 	});
 	if (self.mode!==MODE.REF) {
-		div.css('border', '1px dashed #30b0f0');
+		div.addClass('elmallow');
 	}
 	this.data = [];
 }

@@ -5,11 +5,11 @@
 
 <div>
 	<h2 ltext="BASIC_INFORMATION"/>
-	<div formtype="short" ltext="ID" field="cipherid" ctrl="editleft" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="CDRAFT_ID" field="cdraftid" ctrl="editleft" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="VERSION" field="version" ctrl="editleft" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="DRAFT_NO" field="no" ctrl="editleft" disable_on="add,edit,ref"/>
-	<div class="long right">
+	<div formtype="short" ltext="ID" field="cipherid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="CDRAFT_ID" field="cdraftid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="VERSION" field="version" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="DRAFT_NO" field="no" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div class="long right" hide_on="add">
 		<button class="btn btn-ver btn-normal"></button>
 	</div>
 	<div formtype="long" ltext="DRAFT_EDIT_MEMBER" field="editors" ctrl="elm" proc="editors" disable_on="ref"/>
@@ -21,17 +21,18 @@
 	<h2 ltext="RULE_OF_APPROVAL"/>
 	<div formtype="long" ltext="APPROVERS" field="approvers" ctrl="elm" proc="authors" disable_on="ref"/>
 	<div formtype="short" ltext="REQ_NUM_APPROVERS" field="nofapproval" ctrl="editleft" disable_on="ref"/>
+	<br class="sep"/>
 	<div ctrl="button" proc="button1" hide_on="ref"/>
 	<div class="clause"/>
-	<h2 ltext="TOKEN"/>
-	<div formtype="long" ctrl="list" proc="tokenlist"/>
-	<div class="clause"/>
-	<h2 ltext="TASK"/>
-	<div formtype="long" ctrl="list" proc="tasklist"/>
-	<div class="clause"/>
-	<h2 ltext="APPROVE"/>
-	<div ltext="APPROVE" formtype="long" field="approved" ctrl="elm" proc="approved" disable_on="ref"/>
+	<h2 ltext="TOKEN" hide_on="add"/>
+	<div formtype="long" ctrl="list" proc="tokenlist" hide_on="add"/>
+	<div class="clause" hide_on="add"/>
+	<h2 ltext="TASK" hide_on="add"/>
+	<div formtype="long" ctrl="list" proc="tasklist" hide_on="add"/>
+	<div class="clause" hide_on="add"/>
+	<h2 ltext="APPROVE" hide_on="add,edit"/>
+	<div ltext="APPROVE" formtype="long" field="approved" ctrl="elm" proc="approved" disable_on="ref" hide_on="add,edit"/>
 	<div ctrl="button" proc="button2" hide_on="ref"/>
-	<div class="clause"/>
+	<div class="clause" hide_on="ref"/>
 </div>
 
