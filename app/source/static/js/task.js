@@ -26,9 +26,24 @@ class Task {
 
 	async set(data) {
 		this.data = data;
+		try {
+			const d = await Rpc.call('cipher.get', [{cipherid:data.cipherid}]);
+			this.data.cipher = d.name;
+			[ 
+				$('[field="amount"]').parent().parent().parent(),
+				$('[field="eos_approvers"]').parent().parent().parent(),
+				$('[field="nof_eos_approvers"]').parent().parent().parent(),
+				$('h2[ltext="RULE_OF_PAYMENT"]'),
+				$('div[name="rop_footer"]'),
+			].forEach(elm => {
+				if (d.multisig) {
+					elm.show();
+				} else {
+					elm.hide();
+				}
+			});
+		} catch (e){}
 		Util.setData(this.div, this.data);
-		const cipher = $('div[name="cipherid"]');
-		cipher.find('div[field]').get(0).obj.allowedit(false);
 		$('div[field="pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_results"]').get(0).obj.allowedit(false);

@@ -37,11 +37,14 @@ select {
 
 
 .slinner {
-	border-bottom: 1px solid #24aff3;
 	margin: 4px 4px 0px 4px;
 	height:30px;
 	display:table;
 	width:100%;
+}
+
+.slline {
+	border-bottom: 1px solid #24aff3;
 }
 
 .inner1 {

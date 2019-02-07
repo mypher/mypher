@@ -236,51 +236,46 @@ let Util = {
 					}
 					elm.addClass(attrs['formtype']).append(slinner);
 					let proc = attrs['proc'];
+					let line = false;
 					proc = proc ? btns[proc] : null;
 					switch (attrs['ctrl']) {
-					case 'elm':
-						e2 = $('<div/>');
-						Util.initElmList(e2, mode, proc);
-						break;
 					case 'editright':
-						e2 = $('<input/>').attr('field', attrs['field'])
-							.attr('disable_on', attrs['disable_on']).addClass('editright');
+						e2 = $('<input/>').attr({
+							'field' : attrs['field'],
+							'disable_on' : attrs['disable_on'],
+							'type' : 'text',
+						}).addClass('editright');
+						line = true;
 						break;
 					case 'editleft':
-						e2 = $('<input/>').attr('field', attrs['field'])
-							.attr('disable_on', attrs['disable_on']).addClass('editleft');
+						e2 = $('<input/>').attr({
+							'field' : attrs['field'],
+							'disable_on' : attrs['disable_on'],
+							'type' : 'text',
+						}).addClass('editleft');
+						line = true;
 						break;
 					case 'textarea':
-						e2 = $('<textarea/>').attr('field', attrs['field'])
-							.attr('disable_on', attrs['disable_on']).addClass('editleft');
+						e2 = $('<textarea/>').attr({
+							'field' : attrs['field'],
+							'disable_on' : attrs['disable_on'],
+						}).addClass('editleft');
+						line = true;
 						break;
+					case 'elm':
 					case 'tag':
-						e2 = $('<div/>');
-						Util.initTag(e2, mode, proc);
-						break;
-					case 'list':
-						e2 = $('<div/>');
-						Util.initList(e2, mode, proc);
-						break;
 					case 'date':
-						e2 = $('<div/>');
-						Util.initDate(e2, mode, proc);
-						break;
 					case 'radio':
-						e2 = $('<div/>');
-						Util.initRadio(e2, mode, proc, attrs);
-						break;
 					case 'select':
-						e2 = $('<div/>');
-						Util.initSelect(e2, mode, proc, attrs);
-						break;
+					case 'list':
+						line = true;
 					case 'button':
-						e2 = $('<div/>');
-						for (let j=0; j<5; j++) {
-							e2.append($('<button/>').addClass('btn btn-normal'));
-						}
-						Util.initButton(e2.find('button'), proc);
+						attrs['formtype'] = undefined;
+						e2 = $('<div/>').attr(attrs);
 						break;
+					}
+					if (line) {
+						slinner.addClass('slline');
 					}
 					if (e2!==null) {
 						slinner.append($('<div/>').addClass('slinner2').append(e2));
@@ -295,16 +290,16 @@ let Util = {
 					try {
 						switch (attrs['ctrl']) {
 						case 'tag':
-							Util.initTag(elm, mode, proc);
+							Util.initTag(elm, mode, proc, attrs);
 							break;
 						case 'elm':
-							Util.initElmList(elm, mode, proc);
+							Util.initElmList(elm, mode, proc, attrs);
 							break;
 						case 'list':
-							Util.initList(elm, mode, proc);
+							Util.initList(elm, mode, proc, attrs);
 							break;
 						case 'date':
-							Util.initDate(elm, mode, proc);
+							Util.initDate(elm, mode, proc, attrs);
 							break;
 						case 'radio':
 							Util.initRadio(elm, mode, proc, attrs);
@@ -316,10 +311,10 @@ let Util = {
 							for (let j=0; j<5; j++) {
 								elm.append($('<button/>').addClass('btn btn-normal'));
 							}
-							Util.initButton(elm.find('button'), proc);
+							Util.initButton(elm, proc, attrs);
 							break;
 						case 'button2':
-							Util.initButton(elm.find('button'), proc);
+							Util.initButton(elm, proc, attrs);
 							break;
 						}
 					} catch (e) {}
@@ -365,11 +360,12 @@ let Util = {
 			});
 		});
 	},
-	initDate : function(elm, mode, arr) {
+	initDate : function(elm, mode, arr, attrs) {
 		const div = elm.get(0);
-		div.obj = new DateCtrl(elm);
+		div.obj = new DateCtrl(elm, attrs);
 	},
-	initButton : function(btns, arr) {
+	initButton : function(elm, arr, attrs) {
+		const btns = elm.find('button');
 		const len = btns.length;
 		arr = arr ? arr : [];
 		const start = len - arr.length;
@@ -377,25 +373,28 @@ let Util = {
 			btns.eq(i).css('display', 'none');
 		}
 		for ( let i=0; i<arr.length; i++) {
-			const elm = btns.eq(start + i).css('display', '');
+			const btn = btns.eq(start + i).css('display', '');
 			if (arr[i].text) {
-				elm.text(_L(arr[i].text));
+				btn.text(_L(arr[i].text));
 			}
 			if (arr[i].click) {
-				elm.click(arr[i].click);
+				btn.click(arr[i].click);
 			}
 		}
+		if (attrs) {
+			elm.attr(attrs);
+		}
 	},
-	initTag : function(tag, mode, proc) {
+	initTag : function(tag, mode, proc, attrs) {
 		let elm = tag.get(0);
-		elm.obj = new Tag(tag.eq(0), mode, proc);
+		elm.obj = new Tag(tag.eq(0), mode, proc, attrs);
 	},
-	initElmList : function(list, mode, proc) {
+	initElmList : function(list, mode, proc, attrs) {
 		let elm = list.get(0);
 		let limit = parseInt(list.eq(0).attr('limit'))||0;
-		elm.obj = new ElmList(list.eq(0), mode, limit, proc);
+		elm.obj = new ElmList(list.eq(0), mode, limit, proc, attrs);
 	},
-	initList : function(list, mode, proc) {
+	initList : function(list, mode, proc, attrs) {
 		const elm = list.get(0);
 		let data = {};
 		let cb = () => {};
@@ -436,7 +435,7 @@ let Util = {
 				}
 			};
 		}
-		elm.obj = new List(data, cb);
+		elm.obj = new List(data, cb, attrs);
 	},
 	initRadio : function(div, mode, proc, attrs) {
 		const elm = div.get(0);
@@ -600,7 +599,7 @@ let Util = {
 };
 
 
-function Tag(div, mode, proc) {
+function Tag(div, mode, proc, attrs) {
 	this.div = div;
 	this.mode = mode;
 	this.proc = proc&&proc.click;
@@ -615,6 +614,9 @@ function Tag(div, mode, proc) {
 	});
 	if (self.mode!==MODE.REF) {
 		div.addClass('elmallow');
+	}
+	for ( let i in attrs ) {
+		div.attr(i, attrs[i]);
 	}
 	this.data = [];
 }
@@ -680,7 +682,7 @@ Tag.prototype = {
 	}
 };
 
-function ElmList(div, mode, limit, proc) {
+function ElmList(div, mode, limit, proc, attrs) {
 	this.div = div;
 	this.mode = mode;
 	this.limit = limit;
@@ -691,9 +693,6 @@ function ElmList(div, mode, limit, proc) {
 	};
 	div.click(() => {
 		if (this.mode!==MODE.REF) {
-	//		if (this.proc.click()===false) {
-	//			return;
-	//		}
 			this.click();
 		}
 	});
@@ -704,6 +703,8 @@ function ElmList(div, mode, limit, proc) {
 	});
 	$('#main').append(this.list);
 	$('#main').append(this.back);
+	div.attr(attrs);
+	
 	this.list.hide();
 	this.back.hide();
 	this.data = [];
@@ -895,7 +896,7 @@ String.prototype.bytes = function () {
 	return length;
 };
 
-function DateCtrl(div) {
+function DateCtrl(div, attrs) {
 	this.id = div.attr('field');
 	this.fmt = div.attr('format');
 	const btn = $('<div class="input-group-append"></div>')
@@ -921,6 +922,9 @@ function DateCtrl(div) {
 		}
 		self.setLocal(date, false);
 	});
+	for ( let i in attrs ) {
+		div.attr(i, attrs[i]);
+	}
 	this.div = div;
 }
 
@@ -1098,6 +1102,9 @@ function Select(div, mode, proc, attrs) {
 		if (v==='rf2' && mode===MODE.REF2) return true;
 	});
 	this.allowedit(!disable);
+	for ( let i in attrs ) {
+		div.attr(i, attrs[i]);
+	}
 }
 
 Select.prototype = {
@@ -1145,6 +1152,9 @@ function Radio(div, mode, proc, attrs) {
 		self.set(this.value);
 	});
 	this.value = null;
+	for ( let i in attrs ) {
+		div.attr(i, attrs[i]);
+	}
 }
 
 

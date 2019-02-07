@@ -163,7 +163,7 @@ class Cipher {
 				}
 			});
 		}
-		Util.initButton(this.div.find('div[name="cp_button2"] button'), btns);
+		Util.initButton(this.div.find('div[name="button2"]').eq(0), btns);
 	}
 
 	async refresh() {
@@ -209,11 +209,6 @@ class Cipher {
 			}
 		};
 		await Util.load(this.div, 'parts/cipher.html', this.mode, {
-			draft : [{
-				click : () => {
-					this.hist();
-				}
-			}],
 			tags : {
 				click : () => {
 					return true;
@@ -332,6 +327,9 @@ class Cipher {
 				UI.alert(_L('NOT_FOUND'));
 				inp_multisig.val(this.data.multisig);
 			}
+		});
+		this.div.find('button[name="hist"]').click(() => {
+			this.hist();
 		});
 	}
 
