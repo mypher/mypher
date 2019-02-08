@@ -58,6 +58,8 @@ public:
 		vector<account_name> pic;
 		string hash;
 		vector<string> tags;
+		string results;
+		string payment;
 
 		uint64_t primary_key() const { return tdraftid; }
 		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(noftoken)(amount)

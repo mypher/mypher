@@ -29,11 +29,15 @@ class Task {
 		try {
 			const d = await Rpc.call('cipher.get', [{cipherid:data.cipherid}]);
 			this.data.cipher = d.name;
+			this.data.multisig = d.multisig;
+			if (d.multisig) {
+				const ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
+				this.data.eos_approvers = ms.coowner;
+				this.data.nof_eos_approvers = ms.threshold;
+			}
 			[ 
-				$('[field="amount"]').parent().parent().parent(),
-				$('[field="eos_approvers"]').parent().parent().parent(),
-				$('[field="nof_eos_approvers"]').parent().parent().parent(),
 				$('h2[ltext="RULE_OF_PAYMENT"]'),
+				$('div[name="multisig"]'),
 				$('div[name="rop_footer"]'),
 			].forEach(elm => {
 				if (d.multisig) {
@@ -323,6 +327,7 @@ class Task {
 			pic : userevt,
 			approve_pic : userevt,
 			approve_results : userevt,
+			eos_approvers : userevt,
 			button : btns
 		});
 		this.set(this.data);

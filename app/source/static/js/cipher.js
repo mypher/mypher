@@ -45,6 +45,15 @@ class Cipher {
 	async set(data) {
 		data.purpose = _L('LOADING');
 		this.data = data;
+		try {
+			if (data.multisig) {
+				const d = await Rpc.call('multisig.search', [{id:data.multisig}]);
+				if (d) {
+					this.data.coowner = d.coowner;
+					this.data.threshold = d.threshold;
+				}
+			}
+		} catch (e) {}
 		Util.setData(this.div, this.data);
 		this.mkBtn2();
 		const drawDesc = o => {
@@ -216,6 +225,7 @@ class Cipher {
 			},
 			button1 : btn1,
 			button2 : [],
+			coowner : person,
 			editors : person,
 			authors : person,
 			approved : person,
@@ -308,20 +318,22 @@ class Cipher {
 		const inp_multisig = $('input[field="multisig"]:eq(0)');
 		inp_multisig.blur(async () => {
 			try {
-				if (inp_multisig.val()==='') {
+				const val = inp_multisig.val();
+				if (val==='') {
 					if (this.data.multisig!=='') {
 						this.data = this.get();
-						this.data.nofapproval='';
-						this.data.approvers = [];
+						this.data.threshold='';
+						this.data.coowner = [];
 						this.data.multisig = '';
 						this.set(this.data);
 						return;
 					}
 				}
-				const d = await Rpc.call('multisig.search', [{id:inp_multisig.val()}]);
+				if (val===this.data.multisig) return;
+				const d = await Rpc.call('multisig.search', [{id:val}]);
 				this.data = this.get();
-				this.data.nofapproval = d.threshold;
-				this.data.approvers = d.coowner;
+				this.data.threshold = d.threshold;
+				this.data.coowner = d.coowner;
 				this.set(this.data);
 			} catch (e) {
 				UI.alert(_L('NOT_FOUND'));

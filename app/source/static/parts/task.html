@@ -25,11 +25,15 @@
 	<div class="clause"/>
 
 	<h2 ltext="RULE_OF_PAYMENT"/>
-	<div formtype="long" ltext="EOS_APPROVERS" field="eos_approvers" ctrl="elm" proc="eos_approvers" disable_on="ref"/>
-	<div formtype="short" ltext="NOF_EOS_APPROVERS" field="nof_eos_approvers" ctrl="editleft" disable_on="ref"/>
-	
+	<div class="special" name="multisig">
+	<div formtype="short" ltext="MULTISIG" field="multisig" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="long" ltext="EOS_APPROVERS" field="eos_approvers" ctrl="elm" proc="eos_approvers" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="NOF_EOS_APPROVERS" field="nof_eos_approvers" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	</div>
 	<div class="clause" name="rop_footer"/>
-	
+
 	<h2 ltext="PROGRESS" hide_on="add,edit"/>
 	<div formtype="short" ltext="PIC" field="pic" limit="1" ctrl="elm" proc="pic" disable_on="add,edit,ref" hide_on="add,edit"/>
 	<br class="sep" hide_on="add,edit"/>

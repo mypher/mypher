@@ -43,6 +43,11 @@ select {
 	width:100%;
 }
 
+.special {
+	border: 3px double #ccc;
+	padding: 8px;
+}
+
 .slline {
 	border-bottom: 1px solid #24aff3;
 }
