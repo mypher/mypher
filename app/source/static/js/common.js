@@ -595,6 +595,12 @@ let Util = {
 		} catch (e) {
 			return false;
 		}
+	},
+	isNotEmpty : d => {
+		return (d!==undefined)&&(d!=='');
+	},
+	isEmpty : d => {
+		return (d===undefined)||(d==='');
 	}
 };
 

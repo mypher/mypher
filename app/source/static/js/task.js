@@ -12,8 +12,8 @@ class Task {
 			cipherid : (d.cipherid!==undefined) ? d.cipherid : '',
 			cdraftid : (d.cdraftid!==undefined) ? d.cdraftid : '',
 			tdraftid : (d.tdraftid!==undefined) ? d.tdraftid : '',
+			editors : (d.editors!==undefined) ? d.editors : '',
 		};
-		this.editors = d.editors;
 	}
 
 	get() {
@@ -29,7 +29,10 @@ class Task {
 		try {
 			const d = await Rpc.call('cipher.get', [{cipherid:data.cipherid}]);
 			this.data.cipher = d.name;
+			this.data.editors = d.editors;
 			this.data.multisig = d.multisig;
+			this.data.formalver = d.formalver;
+			this.data.version = d.version;
 			if (d.multisig) {
 				const ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
 				this.data.eos_approvers = ms.coowner;
@@ -187,7 +190,7 @@ class Task {
 					}
 				});
 			}
-			if (vali.canEdit(this.data, this.editors)) {
+			if (vali.canEdit(this.data, this.data.editors)) {
 				btns.push({
 					text : 'EDIT',
 					click : () => {
@@ -451,6 +454,110 @@ class Task {
 };
 
 Task.prototype.Validator = {
+
+	getUserAuth : function(data) {
+		return {
+			editors : data.editors.includes(Account.user),
+			approvers : data.approvers.includes(Account.user),
+			coowners : data.eos_approvers.includes(Account.user),
+			pic : data.pic.includes(Account.user),
+		};
+	},
+
+	const STAT : {
+		DRAFT : 0,
+		RECRUITMENT : 1,
+		APPROVAL : 2,
+		INPROGRESS : 3,
+		REVIEW : 4,
+		WAIT_PAYREQ : 5,
+		SIGN : 6,
+		WAIT_PAY : 7,
+		COMPLETE : 8,
+	},
+
+	async getStat : function(data) {
+		// results are already approved
+		if (this.isFulfillApprovalReqForResults(data)) {
+			if (this.isPayByCrypto(data)) {
+				const stat = await this.getPaymentStat(data);
+				return [
+					this.STAT.COMPLETE,
+					this.STAT.WAIT_PAYREQ,
+					this.STAT.SIGN,
+					this.STAT.WAIT_PAY,
+					this.STAT.COMPLETE,
+				][stat];
+			} 
+			return this.STAT.COMPLETE;
+		}
+		// already results is presented
+		if (Util.isNotEmpty(data.results)) {
+			return this.STAT.REVIEW;
+		}
+		// P.I.C. is already approved
+		if (this.isFilfillApprovalReqForPIC(data)) {
+			return this.STAT.INPROGRESS;
+		}
+		// Someone already applies for P.I.C. 
+		if (Util.isNotEmpty(data.pic)) {
+			return this.STAT.APPROVAL;
+		}
+		// cipher is formal version
+		if (this.isEditable(data)) {
+			return this.STAT.DRAFT;
+		}
+		return this.STAT.RECRUITMENT;
+	}
+
+	isEditable : function(data) {
+		// only the case which version is bigger than latest formal version, a draft is editable
+		if (data.formalver >= data.version) {
+			return false;
+		}
+		return true;
+	},
+
+	isPayByCrypto : fuunction(data) {
+		let a = parseInt(data.amount);
+		return IsNaN(a) ? false : ((a>0) ? true : false);
+	},
+
+	// 0 : not target
+	// 1 : not requested yet
+	// 2 : wait for signature
+	// 3 : ready to pay
+	// 4 : not exists in blockchain(already processed) or can't check payments status
+	async getPaymentStat : function(data) {
+		if (isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
+			return 0;
+		}
+		if (isEmpty(data.payment)) {
+			return 1;
+		}
+		try {
+			const info = await Rpc.call(
+				'multisig.get_tran_info',
+				[{
+					account : data.pic,
+					name : data.paymnet
+				}]
+			);
+			// no longer exists in blockchain
+			if (!info.id) {
+				return 4;
+			}
+			// not fulfill requirements
+			if (info.signed.length<this.data.nof_eos_approvers) {
+				return 2;
+			}
+			return 3;
+		} catch (e) {
+			UI.alert(e);
+		}
+		return 4;
+	}
+
 	canEdit : function(data, editors) {
 		if(!editors.includes(Account.user)) {
 			return false;

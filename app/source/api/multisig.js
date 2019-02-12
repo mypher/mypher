@@ -162,5 +162,21 @@ module.exports = {
 			console.log(e);
 			return {code:'NOT_FOUND'};
 		}
+	},
+
+	get_tran_info : async d => {
+		try {
+			const line = [
+				'cleos multisig review',
+				d.account, 
+				d.name,
+			].join(' ');
+			const data = await cmn.cmd(line);
+			console.log(data);
+			return {};
+		} catch (e) {
+			console.log(e);
+			return {code:'INVALID_PARAM'};
+		}
 	}
 };
