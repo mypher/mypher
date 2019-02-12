@@ -142,62 +142,145 @@ class Task {
 			});
 			break;
 		case MODE.REF:
-			if (vali.canApprovePIC(this.data)) {
-				btns.push({
-					text : 'APPROVE_PIC',
-					click : () => {
-						this.approve_pic();
-					}
-				});
+		{
+			const auth = vali.getUserAuth(this.data);
+			const stat = vali.getStat(this.data);
+			// if loginuser is editor of the cipher to which this task belongs
+			if (auth.editors) {
+				if (stat===vali.STAT.DRAFT) {
+					btns.push({
+						text : 'EDIT',
+						click : () => {
+							this.mode = MODE.EDIT;
+							this.refresh();
+						}
+					});
+				}
 			}
-			if (vali.canCancelApprovePIC(this.data)) {
-				btns.push({
-					text : 'CANCEL_APPROVE_PIC',
-					click : () => {
-						this.cancel_approve_pic();
-					}
-				});
+			// if loginuser is approver of this task
+			if (auth.approvers) {
+				if (stat===vali.STAT.APPROVAL) {
+					btns.push({
+						text : 'APPROVE_PIC',
+						click : () => {
+							this.approve_pic();
+						}
+					});
+					btns.push({
+						text : 'CANCEL_APPROVE_PIC',
+						click : () => {
+							this.cancel_approve_pic();
+						}
+					});
+				}
+				if (stat===vali.STAT.REVIEW) {
+					btns.push({
+						text : 'APPROVE_RESULTS',
+						click : () => {
+							this.approve_results();
+						}
+					});
+					btns.push({
+						text : 'CANCEL_APPROVE_RESULTS',
+						click : () => {
+							this.cancel_approve_results();
+						}
+					});
+				}
 			}
-			if (vali.canApproveResults(this.data)) {
-				btns.push({
-					text : 'APPROVE_RESULTS',
-					click : () => {
-						this.approve_results();
-					}
-				});
+			// if loginuser is coowner of multisig account
+			if (auth.coowner) {
+				if (stat===vali.STAT.SIGN) {
+					btns.push({
+						text : 'SIGN_TO_PAYMENT_REQ',
+						click : () => {
+							this.sign();
+						}
+					});
+				}
 			}
-			if (vali.canCancelApproveResults(this.data)) {
-				btns.push({
-					text : 'CANCEL_APPROVE_RESULTS',
-					click : () => {
-						this.cancel_approve_results();
-					}
-				});
-			}
-			if (vali.canApplyForPIC(this.data)) {
-				btns.push({
-					text : 'APPLY_FOR_PIC',
-					click : () => {
-						this.apply_for_pic();
-					}
-				});
-			}
-			if (vali.canCancelApplyForPIC(this.data)) {
-				btns.push({
-					text : 'CANCEL_APPLY_FOR_PIC',
-					click : () => {
-						this.cancel_apply_for_pic();
-					}
-				});
-			}
-			if (vali.canEdit(this.data, this.data.editors)) {
-				btns.push({
-					text : 'EDIT',
-					click : () => {
-						this.mode = MODE.EDIT;
-						this.refresh();
-					}
-				});
+			// if loginuser is P.I.C. of this task
+			if (auth.pic) {
+				if (stat===vali.STAT.RECRUITMENT) {
+					btns.push({
+						text : 'apply_for_pic',
+							click : () => {
+							this.apply_for_pic();
+						}
+					});
+				}
+				if (stat===vali.STAT.APPROVAL) {
+					btns.push({
+						text : 'CANCEL_APPLY_FOR_PIC',
+						click : () => {
+							this.cancel_apply_for_pic();
+						}
+					});
+					btns.push({
+						text : 'APPROVE_PIC',
+						click : () => {
+							this.approve_pic();
+						}
+					});
+					btns.push({
+						text : 'CANCEL_APPROVE_PIC',
+						click : () => {
+							this.cancel_approve_pic();
+						}
+					});
+				}
+				if (stat===vali.STAT.INPROGRESS) {
+					btns.push({
+						text : 'CANCEL_APPLY_FOR_PIC',
+						click : () => {
+							this.cancel_apply_for_pic();
+						}
+					});
+					btns.push({
+						text : 'PRESENT_RESULTS',
+						click : () => {
+							this.present_results();
+						}
+					});
+				}
+				if (stat===vali.STAT.REVIEW) {
+					btns.push({
+						text : 'CANCEL_PRESENTATION_OF_RESULTS',
+						click : () => {
+							this.cancel_present_results();
+						}
+					});
+				}
+				if (stat===vali.STAT.WAIT_PAYREQ) {
+					btns.push({
+						text : 'REQUEST_PAYMENT',
+						click : () => {
+							this.request_payment();
+						}
+					});
+					btns.push({
+						text : 'CANCEL_PRESENTATION_OF_RESULTS',
+						click : () => {
+							this.cancel_present_results();
+						}
+					});
+				}
+				if (stat===vali.STAT.SIGN) {
+					btns.push({
+						text : 'CANCEL_PAYMENT_REQUEST',
+						click : () => {
+							this.cancel_payment_request();
+						}
+					});
+				}
+				if (stat===vali.STAT.WAIT_PAY) {
+					btns.push({
+						text : 'GET_PAID',
+						click : () => {
+							this.get_paid();
+						}
+					});
+				}
 			}
 			btns.push({
 				text : 'BACK',
@@ -205,7 +288,7 @@ class Task {
 					History.back();
 				}
 			});
-			break;
+		}
 		}
 		return btns;
 	}
@@ -451,6 +534,103 @@ class Task {
 			UI.alert(e);
 		}
 	}
+
+	async sign() {
+		try {
+			await Rpc.call(
+				'multisig.sign',
+				[{
+					sender : Account.user,
+					account : this.data.pic,
+					name : this.data.payment
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async present_results() {
+		try {
+			const data = this.get();
+			await Rpc.call(
+				'task.present_results',
+				[{
+					sender : Account.user,
+					tformalid : data.tformalid,
+					results : data.results,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async cancel_present_results() {
+		try {
+			await Rpc.call(
+				'task.cancel_present_results',
+				[{
+					sender : Account.user,
+					tformalid : data.tformalid,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async request_payment() {
+		try {
+			const data = this.get();
+			await Rpc.call(
+				'multisig.request',
+				[{
+					sender : Account.user,
+					tformalid : data.tformalid,
+					name : data.name,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async cancel_payment_request() {
+		try {
+			const data = this.get();
+			await Rpc.call(
+				'multisig.cancel_request',
+				[{
+					sender : Account.user,
+					name : data.name,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async get_paid() {
+		try {
+			const data = this.get();
+			await Rpc.call(
+				'multisig.execute',
+				[{
+					sender : Account.user,
+					name : data.name,
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
 };
 
 Task.prototype.Validator = {
@@ -464,7 +644,7 @@ Task.prototype.Validator = {
 		};
 	},
 
-	const STAT : {
+	STAT : {
 		DRAFT : 0,
 		RECRUITMENT : 1,
 		APPROVAL : 2,
@@ -476,7 +656,7 @@ Task.prototype.Validator = {
 		COMPLETE : 8,
 	},
 
-	async getStat : function(data) {
+	getStat : async function(data) {
 		// results are already approved
 		if (this.isFulfillApprovalReqForResults(data)) {
 			if (this.isPayByCrypto(data)) {
@@ -508,7 +688,7 @@ Task.prototype.Validator = {
 			return this.STAT.DRAFT;
 		}
 		return this.STAT.RECRUITMENT;
-	}
+	},
 
 	isEditable : function(data) {
 		// only the case which version is bigger than latest formal version, a draft is editable
@@ -518,7 +698,7 @@ Task.prototype.Validator = {
 		return true;
 	},
 
-	isPayByCrypto : fuunction(data) {
+	isPayByCrypto : function(data) {
 		let a = parseInt(data.amount);
 		return IsNaN(a) ? false : ((a>0) ? true : false);
 	},
@@ -528,7 +708,7 @@ Task.prototype.Validator = {
 	// 2 : wait for signature
 	// 3 : ready to pay
 	// 4 : not exists in blockchain(already processed) or can't check payments status
-	async getPaymentStat : function(data) {
+	getPaymentStat : async function(data) {
 		if (isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
 			return 0;
 		}
@@ -556,104 +736,8 @@ Task.prototype.Validator = {
 			UI.alert(e);
 		}
 		return 4;
-	}
+	},
 
-	canEdit : function(data, editors) {
-		if(!editors.includes(Account.user)) {
-			return false;
-		}
-		// if results already fulfill approval requiments, approval can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		return true;
-	},
-	canApprovePIC : function(data) {
-		// if login user does not fulfills both of following requiments, can not approve the pic
-		// - the user is the approver
-		// - the user is the pic
-		if (!data.approvers.includes(Account.user) && !data.pic.includes(Account.user)) {
-			return false;
-		}
-		// check if pic is set
-		if (data.pic.length===0) {
-			return false;
-		}
-		// check if the user already approved pic
-		if (data.approve_pic.includes(Account.user)) {
-			return false;
-		}
-		// if results already fulfill the approval requiments, approval can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		return true;
-	},
-	canCancelApprovePIC : function(data) {
-		// check if user approved pic
-		if (!data.approve_pic.includes(Account.user)) {
-			return false;
-		}
-		// check if results is approved
-		if (!data.approve_results>0) {
-			return false;
-		}
-		// check if the data fulfills all of following requirements 
-		// - the number of approvals for pic equals or overs the requirements
-		// - login user is not the pic
-		if (this.isFulfillApprovalReqForPIC(data) && !data.pic.includes(Account.user)) {
-			return false;
-		}
-		// if the approval for results is completely done, the approval for PIC can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		return true;
-	},
-	canApproveResults : function(data) {
-		// check if user is approver
-		if (!data.approvers.includes(Account.user)) {
-			return false;
-		}
-		// if pic doesn't fulfill approval resuiments, results can't be approved
-		if (!this.isFulfillApprovalReqForPIC(data)) {
-			return false;
-		}
-		// if user already approved results, user can't approve results
-		if (data.approve_results.includes(Account.user)) {
-			return false;
-		}
-		return true;
-	},
-	canCancelApproveResults : function(data) {
-		// check if user approved results
-		if (!data.approve_results.includes(Account.user)) {
-			return false;
-		}
-		// if results already fulfill approval requiments, approval can't be canceled
-		if (this.isFulfillApprovalReqForResults(data)) {
-			return false;
-		}
-		// if user doesn't approve results, user can't cancel approval for results
-		if (!data.approve_results.includes(Account.user)) {
-			return false;
-		}
-		return true;
-	},
-	canApplyForPIC : function(data) {
-		// the task is not formalized can not be applied
-		if (data.tformalid===undefined) return false;
-		// if pic is already set, user can't apply for pic
-		if (data.pic.length>0) return false;
-		return true;
-	},
-	canCancelApplyForPIC : function(data) {
-		// if user isn't pic, user can't cancel
-		if (!data.pic.includes(Account.user)) return false;
-		// if results is on review process, user can't cancel
-		if (data.approve_results.length>0) return false;
-		return true;
-	},
 	isFulfillApprovalReqForPIC : function(data) {
 		// check if the pic of the task is approved by all approvers and pic themselves 
 		let nofapprove = 0, nofpic = 0;

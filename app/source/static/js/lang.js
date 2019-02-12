@@ -154,6 +154,13 @@ var $L = {
 		'EOS_APPROVERS' : '支払口座共有者',
 		'NOF_EOS_APPROVERS' : '支払い必要承認数',
 		'PROGRESS' : '進捗',
+		'SIGN_TO_PAYMENT_REQ' : '支払いに署名',
+		'PRESENT_RESULTS' : '成果物提示',
+		'CANCEL_PRESENTATION_OF_RESULTS' : '成果物提示取消',
+		'REQUEST_PAYMENT' : '支払い申請', 
+		'CANCEL_PAYMENT_REQUEST' : '支払い申請取消',
+		'GET_PAID' : '支払い受取実行',
+		'RESULTS' : '成果物',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',
