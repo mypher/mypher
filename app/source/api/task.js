@@ -384,7 +384,7 @@ module.exports = {
 			return await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
-					name : 'applyforpic',
+					name : 'taaplypic',
 					authorization: [{
 						actor: d.sender,
 						permission: 'active',
@@ -403,7 +403,83 @@ module.exports = {
 			return await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
-					name : 'applyforpic',
+					name : 'taaplypic',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	present_results : async function(d) {
+		try {
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taprrslt',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+
+	},
+	cancel_present_results : async function(d) {
+		try {
+			d.results = '';
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'taprrslt',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+
+	},
+	request_payment : async function(d) {
+		try {
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'tareqpay',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:d,
+				}]
+			});
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	request_payment : async function(d) {
+		try {
+			d.payment = '';
+			return await eos.pushAction({
+				actions :[{
+					account : 'myphersystem',
+					name : 'tareqpay',
 					authorization: [{
 						actor: d.sender,
 						permission: 'active',

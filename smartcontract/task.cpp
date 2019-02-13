@@ -179,6 +179,8 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 		} else { // cancel approval
 			auto result = std::remove(dd.approve_pic.begin(), dd.approve_pic.end(), sender);
 			dd.approve_pic.erase(result, dd.approve_pic.end());
+			dd.results = "";
+			dd.payment = "";
 		}
 		dd.approve_results = vector<account_name>{};
 	});
@@ -256,7 +258,7 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	}
 }
 
-void Task::applyforpic( const account_name sender, const uint64_t tformalid, const bool vec) {
+void Task::taaplypic( const account_name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 	
@@ -297,6 +299,60 @@ void Task::applyforpic( const account_name sender, const uint64_t tformalid, con
 			dd.approve_results = vector<account_name>{};
 		});
 	}
+}
+void Task::taprrslt( const account_name sender, const uint64_t tformalid, const string& results) {
+	// check if sender is fulfill the required auth
+	require_auth(sender);
+
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
+	// check if data exists
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
+
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+
+	// check if pic is sender
+	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
+	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
+	// check if results already approved
+	eosio_assert_code(Task::is_results_approved(tformalid)==true, TASK_COMPLETED);
+	// set results to tformal
+	tfd.modify(tfrec, sender, [&](auto& dd) {
+		dd.approve_results = vector<account_name>{};
+		dd.results = results;
+	});
+}
+
+void Task::tareqpay( const account_name sender, const uint64_t tformalid, const string& payment) {
+	// check if sender is fulfill the required auth
+	require_auth(sender);
+
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
+	// check if data exists
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
+
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+
+	// check if pic is sender
+	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
+	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
+	// check if results is not approved yet
+	eosio_assert_code(Task::is_results_approved(tformalid)==false, RESULTS_IN_REVIEW);
+	// set results to tformal
+	tfd.modify(tfrec, sender, [&](auto& dd) {
+		dd.payment = payment;
+	});
 }
 
 void Task::check_data( const account_name sender, const uint64_t cipherid,
@@ -358,50 +414,21 @@ bool Task::exists(const uint64_t tformalid) {
 	return (d.find(tformalid)!=d.end());
 }
 
-bool Task::completed(const uint64_t cipherid, const uint64_t tdraftid) {
-	tformal_data tfd(SELF, SELF);
-	auto tfidx = tfd.get_index<N(secondary_key)>();
-	auto tfrec = tfidx.find(cipherid);
-	for (; tfrec!=tfidx.end(); ++tfrec) {
-		if (tfrec->tdraftid==tdraftid) {
-			break;
-		}
-		if (tfrec->cipherid!=cipherid) {
-			return false;
-		}
-	}
-	// if the draft is not formal, return false
-	if (tfrec==tfidx.end()) return false;
-	Cipher::cformal_data cfd(SELF, SELF);
-	auto cfrec = cfd.find(cipherid);
-	Cipher::cdraft_data cdd(SELF, cipherid);
-	auto cdrec = cdd.find(cfrec->cdraftid);
-	uint64_t n = 0;
-	for (auto it = tfrec->approve_results.begin(); it!=tfrec->approve_results.end(); ++it) {
-		auto found = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), *it);
-		if (found!=cdrec->approvers.end()) {
-			n++;
-			if (n==cdrec->nofapproval) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool Task::completed(const uint64_t tformalid) {
+bool Task::is_results_approved(const uint64_t tformalid) {
 	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
-	Cipher::cformal_data cfd(SELF, SELF);
-	auto cfrec = cfd.find(tfrec->cipherid);
-	Cipher::cdraft_data cdd(SELF, tfrec->cipherid);
-	auto cdrec = cdd.find(cfrec->cdraftid);
+	// get tdraft data 
+	tdraft_data tdd(SELF, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+
 	uint64_t n = 0;
 	for (auto it = tfrec->approve_results.begin(); it!=tfrec->approve_results.end(); ++it) {
-		auto found = std::find(cdrec->approvers.begin(), cdrec->approvers.end(), *it);
-		if (found!=cdrec->approvers.end()) {
+		auto found = std::find(tdrec->approvers.begin(), tdrec->approvers.end(), *it);
+		if (found!=tdrec->approvers.end()) {
 			n++;
-			if (n==cdrec->nofapproval) {
+			if (n==tdrec->nofapproval) {
 				return true;
 			}
 		}

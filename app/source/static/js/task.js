@@ -27,23 +27,12 @@ class Task {
 	async set(data) {
 		this.data = data;
 		try {
-			const d = await Rpc.call('cipher.get', [{cipherid:data.cipherid}]);
-			this.data.cipher = d.name;
-			this.data.editors = d.editors;
-			this.data.multisig = d.multisig;
-			this.data.formalver = d.formalver;
-			this.data.version = d.version;
-			if (d.multisig) {
-				const ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
-				this.data.eos_approvers = ms.coowner;
-				this.data.nof_eos_approvers = ms.threshold;
-			}
 			[ 
 				$('h2[ltext="RULE_OF_PAYMENT"]'),
 				$('div[name="multisig"]'),
 				$('div[name="rop_footer"]'),
 			].forEach(elm => {
-				if (d.multisig) {
+				if (data.multisig) {
 					elm.show();
 				} else {
 					elm.hide();
@@ -104,12 +93,23 @@ class Task {
 				this.data.approve_pic = [];
 				this.data.approve_results = [];
 			}
+			const d = await Rpc.call('cipher.get', [{cipherid:this.data.cipherid}]);
+			this.data.cipher = d.name;
+			this.data.editors = d.editors;
+			this.data.multisig = d.multisig;
+			this.data.formalver = d.formalver;
+			this.data.version = d.version;
+			if (d.multisig) {
+				const ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
+				this.data.eos_approvers = ms.coowner;
+				this.data.nof_eos_approvers = ms.threshold;
+			}
 		} catch (e) {
 			UI.alert(e);
 		}
 	}
 
-	initButtons() {
+	async initButtons() {
 		let btns = [];
 		const vali = this.Validator;
 		switch (this.mode) {
@@ -144,7 +144,7 @@ class Task {
 		case MODE.REF:
 		{
 			const auth = vali.getUserAuth(this.data);
-			const stat = vali.getStat(this.data);
+			const stat = await vali.getStat(this.data);
 			// if loginuser is editor of the cipher to which this task belongs
 			if (auth.editors) {
 				if (stat===vali.STAT.DRAFT) {
@@ -269,7 +269,7 @@ class Task {
 					btns.push({
 						text : 'CANCEL_PAYMENT_REQUEST',
 						click : () => {
-							this.cancel_payment_request();
+							this.cancel_request_payment();
 						}
 					});
 				}
@@ -334,7 +334,7 @@ class Task {
 				}
 			}
 		};
-		const btns = this.initButtons()
+		const btns = await this.initButtons()
 		await Util.load(this.div, 'parts/task.html', this.mode, {
 			cipherid : {
 				click : key => {
@@ -587,7 +587,7 @@ class Task {
 		try {
 			const data = this.get();
 			await Rpc.call(
-				'multisig.request',
+				'task.request_payment',
 				[{
 					sender : Account.user,
 					tformalid : data.tformalid,
@@ -600,11 +600,11 @@ class Task {
 		}
 	}
 
-	async cancel_payment_request() {
+	async cancel_request_payment() {
 		try {
 			const data = this.get();
 			await Rpc.call(
-				'multisig.cancel_request',
+				'task.cancel_request_payment',
 				[{
 					sender : Account.user,
 					name : data.name,
@@ -676,7 +676,7 @@ Task.prototype.Validator = {
 			return this.STAT.REVIEW;
 		}
 		// P.I.C. is already approved
-		if (this.isFilfillApprovalReqForPIC(data)) {
+		if (this.isFulfillApprovalReqForPIC(data)) {
 			return this.STAT.INPROGRESS;
 		}
 		// Someone already applies for P.I.C. 

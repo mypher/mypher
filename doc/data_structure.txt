@@ -75,6 +75,8 @@ package Task <<Frame>> {
 		approve_pic : name[]
 		approve_results : name[]
 		tags : string[]
+		results : string
+		payment : string
 		--
 		key2 -> cipherid 
 	}

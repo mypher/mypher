@@ -36,6 +36,8 @@ public:
 		vector<account_name> approve_pic;
 		vector<account_name> approve_results;
 		vector<string> tags;
+		string results;
+		string payment;
 
 		uint64_t primary_key() const { return tformalid; }
 		uint64_t secondary_key() const { return cipherid; }
@@ -58,8 +60,6 @@ public:
 		vector<account_name> pic;
 		string hash;
 		vector<string> tags;
-		string results;
-		string payment;
 
 		uint64_t primary_key() const { return tdraftid; }
 		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(noftoken)(amount)
@@ -124,13 +124,25 @@ public:
 	 * @brief apply for pic of a task
 	 */
 	[[eosio::action]]
-	void applyforpic( const account_name sender, const uint64_t tformalid, const bool vec);
+	void taaplypic( const account_name sender, const uint64_t tformalid, const bool vec);
+
+	/**
+	 * @brief present the results
+	 */
+	[[eosio::action]]
+	void taprrslt( const account_name sender, const uint64_t tformalid, const string& results);
+
+	/**
+	 * @brief request the payments
+	 */
+	[[eosio::action]]
+	void tareqpay( const account_name sender, const uint64_t tformalid, const string& payment);
+
 
 	static bool exists(const uint64_t cipherid, const uint64_t tdraftid);
-	static bool completed(const uint64_t cipherid, const uint64_t tdraftid);
 
 	static bool exists(const uint64_t tformalid);
-	static bool completed(const uint64_t tformalid);
+	static bool is_results_approved(const uint64_t tformalid);
 	static void formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist);
 	static bool pic_approved(const uint64_t tformalid);
 

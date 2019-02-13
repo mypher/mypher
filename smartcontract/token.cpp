@@ -215,7 +215,7 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	case When::UNALLOW:
 		eosio_assert_code(0, NOT_FULFILL_REQUIREMENT);
 	case When::COMPLETE_TASK:
-		eosio_assert_code(Task::completed(rec->issuer, rec->taskid), NOT_FULFILL_REQUIREMENT);
+		eosio_assert_code(Task::is_results_approved(rec->taskid), NOT_FULFILL_REQUIREMENT);
 		break;
 	case When::OVER_ISSUER_OWNED_TOKEN:
 		eosio_assert_code(is_sufficient_owned_token(rec->issuer, rec->extokenid, rec->reftoken), NOT_FULFILL_REQUIREMENT);
