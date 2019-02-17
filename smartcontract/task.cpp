@@ -460,6 +460,8 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 			dd.tdraftid = rec->tdraftid; 
 			dd.name = rec->name;
 			dd.tags = rec->tags;
+			dd.results = "";
+			dd.payment = "";
 		});	
 	}
 }

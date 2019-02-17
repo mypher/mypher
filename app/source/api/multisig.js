@@ -46,7 +46,7 @@ module.exports = {
 			// create account
 			const unit = 'SYS';
 			try {
-				const ret = await eos.pushAction({
+				await eos.pushAction({
 					actions :[{
 						account : 'eosio',
 						name : 'newaccount',
@@ -103,6 +103,7 @@ module.exports = {
 				return {code:e};
 			}
 
+			let api;
 			try {
 				d.coowner.sort((a, b) => {
 					return (a>b) ? 1 : 0;
@@ -125,12 +126,6 @@ module.exports = {
 					}
 					return auth;
 				}
-			} catch (e) {
-				log.debug(e);
-				return {code:e};
-			}
-			let api;
-			try {
 				api = await eos.refresh([keys.prikey]);
 				await eos.pushAction({
 					actions :[{

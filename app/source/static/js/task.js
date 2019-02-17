@@ -62,9 +62,7 @@ class Task {
 	}
 
 	async draw() {
-		if (this.mode!==MODE.NEW) {
-			await this.current();
-		}
+		await this.current();
 		await this.refresh();
 	}
 
@@ -73,25 +71,27 @@ class Task {
 
 	async current() {
 		try {
-			const info = await Rpc.call(
-				'task.get',
-				[{
-					cipherid:this.data.cipherid,
-					tdraftid:this.data.tdraftid,
-				}]
-			);
-			const cipherid = this.data.cipherid;
-			this.data = info.tdraft;
-			this.data.cipherid = cipherid;
-			if (info.tformal) {
-				const d = info.tformal;
-				this.data.tformalid = d.tformalid;
-				this.data.approve_pic = d.approve_pic;
-				this.data.approve_results = d.approve_results;
-			} else {
-				this.data.tformalid = undefined;
-				this.data.approve_pic = [];
-				this.data.approve_results = [];
+			if (this.mode!==MODE.NEW) {
+				const info = await Rpc.call(
+					'task.get',
+					[{
+						cipherid:this.data.cipherid,
+						tdraftid:this.data.tdraftid,
+					}]
+				);
+				const cipherid = this.data.cipherid;
+				this.data = info.tdraft;
+				this.data.cipherid = cipherid;
+				if (info.tformal) {
+					const d = info.tformal;
+					this.data.tformalid = d.tformalid;
+					this.data.approve_pic = d.approve_pic;
+					this.data.approve_results = d.approve_results;
+				} else {
+					this.data.tformalid = undefined;
+					this.data.approve_pic = [];
+					this.data.approve_results = [];
+				}
 			}
 			const d = await Rpc.call('cipher.get', [{cipherid:this.data.cipherid}]);
 			this.data.cipher = d.name;
@@ -203,7 +203,7 @@ class Task {
 			if (auth.pic) {
 				if (stat===vali.STAT.RECRUITMENT) {
 					btns.push({
-						text : 'apply_for_pic',
+						text : 'APPLY_FOR_PIC',
 							click : () => {
 							this.apply_for_pic();
 						}
@@ -640,7 +640,7 @@ Task.prototype.Validator = {
 			editors : data.editors.includes(Account.user),
 			approvers : data.approvers.includes(Account.user),
 			coowners : data.eos_approvers.includes(Account.user),
-			pic : data.pic.includes(Account.user),
+			pic : (data.pic.length===0) || data.pic.includes(Account.user),
 		};
 	},
 
@@ -680,7 +680,7 @@ Task.prototype.Validator = {
 			return this.STAT.INPROGRESS;
 		}
 		// Someone already applies for P.I.C. 
-		if (Util.isNotEmpty(data.pic)) {
+		if (data.pic.length>0) {
 			return this.STAT.APPROVAL;
 		}
 		// cipher is formal version

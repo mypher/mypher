@@ -43,7 +43,7 @@ public:
 		uint64_t secondary_key() const { return cipherid; }
 
 		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(approve_pic)
-						(approve_results)(tags) )
+						(approve_results)(tags)(results)(payment) )
 	};
 
 	/**
