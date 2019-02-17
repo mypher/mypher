@@ -87,6 +87,7 @@ class Task {
 					this.data.tformalid = d.tformalid;
 					this.data.approve_pic = d.approve_pic;
 					this.data.approve_results = d.approve_results;
+					this.data.results = d.results;
 				} else {
 					this.data.tformalid = undefined;
 					this.data.approve_pic = [];
@@ -160,32 +161,38 @@ class Task {
 			// if loginuser is approver of this task
 			if (auth.approvers) {
 				if (stat===vali.STAT.APPROVAL) {
-					btns.push({
-						text : 'APPROVE_PIC',
-						click : () => {
-							this.approve_pic();
-						}
-					});
-					btns.push({
-						text : 'CANCEL_APPROVE_PIC',
-						click : () => {
-							this.cancel_approve_pic();
-						}
-					});
+					if (!vali.isApprovedForPIC(this.data)) {
+						btns.push({
+							text : 'APPROVE_PIC',
+							click : () => {
+								this.approve_pic();
+							}
+						});
+					} else {
+						btns.push({
+							text : 'CANCEL_APPROVE_PIC',
+							click : () => {
+								this.cancel_approve_pic();
+							}
+						});
+					}
 				}
 				if (stat===vali.STAT.REVIEW) {
-					btns.push({
-						text : 'APPROVE_RESULTS',
-						click : () => {
-							this.approve_results();
-						}
-					});
-					btns.push({
-						text : 'CANCEL_APPROVE_RESULTS',
-						click : () => {
-							this.cancel_approve_results();
-						}
-					});
+					if (!vali.isApprovedForResults(this.data)) {
+						btns.push({
+							text : 'APPROVE_RESULTS',
+							click : () => {
+								this.approve_results();
+							}
+						});
+					} else {
+						btns.push({
+							text : 'CANCEL_APPROVE_RESULTS',
+							click : () => {
+								this.cancel_approve_results();
+							}
+						});
+					}
 				}
 			}
 			// if loginuser is coowner of multisig account
@@ -216,18 +223,21 @@ class Task {
 							this.cancel_apply_for_pic();
 						}
 					});
-					btns.push({
-						text : 'APPROVE_PIC',
-						click : () => {
-							this.approve_pic();
-						}
-					});
-					btns.push({
-						text : 'CANCEL_APPROVE_PIC',
-						click : () => {
-							this.cancel_approve_pic();
-						}
-					});
+					if (!vali.isApprovedForPIC(this.data)) {
+						btns.push({
+							text : 'APPROVE_PIC',
+							click : () => {
+								this.approve_pic();
+							}
+						});
+					} else {
+						btns.push({
+							text : 'CANCEL_APPROVE_PIC',
+							click : () => {
+								this.cancel_approve_pic();
+							}
+						});
+					}
 				}
 				if (stat===vali.STAT.INPROGRESS) {
 					btns.push({
@@ -699,8 +709,8 @@ Task.prototype.Validator = {
 	},
 
 	isPayByCrypto : function(data) {
-		let a = parseInt(data.amount);
-		return IsNaN(a) ? false : ((a>0) ? true : false);
+		const chk = /^[0\.]*$/.exec(data.amount);
+		return (chk===null)
 	},
 
 	// 0 : not target
@@ -709,10 +719,10 @@ Task.prototype.Validator = {
 	// 3 : ready to pay
 	// 4 : not exists in blockchain(already processed) or can't check payments status
 	getPaymentStat : async function(data) {
-		if (isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
+		if (Util.isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
 			return 0;
 		}
-		if (isEmpty(data.payment)) {
+		if (Util.isEmpty(data.payment)) {
 			return 1;
 		}
 		try {
@@ -756,6 +766,12 @@ Task.prototype.Validator = {
 			if (data.approve_results.includes(v)) nofapprove++;
 		});
 		return (nofapprove>=parseInt(data.nofapproval));
+	},
+	isApprovedForPIC : function(data) {
+		return (data.approve_pic.includes(Account.user));
+	},
+	isApprovedForResults : function(data) {
+		return (data.approve_results.includes(Account.user));
 	},
 };
 

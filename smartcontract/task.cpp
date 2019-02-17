@@ -320,7 +320,7 @@ void Task::taprrslt( const account_name sender, const uint64_t tformalid, const 
 	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 	// check if results already approved
-	eosio_assert_code(Task::is_results_approved(tformalid)==true, TASK_COMPLETED);
+	eosio_assert_code(Task::is_results_approved(tformalid)==false, TASK_COMPLETED);
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.approve_results = vector<account_name>{};
