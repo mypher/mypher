@@ -122,6 +122,8 @@ function prepare_eosio() {
 	create_contract eosio.token
 	cleos push action eosio.token create '[ "eosio", "10000000000.0000 SYS" ]' -p eosio.token@active
 	cleos push action eosio.token issue '[ "eosio", "50000000.0000 SYS", "memo" ]' -p eosio@active
+	#cleos push action eosio.token create '[ "eosio", "10000000000.0000 EOS" ]' -p eosio.token@active
+	#cleos push action eosio.token issue '[ "eosio", "50000000.0000 EOS", "memo" ]' -p eosio@active
 	sleep 1
 	create_contract2 eosio eosio.system
 	cleos push action eosio setpriv '["eosio.msig", 1]' -p eosio@active

@@ -15,9 +15,15 @@ const ecc = require('eosjs-ecc');
 
 module.exports = {
 	refresh : async function(keys) {
+		const api = this.api;
 		// TODO:check if it is possible to get private key from wallet via jsonrpc call
 		const signatureProvider = new eosjs.SignatureProvider(keys);
 		this.api = new eosjs.Api({ rpc, signatureProvider, textDecoder: new TextDecoder, textEncoder: new TextEncoder });
+		return api;
+	},
+
+	setconn : function(api) {
+		this.api = api;
 	},
 
 	pri2pub : key => {
@@ -27,6 +33,14 @@ module.exports = {
 	pushAction : async function(d) {
 		try {
 			return await this.api.transact(d,{blocksBehind: 3, expireSeconds: 30});
+		} catch (e) {
+			throw e;
+		}
+	},
+
+	getAccount : async function(name) {
+		try {
+			return await rpc.get_account(name);
 		} catch (e) {
 			throw e;
 		}

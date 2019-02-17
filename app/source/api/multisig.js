@@ -8,6 +8,7 @@
 const log = require('../cmn/logger')('api.multisig');
 const cmn = require('./cmn');
 const fs = require('fs');
+const eos = require('../db/eos');
 
 async function genkey() {
 	const pick = d => {
@@ -41,92 +42,133 @@ module.exports = {
 				return {code:'INVALID_PARAM'};
 			}
 			const keys = await genkey();
-			// TODO:check if the below processes is needed
-			// - wallet imports
 
-			// unlock the default wallet
-			let wkey = fs.readFileSync('/keys/wallet.txt', 'utf8');
-			wkey = /"([^"]*)"/.exec(wkey);
-			if (!wkey||wkey.length!==2) {
-				log.error('wallet key not found');
-				return {code:'INVALID_ENVIRONMENT'};
-			}
-			wkey = wkey[1];
-			try {
-				await cmn.cmd('cleos wallet unlock --password ' + wkey);
-			} catch (e) {
-				// don't raise error bacause above command returns an error 
-				// if the wallet is already unlocked 
-				log.debug(e);
-			}
-			await cmn.cmd('cleos wallet import --private-key ' + keys.prikey);
 			// create account
 			const unit = 'SYS';
-			let line = [
-				'cleos system newaccount',
-				d.personid, '--transfer', d.id, keys.pubkey, 
-				'--stake-net "1.0000', unit, '" --stake-cpu "1.0000', unit, 
-				'" --buy-ram-kbytes 8'
-			].join(' ');
 			try {
-				await cmn.cmd(line);
+				const ret = await eos.pushAction({
+					actions :[{
+						account : 'eosio',
+						name : 'newaccount',
+						authorization: [{
+							actor: d.personid,
+							permission: 'active',
+						}],
+						data:{
+							creator : d.personid,
+							name : d.id,
+							owner: {
+								threshold: 1,
+								keys: [{ key: keys.pubkey, weight: 1 }],
+								accounts: [],
+								waits: []
+							},
+							active: {
+								threshold: 1,
+								keys: [{ key: keys.pubkey, weight: 1 }],
+								accounts: [],
+								waits: []
+							},
+						},
+					},{
+						account : 'eosio',
+						name : 'buyrambytes',
+						authorization: [{
+							actor: d.personid,
+							permission: 'active',
+						}],
+						data:{
+							payer : d.personid,
+							receiver : d.id,
+							bytes : 8192,
+						},
+					},{
+						account : 'eosio',
+						name : 'delegatebw',
+						authorization: [{
+							actor: d.personid,
+							permission: 'active',
+						}],
+						data:{
+							from : d.personid,
+							receiver : d.id,
+							stake_net_quantity : '1.0000 ' + unit,
+							stake_cpu_quantity : '1.0000 ' + unit,
+							transfer : false,
+						},
+					}]
+				});
 			} catch (e) {
 				log.debug(e);
-				if (e.includes('no balance object found')) {
-					return {code:'INSUFFICIENT_FUNDS'};
-				}
-				if (e.includes('overdrawn balance')) {
-					return {code:'INSUFFICIENT_FUNDS'};
-				}
-				return {code:'FAILED_TO_CREATE_ACCOUNT'};
+				return {code:e};
 			}
-			const makeJson = type => {
-				let json = {
-					threshold : parseInt(d.threshold),
-					keys : [],
-					accounts : [],
-					waits : []
-				};
+
+			try {
 				d.coowner.sort((a, b) => {
 					return (a>b) ? 1 : 0;
 				});
-				for ( let n in d.coowner ) {
-					json.accounts.push({
-						permission : {
-							actor : d.coowner[n],
-							permission : type
-						},
-						weight : 1
-					});
+				 const makeAuth = type => {
+					let auth = {
+						threshold : parseInt(d.threshold),
+						keys : [],
+						accounts : [],
+						waits : []
+					};
+					for ( let n in d.coowner ) {
+						auth.accounts.push({
+							permission : {
+								actor : d.coowner[n],
+								permission : type
+							},
+							weight : 1
+						});
+					}
+					return auth;
 				}
-				return JSON.stringify(json);
-			};
-			// set the active permission
-			line = [
-				'cleos set account permission', d.id,
-				'active',
-				"'" + makeJson('active') + "'",
-				'owner -p',
-				d.id + '@owner'
-			].join(' ');
-			await cmn.cmd(line);
-			// set the owner permisson
-			line = [
-				'cleos set account permission', d.id,
-				'owner',
-				"'" + makeJson('owner') + "'",
-				'-p',
-				d.id + '@owner'
-			].join(' ');
-			await cmn.cmd(line);
-			// delete the temporary key from the wallet
-			line = [
-				'cleos wallet remove_key', keys.pubkey,
-				'--private-key', wkey
-			].join(' ');
+			} catch (e) {
+				log.debug(e);
+				return {code:e};
+			}
+			let api;
 			try {
-				await cmn.cmd(line);
-			} catch (e) {}
+				api = await eos.refresh([keys.prikey]);
+				await eos.pushAction({
+					actions :[{
+						account : 'eosio',
+						name : 'updateauth',
+						authorization: [{
+							actor: d.id,
+							permission: 'owner',
+						}],
+						data:{
+							account : d.id,
+							permission : 'active',
+							parent : 'owner',
+							auth : makeAuth('active')
+						}
+					},{
+						account : 'eosio',
+						name : 'updateauth',
+						authorization: [{
+							actor: d.id,
+							permission: 'owner',
+						}],
+						data:{
+							account : d.id,
+							permission : 'owner',
+							parent : '',
+							auth : makeAuth('owner')
+						}
+					}]
+				});
+				eos.setconn(api);
+			} catch (e) {
+				if (api) {
+					eos.setconn(api);
+				}
+				log.debug(e);
+				return {code:e};
+			}
 			return {};
 		} catch (e) {
 			return {code:e};
@@ -135,27 +177,20 @@ module.exports = {
 
 	search : async d => {
 		try {
-			const data = await cmn.cmd('cleos get account ' + d.id);
-			let line = data.split('\n');
-			let ret = {
+			const data = await eos.getAccount(d.id);
+			let v;
+			const ret = {
 				threshold : 0,
 				coowner : [],
 				id : d.id,
 			};
-			line.some(v=> {
-				if (/^[ ]*active/.exec(v)===null) return false;
-				let r = /([0-9]*):[ ]*(.*)/.exec(v);
-				if (r!==null && r.length===3) {
-					ret.threshold = r[1];
-					r = r[2].split(',');
-					r.forEach(v=> {
-						let vv = /[ ]*([0-9]+) ([^@]*)/.exec(v);
-						if (vv!==null && vv.length===3) {
-							ret.coowner.push(vv[2]);
-						}
+			data.permissions.forEach(v => {
+				if (v.perm_name==='active') {
+					ret.threshold = v.required_auth.threshold;
+					v.required_auth.accounts.forEach(v => {
+						ret.coowner.push(v.permission.actor);
 					});
 				}
-				return true;
 			});
 			return ret;
 		} catch (e) {

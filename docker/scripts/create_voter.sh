@@ -9,7 +9,7 @@ function create_account() {
 	local OW_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
 	local OW_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
 	cleos wallet import --private-key ${OW_PRI}
-	cleos system newaccount eosio --transfer $1 ${OW_PUB} --stake-net "4.0000 SYS" --stake-cpu "5.0000 SYS" --buy-ram-kbytes 8
+	cleos system newaccount eosio --transfer $1 ${OW_PUB} --stake-net "4.0000 EOS" --stake-cpu "5.0000 EOS" --buy-ram-kbytes 8
 }
 
 function vote() {
