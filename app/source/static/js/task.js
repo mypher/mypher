@@ -600,8 +600,11 @@ class Task {
 				'task.request_payment',
 				[{
 					sender : Account.user,
+					multisig : data.multisig,
+					quantity : data.amount,
+					memo : 'cipher:' + data.cipher + ', task:' + data.name,
+					proposal_name : 'test',
 					tformalid : data.tformalid,
-					name : data.name,
 				}]
 			);
 			this.draw();

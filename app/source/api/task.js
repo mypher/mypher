@@ -9,6 +9,7 @@ const log = require('../cmn/logger')('api.task');
 const cmn = require('./cmn');
 const eos = require('../db/eos');
 const ipfs = require('../db/ipfs');
+const multisig = require('./multisig');
 
 module.exports = {
 	conv4store : function(d) {
@@ -455,9 +456,22 @@ module.exports = {
 		}
 
 	},
+
+	/*
+		sender
+		multisig
+		quantity
+		memo
+		proposal_name
+		tformalid
+	*/
 	request_payment : async function(d) {
+		let rslt = await multisig.propose(d);
+		if (rslt.code) {
+			return rslt;
+		}
 		try {
-			return await eos.pushAction({
+			await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',
 					name : 'tareqpay',
@@ -465,15 +479,20 @@ module.exports = {
 						actor: d.sender,
 						permission: 'active',
 					}],
-					data:d,
+					data: {
+						sender : d.sender,
+						tformalid : d.tformalid,
+						payment : d.proposal_name,
+					},
 				}]
 			});
 		} catch (e) {
 			log.error(e);
+			await multisig.cancel_propose(d);
 			return cmn.parseEosError(e);
 		}
 	},
-	request_payment : async function(d) {
+	cancel_req_payment : async function(d) {
 		try {
 			d.payment = '';
 			return await eos.pushAction({

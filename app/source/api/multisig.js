@@ -208,5 +208,77 @@ module.exports = {
 			console.log(e);
 			return {code:'INVALID_PARAM'};
 		}
+	},
+
+	propose : async d => {
+		try {
+			const info = await eos.getAccount(d.multisig);
+			d.req_perm = [];
+			info.permissions.forEach(v => {
+				if (v.perm_name==='active') {
+					v.required_auth.accounts.forEach(v => {
+						d.req_perm.push(v.permission);
+					});
+				}
+			});
+			const trx = await eos.pushAction({
+				actions :[{
+					account : 'eosio.token',
+					name : 'transfer',
+					authorization: [{
+						actor: d.multisig,
+						permission: 'active',
+					}],
+					data:{
+						from : d.multisig, 
+						to : d.sender, 
+						quantity : d.quantity, 
+						memo : d.memo,
+					},
+				}]
+			});
+			await eos.pushAction({
+				actions :[{
+					account : 'eosio.msig',
+					name : 'propose',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:{
+						proposer : d.sender,
+						proposal_name : d.proposal_name,
+						requested : d.req_perm,
+						trx,
+					},
+				}]
+			});
+		} catch (e) {
+			console.log(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	cancel_propose : async d => {
+		try {
+			await eos.pushAction({
+				actions :[{
+					account : 'eosio.msig',
+					name : 'cancel',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:{
+						proposer : d.sender,
+						proposal_name : d.proposal_name,
+						canceler : d.sender,
+					},
+				}]
+			});
+
+		} catch (e) {
+			console.log(e);
+			return cmn.parseEosError(e);
+		}
 	}
 };
