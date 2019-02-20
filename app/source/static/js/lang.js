@@ -161,6 +161,8 @@ var $L = {
 		'CANCEL_PAYMENT_REQUEST' : '支払い申請取消',
 		'GET_PAID' : '支払い受取実行',
 		'RESULTS' : '成果物',
+		'PROPOSE_PAYMENTS' : '支払い申請',
+		'PROPOSE_NAME' : '申請名',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

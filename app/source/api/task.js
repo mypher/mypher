@@ -466,13 +466,14 @@ module.exports = {
 		tformalid
 	*/
 	request_payment : async function(d) {
-		let rslt = await multisig.propose(d);
-		if (rslt.code) {
-			return rslt;
+		const transaction = await multisig.get_propose_data(d);
+		if (transaction.code) {
+			return transaction;
 		}
 		try {
 			await eos.pushAction({
-				actions :[{
+				actions :[
+				transaction, {
 					account : 'myphersystem',
 					name : 'tareqpay',
 					authorization: [{

@@ -7,9 +7,7 @@
 
 const log = require('../cmn/logger')('api.multisig');
 const cmn = require('./cmn');
-const fs = require('fs');
 const eos = require('../db/eos');
-const eosserialize = require('eosjs/dist/eosjs-serialize');
 
 async function genkey() {
 	const pick = d => {
@@ -211,7 +209,7 @@ module.exports = {
 		}
 	},
 
-	propose : async d => {
+	get_propose_data : async d => {
 		try {
 			const info = await eos.getAccount(d.multisig);
 			d.req_perm = [];
@@ -222,10 +220,10 @@ module.exports = {
 					});
 				}
 			});
-			let exp =new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
-			exp = exp.substring(0, exp.length-1);
+			let expiration =new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
+			expiration = expiration.substring(0, expiration.length-1);
 			const actions = await eos.serializeActions([
-					{ 
+				{ 
 					account: 'eosio.token', 
 					name: 'transfer', 
 					authorization: [ { actor: d.multisig, permission: 'active' } ], 
@@ -233,36 +231,34 @@ module.exports = {
 						from : d.multisig, 
 						to : d.sender, 
 						quantity : d.quantity + ' SYS', 
-						memo : d.memo, }
+						memo : d.memo, 
 					}
+				}
 			]);
-			const trx = {
-				expiration: exp, 
-				ref_block_num: 0, 
-				ref_block_prefix: 0, 
-				max_net_usage_words: 0, 
-				max_cpu_usage_ms: 0, 
-				delay_sec: 0, 
-				context_free_actions: [], 
-				actions, 
-				transaction_extensions: [] 
+			return {
+				account : 'eosio.msig',
+				name : 'propose',
+				authorization: [{
+					actor: d.sender,
+					permission: 'active',
+				}],
+				data:{
+					proposer : d.sender,
+					proposal_name : d.proposal_name,
+					requested : d.req_perm,
+					trx : {
+						expiration, 
+						ref_block_num: 0, 
+						ref_block_prefix: 0, 
+						max_net_usage_words: 0, 
+						max_cpu_usage_ms: 0, 
+						delay_sec: 0, 
+						context_free_actions: [], 
+						actions, 
+						transaction_extensions: [] 
+					}
+				},
 			};
-			await eos.pushAction({
-				actions :[{
-					account : 'eosio.msig',
-					name : 'propose',
-					authorization: [{
-						actor: d.sender,
-						permission: 'active',
-					}],
-					data:{
-						proposer : d.sender,
-						proposal_name : d.proposal_name,
-						requested : d.req_perm,
-						trx,
-					},
-				}]
-			});
 		} catch (e) {
 			console.log(e);
 			return cmn.parseEosError(e);

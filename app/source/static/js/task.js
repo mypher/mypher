@@ -594,23 +594,38 @@ class Task {
 	}
 
 	async request_payment() {
-		try {
-			const data = this.get();
-			await Rpc.call(
-				'task.request_payment',
-				[{
-					sender : Account.user,
-					multisig : data.multisig,
-					quantity : data.amount,
-					memo : 'cipher:' + data.cipher + ', task:' + data.name,
-					proposal_name : 'test2',
-					tformalid : data.tformalid,
-				}]
-			);
-			this.draw();
-		} catch (e) {
-			UI.alert(e);
-		}
+		const div = UI.popup(600,200);
+		const click = async () => {
+			try {
+				const data = this.get();
+				const proposal_name = div.find('[field="propose_name"]').eq(0).val();
+				await Rpc.call(
+					'task.request_payment',
+					[{
+						sender : Account.user,
+						multisig : data.multisig,
+						quantity : data.amount,
+						memo : 'cipher:' + data.cipher + ', task:' + data.name,
+						proposal_name : proposal_name,
+						tformalid : data.tformalid,
+					}]
+				);
+				this.draw();
+			} catch (e) {
+				UI.alert(e);
+			}
+		};
+		await Util.load(div, 'parts/reqpay.html', MODE.NEW, {
+			button : [{
+				text : 'PROPOSE_PAYMENTS',
+				click,
+			},{
+				text : 'BACK',
+				click : () => {
+					UI.closePopup();
+				}
+			}]
+		});
 	}
 
 	async cancel_request_payment() {
