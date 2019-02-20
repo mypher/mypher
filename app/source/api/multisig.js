@@ -9,6 +9,7 @@ const log = require('../cmn/logger')('api.multisig');
 const cmn = require('./cmn');
 const fs = require('fs');
 const eos = require('../db/eos');
+const eosserialize = require('eosjs/dist/eosjs-serialize');
 
 async function genkey() {
 	const pick = d => {
@@ -27,7 +28,7 @@ async function genkey() {
 		pubkey : pick(ret[1]),
 		prikey : pick(ret[0]),
 	};
-} 
+}
 
 module.exports = {
 	create : async function(d) {
@@ -221,22 +222,31 @@ module.exports = {
 					});
 				}
 			});
-			const trx = await eos.pushAction({
-				actions :[{
-					account : 'eosio.token',
-					name : 'transfer',
-					authorization: [{
-						actor: d.multisig,
-						permission: 'active',
-					}],
-					data:{
+			let exp =new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
+			exp = exp.substring(0, exp.length-1);
+			const actions = await eos.serializeActions([
+					{ 
+					account: 'eosio.token', 
+					name: 'transfer', 
+					authorization: [ { actor: d.multisig, permission: 'active' } ], 
+					data: {
 						from : d.multisig, 
 						to : d.sender, 
-						quantity : d.quantity, 
-						memo : d.memo,
-					},
-				}]
-			});
+						quantity : d.quantity + ' SYS', 
+						memo : d.memo, }
+					}
+			]);
+			const trx = {
+				expiration: exp, 
+				ref_block_num: 0, 
+				ref_block_prefix: 0, 
+				max_net_usage_words: 0, 
+				max_cpu_usage_ms: 0, 
+				delay_sec: 0, 
+				context_free_actions: [], 
+				actions, 
+				transaction_extensions: [] 
+			};
 			await eos.pushAction({
 				actions :[{
 					account : 'eosio.msig',

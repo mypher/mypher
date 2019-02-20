@@ -603,7 +603,7 @@ class Task {
 					multisig : data.multisig,
 					quantity : data.amount,
 					memo : 'cipher:' + data.cipher + ', task:' + data.name,
-					proposal_name : 'test',
+					proposal_name : 'test2',
 					tformalid : data.tformalid,
 				}]
 			);
