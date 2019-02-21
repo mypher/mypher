@@ -43,6 +43,13 @@ class Task {
 		$('div[field="pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_results"]').get(0).obj.allowedit(false);
+		if (data.payment!=='') {
+			$('[ltext="PROPOSE_PAYMENTS"]').show();
+			$('[field="payment"]').show().prop('disabled', true);
+		} else {
+			$('[ltext="PROPOSE_PAYMENTS"]').hide();
+			$('[field="payment"]').hide();
+		}
 		const drawDesc = o => {
 			const v = {
 				description : o.description
@@ -88,6 +95,7 @@ class Task {
 					this.data.approve_pic = d.approve_pic;
 					this.data.approve_results = d.approve_results;
 					this.data.results = d.results;
+					this.data.payment = d.payment;
 				} else {
 					this.data.tformalid = undefined;
 					this.data.approve_pic = [];
@@ -748,7 +756,7 @@ Task.prototype.Validator = {
 				'multisig.get_tran_info',
 				[{
 					account : data.pic,
-					name : data.paymnet
+					name : data.payment
 				}]
 			);
 			// no longer exists in blockchain

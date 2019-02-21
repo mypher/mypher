@@ -348,7 +348,7 @@ void Task::tareqpay( const account_name sender, const uint64_t tformalid, const 
 	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 	// check if results is not approved yet
-	eosio_assert_code(Task::is_results_approved(tformalid)==false, RESULTS_IN_REVIEW);
+	eosio_assert_code(Task::is_results_approved(tformalid)==true, RESULTS_IN_REVIEW);
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.payment = payment;

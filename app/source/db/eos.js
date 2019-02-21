@@ -32,8 +32,19 @@ module.exports = {
     	return eosjs.serialize.arrayToHex(buf.asUint8Array());
 	},
 
+	hex2json : function(types, type, data) {
+		let js2Type = eosjs.serialize.getType(types, type);
+    	let buf = new eosjs.serialize.SerialBuffer({ textEncoder, textDecoder });
+    	js2Type.serialize(buf, data);
+    	return eosjs.serialize.arrayToHex(buf.asUint8Array());
+	},
+
 	serializeActions : async function(actions) {
 		return await this.api.serializeActions(actions);
+	},
+
+	deserializeTransaction : async function(trans) {
+		return await this.api.deserializeTransaction(trans);
 	},
 
 	setconn : function(api) {

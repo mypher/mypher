@@ -195,14 +195,16 @@ module.exports = {
 
 	get_tran_info : async d => {
 		try {
-			const line = [
-				'cleos multisig review',
-				d.account, 
-				d.name,
-			].join(' ');
-			const data = await cmn.cmd(line);
-			console.log(data);
-			return {};
+			const data = await eos.getDataWithPKey({
+				code : 'eosio.msig',
+				scope : d.account[0],
+				table : 'proposal'
+			}, d.name);
+			if (data===null||data.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			data[0].transaction = await eos.deserializeTransaction(data[0].packed_transaction);
+			return data[0];
 		} catch (e) {
 			console.log(e);
 			return {code:'INVALID_PARAM'};
@@ -242,7 +244,7 @@ module.exports = {
 					actor: d.sender,
 					permission: 'active',
 				}],
-				data:{
+				data : {
 					proposer : d.sender,
 					proposal_name : d.proposal_name,
 					requested : d.req_perm,
