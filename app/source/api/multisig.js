@@ -203,7 +203,16 @@ module.exports = {
 			if (data===null||data.length===0) {
 				return {code:'NOT_FOUND'};
 			}
-			data[0].transaction = await eos.deserializeTransaction(data[0].packed_transaction);
+			//data[0].transaction = await eos.deserializeTransaction(data[0].packed_transaction);
+			const data2 = await eos.getDataWithPKey({
+				code : 'eosio.msig',
+				scope : d.account[0],
+				table : 'approvals'
+			}, d.name);
+			if (data2===null||data2.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			data[0].approved = data2[0].provided_approvals.map(v => { return v.actor; });
 			return data[0];
 		} catch (e) {
 			console.log(e);
@@ -284,6 +293,29 @@ module.exports = {
 				}]
 			});
 
+		} catch (e) {
+			console.log(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	sign : async d => {
+		try {
+			await eos.pushAction({
+				actions :[{
+					account : 'eosio.msig',
+					name : 'approve',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:{
+						proposer : d.proposer,
+						proposal_name : d.name,
+						level : {actor: d.sender, permission : 'active'},
+					},
+				}]
+			});
+			
 		} catch (e) {
 			console.log(e);
 			return cmn.parseEosError(e);

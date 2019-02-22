@@ -204,7 +204,7 @@ class Task {
 				}
 			}
 			// if loginuser is coowner of multisig account
-			if (auth.coowner) {
+			if (auth.coowners) {
 				if (stat===vali.STAT.SIGN) {
 					btns.push({
 						text : 'SIGN_TO_PAYMENT_REQ',
@@ -559,7 +559,7 @@ class Task {
 				'multisig.sign',
 				[{
 					sender : Account.user,
-					account : this.data.pic,
+					proposer : this.data.pic[0],
 					name : this.data.payment
 				}]
 			);
@@ -760,11 +760,11 @@ Task.prototype.Validator = {
 				}]
 			);
 			// no longer exists in blockchain
-			if (!info.id) {
+			if (!info.proposal_name) {
 				return 4;
 			}
 			// not fulfill requirements
-			if (info.signed.length<this.data.nof_eos_approvers) {
+			if (info.approved.length<data.nof_eos_approvers) {
 				return 2;
 			}
 			return 3;
