@@ -560,7 +560,7 @@ class Task {
 				[{
 					sender : Account.user,
 					proposer : this.data.pic[0],
-					name : this.data.payment
+					proposal_name : this.data.payment
 				}]
 			);
 			this.draw();
@@ -614,10 +614,11 @@ class Task {
 						multisig : data.multisig,
 						quantity : data.amount,
 						memo : 'cipher:' + data.cipher + ', task:' + data.name,
-						proposal_name : proposal_name,
+						proposal_name,
 						tformalid : data.tformalid,
 					}]
 				);
+				UI.closePopup();
 				this.draw();
 			} catch (e) {
 				UI.alert(e);
@@ -643,7 +644,8 @@ class Task {
 				'task.cancel_request_payment',
 				[{
 					sender : Account.user,
-					name : data.name,
+					tformalid : data.tformalid,
+					proposal_name : data.payment
 				}]
 			);
 			this.draw();
@@ -659,7 +661,7 @@ class Task {
 				'multisig.execute',
 				[{
 					sender : Account.user,
-					name : data.name,
+					proposal_name : data.payment,
 				}]
 			);
 			this.draw();

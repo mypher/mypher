@@ -487,24 +487,32 @@ module.exports = {
 					},
 				}]
 			});
+			return {};
 		} catch (e) {
 			log.error(e);
-			await multisig.cancel_propose(d);
 			return cmn.parseEosError(e);
 		}
 	},
-	cancel_req_payment : async function(d) {
+	cancel_request_payment : async function(d) {
+		const transaction = await multisig.get_cancel_propose_data(d);
+		if (transaction.code) {
+			return transaction;
+		}
 		try {
-			d.payment = '';
 			return await eos.pushAction({
-				actions :[{
+				actions :[
+				transaction, {
 					account : 'myphersystem',
 					name : 'tareqpay',
 					authorization: [{
 						actor: d.sender,
 						permission: 'active',
 					}],
-					data:d,
+					data: {
+						sender : d.sender,
+						tformalid : d.tformalid,
+						payment : '',
+					},
 				}]
 			});
 		} catch (e) {

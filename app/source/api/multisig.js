@@ -201,7 +201,7 @@ module.exports = {
 				table : 'proposal'
 			}, d.name);
 			if (data===null||data.length===0) {
-				return {code:'NOT_FOUND'};
+				return {};
 			}
 			//data[0].transaction = await eos.deserializeTransaction(data[0].packed_transaction);
 			const data2 = await eos.getDataWithPKey({
@@ -275,6 +275,21 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
+	get_cancel_propose_data : async d => {
+		return {
+			account : 'eosio.msig',
+			name : 'cancel',
+			authorization: [{
+				actor: d.sender,
+				permission: 'active',
+			}],
+			data : {
+				proposer : d.sender,
+				proposal_name : d.proposal_name,
+				canceler : d.sender,
+			},
+		};
+	},
 	cancel_propose : async d => {
 		try {
 			await eos.pushAction({
@@ -310,12 +325,35 @@ module.exports = {
 					}],
 					data:{
 						proposer : d.proposer,
-						proposal_name : d.name,
+						proposal_name : d.proposal_name,
 						level : {actor: d.sender, permission : 'active'},
 					},
 				}]
 			});
-			
+			return {};
+		} catch (e) {
+			console.log(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	execute : async d => {
+		try {
+			await eos.pushAction({
+				actions :[{
+					account : 'eosio.msig',
+					name : 'exec',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data:{
+						proposer : d.sender,
+						proposal_name : d.proposal_name,
+						executer : d.sender,
+					},
+				}]
+			});
+			return {};
 		} catch (e) {
 			console.log(e);
 			return cmn.parseEosError(e);
