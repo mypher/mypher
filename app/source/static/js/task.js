@@ -283,7 +283,7 @@ class Task {
 						}
 					});
 				}
-				if (stat===vali.STAT.SIGN) {
+				if (stat===vali.STAT.WAIT_REQUIRED_SIG) {
 					btns.push({
 						text : 'CANCEL_PAYMENT_REQUEST',
 						click : () => {
@@ -688,8 +688,9 @@ Task.prototype.Validator = {
 		REVIEW : 4,
 		WAIT_PAYREQ : 5,
 		SIGN : 6,
-		WAIT_PAY : 7,
-		COMPLETE : 8,
+		WAIT_REQUIRED_SIG : 7,
+		WAIT_PAY : 8,
+		COMPLETE : 9,
 	},
 
 	getStat : async function(data) {
@@ -701,6 +702,7 @@ Task.prototype.Validator = {
 					this.STAT.COMPLETE,
 					this.STAT.WAIT_PAYREQ,
 					this.STAT.SIGN,
+					this.STAT.WAIT_REQUIRED_SIG,
 					this.STAT.WAIT_PAY,
 					this.STAT.COMPLETE,
 				][stat];
@@ -741,9 +743,10 @@ Task.prototype.Validator = {
 
 	// 0 : not target
 	// 1 : not requested yet
-	// 2 : wait for signature
-	// 3 : ready to pay
-	// 4 : not exists in blockchain(already processed) or can't check payments status
+	// 2 : wait for your signature
+	// 3 : wait for required signature
+	// 4 : ready to pay
+	// 5 : not exists in blockchain(already processed) or can't check payments status
 	getPaymentStat : async function(data) {
 		if (Util.isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
 			return 0;
@@ -761,13 +764,16 @@ Task.prototype.Validator = {
 			);
 			// no longer exists in blockchain
 			if (!info.proposal_name) {
-				return 4;
+				return 5;
 			}
 			// not fulfill requirements
 			if (info.approved.length<data.nof_eos_approvers) {
+				if (info.approved.includes(Account.user)) {
+					return 3;
+				}
 				return 2;
 			}
-			return 3;
+			return 4;
 		} catch (e) {
 			UI.alert(e);
 		}
@@ -798,7 +804,7 @@ Task.prototype.Validator = {
 	},
 	isApprovedForResults : function(data) {
 		return (data.approve_results.includes(Account.user));
-	},
+	}
 };
 
 //# sourceURL=task.js
