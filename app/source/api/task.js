@@ -17,7 +17,7 @@ module.exports = {
 		d.tdraftid = cmn.st2num(d.tdraftid);
 		d.rewardid = cmn.st2num(d.rewardid);
 		d.noftoken = cmn.st2num(d.noftoken);
-		d.amount = cmn.st2float(d.amount);
+		d.amount = cmn.st2num(d.amount*10000);
 		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;		
 	},
@@ -26,7 +26,7 @@ module.exports = {
 		d.tdraftid = cmn.num2st(d.tdraftid);
 		d.rewardid = cmn.num2st(d.rewardid);
 		d.noftoken = cmn.num2st(d.noftoken);
-		d.amount = cmn.num2st(d.amount);
+		d.amount = cmn.num2st(d.amount/10000);
 		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;		
 	},
@@ -495,9 +495,6 @@ module.exports = {
 	},
 	cancel_request_payment : async function(d) {
 		const transaction = await multisig.get_cancel_propose_data(d);
-		if (transaction.code) {
-			return transaction;
-		}
 		try {
 			return await eos.pushAction({
 				actions :[
@@ -512,6 +509,29 @@ module.exports = {
 						sender : d.sender,
 						tformalid : d.tformalid,
 						payment : '',
+					},
+				}]
+			});
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+	exec_payment : async function(d) {
+		const transaction = multisig.get_execute_data(d);
+		try {
+			return await eos.pushAction({
+				actions :[
+				transaction, {
+					account : 'myphersystem',
+					name : 'tafinish',
+					authorization: [{
+						actor: d.sender,
+						permission: 'active',
+					}],
+					data: {
+						sender : d.sender,
+						tformalid : d.tformalid,
 					},
 				}]
 			});

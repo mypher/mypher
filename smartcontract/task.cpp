@@ -17,7 +17,7 @@ namespace mypher {
 
 void Task::tanew(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
 				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
-				const double_t amount, const uint8_t nofapproval, 
+				const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -63,7 +63,7 @@ void Task::taupdate( const account_name sender,
 				const uint64_t tdraftid, 
 				const string& name,  
 				const uint64_t rewardid, const uint64_t noftoken, 
-				const double_t amount, const uint8_t nofapproval, 
+				const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
@@ -236,9 +236,13 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 		// check if sender does't approve results
 		eosio_assert_code(result4!=tfrec->approve_results.end(), SENDER_NOT_APPROVE_YET);
 	}
+	bool issue = (tdrec->rewardid!=NUMBER_NULL) && (tdrec->noftoken>0);
 	tfd.modify(tfrec, sender, [&](auto& dd){
 		if (vec) { // approve
 			dd.approve_results.push_back(sender);
+			if (issue) {
+				dd.completed = true;
+			}
 		} else { // cancel approval
 			auto result = std::remove(dd.approve_results.begin(), dd.approve_results.end(), sender);
 			dd.approve_results.erase(result, dd.approve_results.end());
@@ -246,9 +250,7 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	});
 	// send the reward to pic
 	if (tfrec->approve_results.size()>=tdrec->nofapproval) {
-		eosio::print("##prepare issuing");
-		if (tdrec->rewardid!=NUMBER_NULL && tdrec->noftoken>0) {
-			eosio::print("##prepare issuing2");
+		if (issue) {
 			for (auto it=tdrec->pic.begin(); it!=tdrec->pic.end(); ++it) {
 				Token::issue(sender, tfrec->cipherid, tdrec->rewardid, *it,
 					(uint64_t)(tdrec->noftoken / tdrec->pic.size())
@@ -347,17 +349,45 @@ void Task::tareqpay( const account_name sender, const uint64_t tformalid, const 
 	// check if pic is sender
 	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
+
 	// check if results is not approved yet
 	eosio_assert_code(Task::is_results_approved(tformalid)==true, RESULTS_IN_REVIEW);
+
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.payment = payment;
 	});
 }
 
+void Task::tafinish( const account_name sender, const uint64_t tformalid) {
+	// check if sender is fulfill the required auth
+	require_auth(sender);
+
+	// get tformal data	
+	tformal_data tfd(self, self);
+	auto tfrec = tfd.find(tformalid);
+	// check if data exists
+	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
+
+	// get tdraft data 
+	tdraft_data tdd(self, tfrec->cipherid);
+	auto tdrec = tdd.find(tfrec->tdraftid);
+	// check if data exists
+	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
+	
+	// check if pic is sender
+	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
+	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
+
+	// set results to tformal
+	tfd.modify(tfrec, sender, [&](auto& dd) {
+		dd.completed = true;
+	});
+}
+
 void Task::check_data( const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t noftoken, const double_t amount, const uint8_t nofapproval, 
+				const uint64_t noftoken, const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags) {
@@ -462,6 +492,7 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 			dd.tags = rec->tags;
 			dd.results = "";
 			dd.payment = "";
+			dd.completed = false;
 		});	
 	}
 }

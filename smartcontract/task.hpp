@@ -38,12 +38,13 @@ public:
 		vector<string> tags;
 		string results;
 		string payment;
+		bool completed;
 
 		uint64_t primary_key() const { return tformalid; }
 		uint64_t secondary_key() const { return cipherid; }
 
 		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(approve_pic)
-						(approve_results)(tags)(results)(payment) )
+						(approve_results)(tags)(results)(payment)(completed) )
 	};
 
 	/**
@@ -54,7 +55,7 @@ public:
 		string name;
 		uint64_t rewardid;
 		uint64_t noftoken;
-		double_t amount;
+		uint64_t amount;
 		uint64_t nofapproval;
 		vector<account_name> approvers;
 		vector<account_name> pic;
@@ -89,7 +90,7 @@ public:
 	[[eosio::action]]
 	void tanew(	const account_name sender, const uint64_t cipherid, uint64_t cdraftid,
 				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
-				const double_t amount, const uint8_t nofapproval, 
+				const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, 
 				const string& hash,
@@ -103,7 +104,7 @@ public:
 				const uint64_t tdraftid, 
 				const string& name,  
 				const uint64_t rewardid, const uint64_t noftoken, 
-				const double_t amount, const uint8_t nofapproval, 
+				const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);
@@ -138,6 +139,11 @@ public:
 	[[eosio::action]]
 	void tareqpay( const account_name sender, const uint64_t tformalid, const string& payment);
 
+	/**
+	 * @brief finish the task
+	 */
+	[[eosio::action]]
+	void tafinish( const account_name sender, const uint64_t tformalid);
 
 	static bool exists(const uint64_t cipherid, const uint64_t tdraftid);
 
@@ -150,7 +156,7 @@ private:
 	void check_data( 
 				const account_name sender, const uint64_t cipherid,
 				const string& name, const uint64_t rewardid, 
-				const uint64_t noftoken, const double_t amount, const uint8_t nofapproval, 
+				const uint64_t noftoken, const uint64_t amount, const uint8_t nofapproval, 
 				const vector<account_name>& approvers, 
 				const vector<account_name>& pic, const string& hash, 
 				const vector<string>& tags);

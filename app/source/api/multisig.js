@@ -199,7 +199,7 @@ module.exports = {
 				code : 'eosio.msig',
 				scope : d.account[0],
 				table : 'proposal'
-			}, d.name);
+			}, d.proposal_name);
 			if (data===null||data.length===0) {
 				return {};
 			}
@@ -336,27 +336,19 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
-	execute : async d => {
-		try {
-			await eos.pushAction({
-				actions :[{
-					account : 'eosio.msig',
-					name : 'exec',
-					authorization: [{
-						actor: d.sender,
-						permission: 'active',
-					}],
-					data:{
-						proposer : d.sender,
-						proposal_name : d.proposal_name,
-						executer : d.sender,
-					},
-				}]
-			});
-			return {};
-		} catch (e) {
-			console.log(e);
-			return cmn.parseEosError(e);
-		}
+	get_execute_data : d => {
+		return {
+			account : 'eosio.msig',
+			name : 'exec',
+			authorization: [{
+				actor: d.sender,
+				permission: 'active',
+			}],
+			data:{
+				proposer : d.sender,
+				proposal_name : d.proposal_name,
+				executer : d.sender,
+			},
+		};
 	}
 };

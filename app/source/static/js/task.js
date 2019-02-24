@@ -43,12 +43,18 @@ class Task {
 		$('div[field="pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_pic"]').get(0).obj.allowedit(false);
 		$('div[field="approve_results"]').get(0).obj.allowedit(false);
-		if (data.payment!=='') {
-			$('[ltext="PROPOSE_PAYMENTS"]').show();
-			$('[field="payment"]').show().prop('disabled', true);
-		} else {
-			$('[ltext="PROPOSE_PAYMENTS"]').hide();
-			$('[field="payment"]').hide();
+		if (this.mode!==MODE.REF) {
+			if (!Util.isEmpty(data.payment)) {
+				$('[ltext="PROPOSE_PAYMENTS"]').show();
+				$('[field="payment"]').show().prop('disabled', true);
+				$('[field="approve_payment"]').show();
+				$('[field="completed"]').show();
+			} else {
+				$('[ltext="PROPOSE_PAYMENTS"]').hide();
+				$('[field="payment"]').hide();
+				$('[field="approve_payment"]').hide();
+				$('[field="completed"]').hide();
+			}
 		}
 		const drawDesc = o => {
 			const v = {
@@ -87,8 +93,10 @@ class Task {
 					}]
 				);
 				const cipherid = this.data.cipherid;
+				const cdraftid = this.data.cdraftid;
 				this.data = info.tdraft;
 				this.data.cipherid = cipherid;
+				this.data.cdraftid = cdraftid;
 				if (info.tformal) {
 					const d = info.tformal;
 					this.data.tformalid = d.tformalid;
@@ -96,22 +104,33 @@ class Task {
 					this.data.approve_results = d.approve_results;
 					this.data.results = d.results;
 					this.data.payment = d.payment;
+					this.data.completed = d.completed;
 				} else {
 					this.data.tformalid = undefined;
 					this.data.approve_pic = [];
 					this.data.approve_results = [];
 				}
 			}
-			const d = await Rpc.call('cipher.get', [{cipherid:this.data.cipherid}]);
+			const d = await Rpc.call('cipher.get', [{
+				cipherid : this.data.cipherid, 
+				cdraftid : this.data.cdraftid
+			}]);
 			this.data.cipher = d.name;
 			this.data.editors = d.editors;
 			this.data.multisig = d.multisig;
 			this.data.formalver = d.formalver;
 			this.data.version = d.version;
 			if (d.multisig) {
-				const ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
+				let ms = await Rpc.call('multisig.search', [{id:d.multisig}]);
 				this.data.eos_approvers = ms.coowner;
 				this.data.nof_eos_approvers = ms.threshold;
+				if (this.data.payment) {
+					ms = await Rpc.call(
+						'multisig.get_tran_info',
+						[{account : this.data.pic, proposal_name : this.data.payment}]
+					);
+					this.data.approve_payment = ms.approved
+				}
 			}
 		} catch (e) {
 			UI.alert(e);
@@ -121,6 +140,8 @@ class Task {
 	async initButtons() {
 		let btns = [];
 		const vali = this.Validator;
+		const fields = $('input[field="results"]');
+		fields.prop('disabled', true);
 		switch (this.mode) {
 		case MODE.NEW:
 			btns.push({
@@ -153,7 +174,7 @@ class Task {
 		case MODE.REF:
 		{
 			const auth = vali.getUserAuth(this.data);
-			const stat = await vali.getStat(this.data);
+			const stat = vali.getStat(this.data);
 			// if loginuser is editor of the cipher to which this task belongs
 			if (auth.editors) {
 				if (stat===vali.STAT.DRAFT) {
@@ -260,6 +281,7 @@ class Task {
 							this.present_results();
 						}
 					});
+					fields.prop('disabled', false);
 				}
 				if (stat===vali.STAT.REVIEW) {
 					btns.push({
@@ -658,10 +680,11 @@ class Task {
 		try {
 			const data = this.get();
 			await Rpc.call(
-				'multisig.execute',
+				'task.exec_payment',
 				[{
 					sender : Account.user,
 					proposal_name : data.payment,
+					tformalid : data.tformalid
 				}]
 			);
 			this.draw();
@@ -695,11 +718,11 @@ Task.prototype.Validator = {
 		COMPLETE : 9,
 	},
 
-	getStat : async function(data) {
+	getStat : function(data) {
 		// results are already approved
 		if (this.isFulfillApprovalReqForResults(data)) {
 			if (this.isPayByCrypto(data)) {
-				const stat = await this.getPaymentStat(data);
+				const stat = this.getPaymentStat(data);
 				return [
 					this.STAT.COMPLETE,
 					this.STAT.WAIT_PAYREQ,
@@ -749,28 +772,24 @@ Task.prototype.Validator = {
 	// 3 : wait for required signature
 	// 4 : ready to pay
 	// 5 : not exists in blockchain(already processed) or can't check payments status
-	getPaymentStat : async function(data) {
+	getPaymentStat : function(data) {
 		if (Util.isEmpty(data.multisig)||!this.isPayByCrypto(data)) {
 			return 0;
 		}
 		if (Util.isEmpty(data.payment)) {
 			return 1;
 		}
+		if (data.completed) {
+			return 5;
+		}
 		try {
-			const info = await Rpc.call(
-				'multisig.get_tran_info',
-				[{
-					account : data.pic,
-					name : data.payment
-				}]
-			);
 			// no longer exists in blockchain
-			if (!info.proposal_name) {
-				return 5;
+			if (!data.approve_payment) {
+				return 1;
 			}
 			// not fulfill requirements
-			if (info.approved.length<data.nof_eos_approvers) {
-				if (info.approved.includes(Account.user)) {
+			if (data.approve_payment.length<data.nof_eos_approvers) {
+				if (data.approve_payment.includes(Account.user)) {
 					return 3;
 				}
 				return 2;

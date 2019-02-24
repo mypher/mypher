@@ -43,10 +43,12 @@
 	<br class="sep" hide_on="add,edit"/>
 	<div formtype="long" ltext="APPROVAL_FOR_PIC" field="approve_pic" ctrl="elm" proc="approve_pic" disable_on="add,edit,ref" hide_on="add,edit"/>
 	<div formtype="long" ltext="APPROVAL_FOR_RESULTS" field="approve_results" ctrl="elm" proc="approve_results" disable_on="add,edit,ref" hide_on="add,edit"/>
-	<div class="clause" name="rop_footer"/>
+	<div class="clause" name="rop_footer" hide_on="add,edit"/>
 
 	<h2 ltext="PROPOSE_PAYMENTS"/>
-	<div formtype="long" ltext="PROPOSE_NAME" field="payment" ctrl="editleft" dispable_on="add,edit,ref"/>
+	<div formtype="long" ltext="PROPOSE_NAME" field="payment" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PAYMENT" field="approve_payment" ctrl="elm" proc="approve_results" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="short" ltext="COMPLETE" ctrl="radio" field="completed" hide_on="add,edit" disable_on="add,edit,ref" proc="type" sel="0:NOCOMPLETE,1:COMPLETE"/>
 	<div class="clause" hide_on="add,edit"/>
 	<div ctrl="button" proc="button"/>
 </div>
