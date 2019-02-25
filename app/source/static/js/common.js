@@ -541,6 +541,9 @@ let Util = {
 				case 'radio':
 					if (o) base[elm.attr('field')] = o.get();
 					break;
+				case 'select':
+					base[elm.attr('field')] = elm.find('select').val();
+					break;
 				default:
 					base[elm.attr('field')] = elm.val();
 				}
@@ -1101,6 +1104,7 @@ function Select(div, mode, proc, attrs) {
 	this.div.click(()=> {
 		return this.canedit;
 	});
+	select.change(this.proc.change);
 	const disable = disable_on.some(v => {
 		if (v==='add' && mode===MODE.ADD) return true;
 		if (v==='edit' && mode===MODE.EDIT) return true;

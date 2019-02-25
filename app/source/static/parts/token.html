@@ -4,11 +4,11 @@
 -->
 <div>
 	<h2 ltext="BASIC_INFORMATION"/>
-	<div formtype="short" ltext="ISSUER" field="issuer" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="ISSUER" field="cipher" ctrl="editleft" disable_on="add,edit,ref"/>
 	<br class="sep"/>
-	<div formtype="short" ltext="TOKENID" field="tokenid" ctrl="editleft" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="TOKENID" field="tokenid" ctrl="editleft" disable_on="add,edit,ref" hide_on="add"/>
 	<div formtype="long" ltext="NAME1" field="name" ctrl="editleft" disable_on="ref"/>
-	<div formtype="short" ltext="ISSUE_LIMIT" field="ilimit" ctrl="editleft" disable_on="ref"/>
+	<div formtype="short" ltext="ISSUE_LIMIT" field="limit" ctrl="editleft" disable_on="ref"/>
 	<div class="clause"/>
 	<h2 ltext="FUNCTION"/>
 	<div formtype="short" ltext="TYPE" ctrl="select" field="type" disable_on="ref" proc="type" sel="0:NONE,1:QRCODE,2:DEVIDE_TOKEN,3:DEVIDE_SYS"/>
@@ -27,8 +27,8 @@
 	<div formtype="short" ltext="NOF_DEVIDED_TOKEN" ctrl="editleft" field="nofdesttoken" disable_on="ref"/>
 	<br class="sep"/>
 	<div formtype="short" ltext="NOF_DEVIDED_EOS" ctrl="editleft" field="nofdesteos" disable_on="ref"/>
+	<div class="clause"/>
 	<div ctrl="button" proc="button"/>
-	<br class="sep"/>
 	
 </div>
 

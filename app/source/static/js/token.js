@@ -21,17 +21,15 @@ class Token extends View {
 		this.data = Util.getData(this.div, {
 			editors : this.data.editors,
 			cdraftid : this.data.cdraftid,
+			issuer : this.data.issuer,
 		});
 		return this.data;
 	}
 
 	async set(data) {
 		this.data = data;
-		const owner = $('div[name="issuer"]');
-		owner.show();
 		Util.setData(this.div, this.data);
 		this.grayAttr(this.data.type, this.data.when);
-		owner.find('div[field]').get(0).obj.allowedit(false);
 	}
 
 	async save() {
@@ -43,6 +41,14 @@ class Token extends View {
 		} else {
 			this.data.type = 0;
 			this.data.when = 0;
+		}
+		try {
+			const d = await  Rpc.call('cipher.get', [{
+				cipherid : this.data.issuer, 
+			}]);
+			this.data.cipher = d.name;
+		} catch (e) {
+			UI.alert(e);
 		}
 		await this.refresh();
 	}
@@ -197,13 +203,13 @@ class Token extends View {
 			},
 			type : {
 				change : evt => {
-					const when = $('[field="when"]').val();
+					const when = $('[field="when"] select').val();
 					if (!init) this.grayAttr(evt.target.value, when);
 				}
 			},
 			when : {
 				change : evt => {
-					const type = $('[field="type"]').val();
+					const type = $('[field="type"] select').val();
 					if (!init) this.grayAttr(type, evt.target.value);
 				}
 			},
