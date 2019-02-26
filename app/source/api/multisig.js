@@ -203,7 +203,13 @@ module.exports = {
 			if (data===null||data.length===0) {
 				return {};
 			}
-			//data[0].transaction = await eos.deserializeTransaction(data[0].packed_transaction);
+			const mstrans = await eos.deserializeTransaction(data[0].packed_transaction);
+			if (mstrans) {
+				data[0].tranasction = await Promise.all(mstrans.actions.map(async v => {
+					v.data =  await eos.deserializeActionData(v.account, v.name, v.data);
+					return v;
+				}));
+			}
 			const data2 = await eos.getDataWithPKey({
 				code : 'eosio.msig',
 				scope : d.account[0],

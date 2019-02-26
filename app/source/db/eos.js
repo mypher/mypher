@@ -13,6 +13,7 @@ const httpEndpoint = 'http://127.0.0.1:8888';
 const rpc = new eosjs.JsonRpc(httpEndpoint, { fetch });
 const ecc = require('eosjs-ecc');
 const JsSignatureProvider = require('eosjs/dist/eosjs-jssig').default;
+const ser = require('eosjs/dist/eosjs-serialize');
 const textEncoder = new TextEncoder;
 const textDecoder = new TextDecoder;
 
@@ -36,7 +37,13 @@ module.exports = {
 		return await this.api.serializeActions(actions);
 	},
 
+	deserializeActionData : async function(account, name, data) {
+		const contract = await this.api.getContract(account);
+		return await ser.deserializeActionData(contract, account, name, data, textEncoder, textDecoder);
+	},
+
 	deserializeTransaction : async function(trans) {
+		trans = ser.hexToUint8Array(trans);
 		return await this.api.deserializeTransaction(trans);
 	},
 

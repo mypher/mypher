@@ -100,6 +100,19 @@ User.prototype = {
 			break;
 		}
 		const self = this;
+		const col = (this.data.personid===Account.user) 
+			? [
+					{ width : 1, label : _L('ID'), name : 'tokenid' },
+					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 4, label : _L('NAME2'), name : 'name' },
+					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
+					{ width : 2, label : _L(''), btn : 'USE_EX' },
+			] : [
+					{ width : 1, label : _L('ID'), name : 'tokenid' },
+					{ width : 4, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 5, label : _L('NAME2'), name : 'name' },
+					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
+			];
 		await Util.load(this.div, 'parts/user.html', this.mode, {
 			button :btn,
 			tags :[{
@@ -108,13 +121,7 @@ User.prototype = {
 				}
 			}],
 			tokenlist : {
-				col : [
-					{ width : 1, label : _L('ID'), name : 'tokenid' },
-					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 4, label : _L('NAME2'), name : 'name' },
-					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
-					{ width : 2, label : _L(''), btn : 'USE_EX' },
-				],
+				col,
 				key : [],
 				ondata : (d, list) => {
 					if (this.data.tokenlist.length===0) {
@@ -151,16 +158,20 @@ User.prototype = {
 					History.run(_L('TOKEN'), token);
 				},
 				onbutton : (d, list) => {
+					const div = UI.popup(500,300);
 					const tu = new TokenUse({
-						div : $('#main'),
+						div : div,
 						personid : self.data.personid,
 						person : self.data.name,
 						tokenid : d.val.tokenid,
 						token : d.val.name,
 						quantity : d.val.quantity,
 						mode : MODE.EDIT,
+						term : () => {
+							UI.closePopup();
+						}
 					});
-					History.run(_L('TOKEN_USE'), tu);
+					tu.draw();
 				},
 				onadd : () => {}
 			},

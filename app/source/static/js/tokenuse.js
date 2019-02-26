@@ -14,6 +14,7 @@ class TokenUse extends View {
 			token : d.token,
 		};
 		this.div = d.div;
+		this.term = d.term;
 	}
 
 	async get() {
@@ -36,6 +37,11 @@ class TokenUse extends View {
 					} catch (e) {
 						UI.alert(e);
 					}
+				}
+			},{
+				text : 'BACK',
+				click : async () => {
+					this.term();
 				}
 			}],
 		});

@@ -59,8 +59,12 @@ Rpc = {
 var UI = {
 	alert : function(msg, data) {
 		var l = _L(msg, data);
+		l = l ? l : msg;
+		if (msg.stack) {
+			l = l + '\n' + msg.stack;
+		}
 		var div = UI.popup(400, 150);
-		div.text(l ? l : msg);
+		div.text(l);
 	},
 
 	popup : function(w, h) {
