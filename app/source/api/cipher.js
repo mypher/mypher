@@ -40,7 +40,7 @@ module.exports = {
 			});
 			let ret = [];
 			let ex = new RegExp(d.name);
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (ex.exec(v.name)!=null) {
 					ret.push(v);
 				}
@@ -60,7 +60,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (v.tags.includes(d.tag)) {
 					ret.push(v);
 				}
@@ -131,7 +131,7 @@ module.exports = {
 				lower_bound : min,
 				upper_bound : max + 1,
 			});
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				ret.push({
 					cipherid : v.cipherid,
 					name : v.name,
@@ -170,12 +170,10 @@ module.exports = {
 				table : 'cdraft',
 				limit : -1,
 			});
-			if (sdata && sdata.rows instanceof Array) {
-				for (let i=sdata.rows.length-1; i>=0; i-- ) {
-					const rec = sdata.rows[i];
-					if (rec.editors.length===1&&rec.editors[0]===d.user) {
-						return rec.cdraftid;
-					}
+			for (let i=sdata.length-1; i>=0; i-- ) {
+				const rec = sdata[i];
+				if (rec.editors.length===1&&rec.editors[0]===d.user) {
+					return rec.cdraftid;
 				}
 			}
 			return -1;
@@ -295,10 +293,7 @@ module.exports = {
 				table : 'cdraft',
 				limit : -1,
 			});
-			if (data&&data.rows) {
-				return data.rows;
-			}
-			return [];
+			return data;
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}

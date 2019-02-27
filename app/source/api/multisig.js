@@ -195,7 +195,7 @@ module.exports = {
 
 	get_tran_list : async d => {
 		try {
-			const data = await eos.get_table_rows({
+			const data = await eos.getData({
 				code : 'eosio.msig',
 				scope : d.account,
 				table : 'proposal'
@@ -211,7 +211,7 @@ module.exports = {
 		try {
 			const data = await eos.getDataWithPKey({
 				code : 'eosio.msig',
-				scope : d.account[0],
+				scope : d.account,
 				table : 'proposal'
 			}, d.proposal_name);
 			if (data===null||data.length===0) {
@@ -219,7 +219,7 @@ module.exports = {
 			}
 			const mstrans = await eos.deserializeTransaction(data[0].packed_transaction);
 			if (mstrans) {
-				data[0].tranasction = await Promise.all(mstrans.actions.map(async v => {
+				data[0].transaction = await Promise.all(mstrans.actions.map(async v => {
 					if (v.data) {
 						v.data =  await eos.deserializeActionData(v.account, v.name, v.data);
 					}
@@ -228,9 +228,9 @@ module.exports = {
 			}
 			const data2 = await eos.getDataWithPKey({
 				code : 'eosio.msig',
-				scope : d.account[0],
+				scope : d.account,
 				table : 'approvals'
-			}, d.name);
+			}, d.proposal_name);
 			if (data2===null||data2.length===0) {
 				return {code:'NOT_FOUND'};
 			}

@@ -87,7 +87,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach( v=> {
+			data.forEach( v=> {
 				if (v.name.includes(d.name)) {
 					ret.push(v);
 				}
@@ -138,8 +138,8 @@ module.exports = {
 				upper_bound : max + 1,
 			});
 			let ret = [];
-			for (let i in data.rows) {
-				const v  = data.rows[i];
+			for (let i in data) {
+				const v  = data[i];
 				const idata = await eos.getData({
 					code : 'myphersystem',
 					scope : v.tokenid,
@@ -156,14 +156,14 @@ module.exports = {
 					lower_bound : v.issuer,
 				});
 				let issuer = {};
-				if (pdata.rows.length===1) {
-					issuer = pdata.rows[0];
+				if (pdata.length===1) {
+					issuer = pdata[0];
 				}
 				ret.push({
 					tokenid : v.tokenid,
 					issuer : issuer,
 					name : v.name,
-					quantity : idata.rows[0].quantity,
+					quantity : idata[0].quantity,
 				});
 			}
 			return ret;
@@ -234,7 +234,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (String(v.tokenid).includes(n) || v.name.includes(n)) {
 					ret.push({
 						tokenid : v.tokenid,
@@ -258,7 +258,7 @@ module.exports = {
 			});
 			let ret = [];
 			n = parseInt(n);
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (v.issuer === n) {
 					ret.push({
 						tokenid : v.tokenid,
@@ -297,7 +297,7 @@ module.exports = {
 				lower_bound : min,
 				upper_bound : max + 1,
 			});
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				ret.push({
 					tokenid : v.tokenid,
 					name : v.name,

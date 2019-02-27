@@ -22,7 +22,7 @@ class PayReq {
 	async current() {
 		try {
 			if (this.data.proposer && this.data.proposal_name) {
-				ms = await Rpc.call(
+				let ms = await Rpc.call(
 					'multisig.get_tran_info',
 					[{account : this.data.proposer, proposal_name : this.data.proposal_name}]
 				);
@@ -38,7 +38,7 @@ class PayReq {
 					this.data.quantity = '';
 				}
 				if (this.data.payer) {
-					let ms = await Rpc.call('multisig.search', [{id:d.payer}]);
+					ms = await Rpc.call('multisig.search', [{id:this.data.payer}]);
 					this.data.eos_approvers = ms.coowner;
 					this.data.nof_eos_approvers = ms.threshold;
 				}
@@ -49,9 +49,51 @@ class PayReq {
 	}
 
 	async refresh() {
-		const btns = await this.initButtons()
+		const button = await this.initButtons();
+		const userevt = {
+			click : key => {
+				let user = new User({
+					div : $('#main'),
+					name : key 
+				});
+				History.run(_L('USER'), user);
+			},
+			change : elm => {
+				Rpc.call('person.list_byname', [elm.input.val()])
+				.then(ret => {
+					let l = [];
+					ret.forEach(v => {
+						l.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
+					});
+					elm.obj.pulldown(l);
+				}).catch(e => {
+					UI.alert(e);
+				});
+			},
+			name : async l => {
+				try {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
+					});
+					return ret;
+				} catch (e) {
+					UI.alert(e);
+					return [];
+				}
+			},
+
+		};
 		await Util.load(this.div, 'parts/payreq.html', this.mode, {
-			button : btns
+			button,
+			eos_approvers : userevt, 
 		});
 		Util.setData(this.div, this.data);
 	}
@@ -68,3 +110,5 @@ class PayReq {
 	}
 
 }
+
+//# sourceURL=payreq.js

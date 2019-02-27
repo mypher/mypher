@@ -18,7 +18,7 @@ _ = {
 		System.loadModule('tokenuse');
 		System.loadModule('multisig');
 		System.loadModule('debuglayout');
-		System.loadModule('reqpay');
+		System.loadModule('payreq');
 		Header.init($('#head')).then(() => {
 			_.showSearch();
 		});

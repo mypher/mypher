@@ -79,7 +79,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach( v=> {
+			data.forEach( v=> {
 				if (v.name.includes(d.name)) {
 					ret.push(v);
 				}
@@ -100,7 +100,7 @@ module.exports = {
 			});
 			let ret = [];
 			d = parseInt(d);
-			data.rows.forEach( v=> {
+			data.forEach( v=> {
 				if (v.cipherid === d) {
 					ret.push(v);
 				}
@@ -218,7 +218,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (String(v.tformalid).includes(n) || v.name.includes(n)) {
 					ret.push({
 						tformalid : v.tformalid,
@@ -243,7 +243,7 @@ module.exports = {
 				limit :-1 
 			});
 			let ret =[];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (d.list.includes(v.tdraftid)) {
 					ret.push({
 						tdraftid : v.tdraftid,

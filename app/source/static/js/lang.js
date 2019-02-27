@@ -169,6 +169,8 @@ var $L = {
 		'PAYER' : '支払いアカウント',
 		'MEMO' : 'メモ',
 		'DETAILS' : '詳細',
+		'IN_REQUEST_PAYMENT' : '支払い申請中',
+		'RECEIPIENT' : '受取人',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

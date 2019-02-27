@@ -114,10 +114,51 @@ User.prototype = {
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
 			];
 		const col2 = [
-			{ width : 10, label : _L('NAME'), name : 'proposal_name' },
+			{ width : 10, label : _L('NAME2'), name : 'proposal_name' },
 			{ width : 2, label : _L(''), btn : 'DETAILS' },
 			
 		];
+		const userevt = {
+			click : key => {
+				let user = new User({
+					div : $('#main'),
+					name : key 
+				});
+				History.run(_L('USER'), user);
+			},
+			change : elm => {
+				Rpc.call('person.list_byname', [elm.input.val()])
+				.then(ret => {
+					let l = [];
+					ret.forEach(v => {
+						l.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
+					});
+					elm.obj.pulldown(l);
+				}).catch(e => {
+					UI.alert(e);
+				});
+			},
+			name : async l => {
+				try {
+					l = await Rpc.call('person.name', [l]);
+					let ret = [];
+					l.forEach(v => {
+						ret.push({
+							key : v.personid,
+							name : v.name + '（' + v.personid + '）'
+						});
+					});
+					return ret;
+				} catch (e) {
+					UI.alert(e);
+					return [];
+				}
+			},
+
+		};
 		await Util.load(this.div, 'parts/user.html', this.mode, {
 			button :btn,
 			tags :[{
@@ -181,11 +222,11 @@ User.prototype = {
 				onadd : () => {}
 			},
 			payreqlist : {
-				col2,
+				col : col2,
 				key : [],
-				ondata : (d. list) => {
+				ondata : (d, list) => {
 					Rpc.call('multisig.get_tran_list', [{
-						account : this.personid,
+						account : this.data.personid,
 					}]).then(ret => {
 						list.show(ret);
 					}).catch (e=> {
@@ -195,11 +236,11 @@ User.prototype = {
 				onselect : (d, list) => {
 				},
 				onbutton : (d, list) => {
-					const div = UI.popup(500,400);
+					const div = UI.popup(650,400);
 					const pr = new PayReq({
 						div,
-						proposer : this.personid,
-						proposal_name : d.proposal_name,
+						proposer : this.data.personid,
+						proposal_name : d.val.proposal_name,
 						term : () => {
 							UI.closePopup();
 						}

@@ -72,7 +72,11 @@ module.exports = {
 	},
 
 	getData : async function(d) {
-		return await rpc.get_table_rows(d);
+		const ret = await rpc.get_table_rows(d);
+		if (ret && ret.rows instanceof Array) {
+			return ret.rows;
+		}
+		return [];
 	},
 
 	getDataWithPKey : async function(d, key, limit) {

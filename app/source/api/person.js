@@ -80,16 +80,13 @@ module.exports = {
 				table : 'person',
 				limit : -1,
 			});
-			if (data.rows && data.rows instanceof Array) {
-				let ret = [];
-				data.rows.forEach(v=> {
-					if (v.tags.includes(d)) {
-						ret.push(v);
-					}
-				});
-				return ret;
-			}
-			return [];
+			let ret = [];
+			data.forEach(v=> {
+				if (v.tags.includes(d)) {
+					ret.push(v);
+				}
+			});
+			return ret;
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}
@@ -118,7 +115,7 @@ module.exports = {
 				upper_bound : max + 'a',
 			});
 			let ret = [];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				ret.push({
 					personid : v.personid,
 					name : v.name,
@@ -138,7 +135,7 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			data.rows.forEach(v => {
+			data.forEach(v => {
 				if (v.personid.includes(n) || v.name.includes(n)) {
 					ret.push({
 						personid : v.personid,
