@@ -129,7 +129,7 @@ class Task {
 						'multisig.get_tran_info',
 						[{account : this.data.pic, proposal_name : this.data.payment}]
 					);
-					this.data.approve_payment = ms.approved
+					this.data.approve_payment = ms.approved;
 				}
 			}
 		} catch (e) {

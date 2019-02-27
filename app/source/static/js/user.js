@@ -113,6 +113,11 @@ User.prototype = {
 					{ width : 5, label : _L('NAME2'), name : 'name' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
 			];
+		const col2 = [
+			{ width : 10, label : _L('NAME'), name : 'proposal_name' },
+			{ width : 2, label : _L(''), btn : 'DETAILS' },
+			
+		];
 		await Util.load(this.div, 'parts/user.html', this.mode, {
 			button :btn,
 			tags :[{
@@ -135,7 +140,7 @@ User.prototype = {
 						list : this.data.tokenlist,
 						personid : this.data.personid,
 					}]).then(ret => {
-						let l = [];
+						const l = [];
 						ret.forEach(v => {
 							l.push({
 								tokenid : v.tokenid,
@@ -160,7 +165,7 @@ User.prototype = {
 				onbutton : (d, list) => {
 					const div = UI.popup(500,300);
 					const tu = new TokenUse({
-						div : div,
+						div,
 						personid : self.data.personid,
 						person : self.data.name,
 						tokenid : d.val.tokenid,
@@ -175,6 +180,33 @@ User.prototype = {
 				},
 				onadd : () => {}
 			},
+			payreqlist : {
+				col2,
+				key : [],
+				ondata : (d. list) => {
+					Rpc.call('multisig.get_tran_list', [{
+						account : this.personid,
+					}]).then(ret => {
+						list.show(ret);
+					}).catch (e=> {
+						UI.alert(e);
+					});
+				},
+				onselect : (d, list) => {
+				},
+				onbutton : (d, list) => {
+					const div = UI.popup(500,400);
+					const pr = new PayReq({
+						div,
+						proposer : this.personid,
+						proposal_name : d.proposal_name,
+						term : () => {
+							UI.closePopup();
+						}
+					});
+					pr.draw();
+				}
+			}
 		});
 		Util.setData(this.div, this.data);
 	},

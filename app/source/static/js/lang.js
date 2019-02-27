@@ -166,6 +166,9 @@ var $L = {
 		'APPROVAL_FOR_PAYMENT' : '支払い承認',
 		'COMPLETE' : '完了',
 		'NOCOMPLETE' : '未完了',
+		'PAYER' : '支払いアカウント',
+		'MEMO' : 'メモ',
+		'DETAILS' : '詳細',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

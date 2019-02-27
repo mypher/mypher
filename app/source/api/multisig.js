@@ -193,6 +193,20 @@ module.exports = {
 		}
 	},
 
+	get_tran_list : async d => {
+		try {
+			const data = await eos.get_table_rows({
+				code : 'eosio.msig',
+				scope : d.account,
+				table : 'proposal'
+			});
+			return data;
+		} catch (e) {
+			console.log(e);
+			return cmn.parseEosError(e);
+		}
+	},
+
 	get_tran_info : async d => {
 		try {
 			const data = await eos.getDataWithPKey({
@@ -206,7 +220,9 @@ module.exports = {
 			const mstrans = await eos.deserializeTransaction(data[0].packed_transaction);
 			if (mstrans) {
 				data[0].tranasction = await Promise.all(mstrans.actions.map(async v => {
-					v.data =  await eos.deserializeActionData(v.account, v.name, v.data);
+					if (v.data) {
+						v.data =  await eos.deserializeActionData(v.account, v.name, v.data);
+					}
 					return v;
 				}));
 			}

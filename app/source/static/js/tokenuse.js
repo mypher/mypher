@@ -18,6 +18,17 @@ class TokenUse extends View {
 	}
 
 	async get() {
+		try {
+			const info = await Rpc.call(
+				'token.get',
+				[{tokenid:this.data.tokenid}]
+			);
+			info.cdraftid = this.data.cdraftid;
+			info.editors = this.data.editors;
+			this.data = info;
+		} catch (e) {
+			UI.alert(e);
+		}
 	}
 
 	save() {
