@@ -170,7 +170,7 @@ var $L = {
 		'MEMO' : 'メモ',
 		'DETAILS' : '詳細',
 		'IN_REQUEST_PAYMENT' : '支払い申請中',
-		'RECEIPIENT' : '受取人',
+		'RECIPIENT' : '受取人',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',
@@ -206,6 +206,7 @@ var $L = {
 		'INVALID_KEY' : 'キーが正しくありません。',
 		'FAILED_TO_GET_DATA' : 'データの取得に失敗しました。',
 		'NOT_FOUND' : '対象が見つかりませんでした。',
+		'SUCCESS_TO_GET_PAID' : '受取が完了しました。',
 
 		'E1' : '対象データが見つかりませんでした。(E1)',
 		'E2' : '入力内容に誤りがあります。(E2)',

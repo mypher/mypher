@@ -236,7 +236,7 @@ User.prototype = {
 				onselect : (d, list) => {
 				},
 				onbutton : (d, list) => {
-					const div = UI.popup(650,400);
+					const div = UI.popup(800,600);
 					const pr = new PayReq({
 						div,
 						proposer : this.data.personid,

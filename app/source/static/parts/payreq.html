@@ -4,13 +4,12 @@
 -->
 <div>
 	<h2 ltext="PROPOSE_PAYMENTS"/>
-	<div formtype="short" ltext="RECEIPIENT" field="receipient" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="short" ltext="RECIPIENT" field="recipient" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
 	<div formtype="short" ltext="PROPOSE_NAME" field="proposal_name" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
 	<br class="sep"/>
 	<div formtype="short" ltext="QUANTITY" field="quantity" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
-	<div formtype="long" ltext="APPROVAL_FOR_PAYMENT" field="approve_payment" ctrl="elm" proc="approve_results" disable_on="add,edit,ref" hide_on="add,edit"/>
-	<div formtype="short" ltext="COMPLETE" ctrl="radio" field="completed" hide_on="add,edit" disable_on="add,edit,ref" proc="type" sel="0:NOCOMPLETE,1:COMPLETE"/>
-	<div class="clause"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PAYMENT" field="approve_payment" ctrl="elm" proc="approve_payment" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="MEMO" field="memo" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
 	<div class="special" name="payer">
 	<div formtype="short" ltext="MULTISIG" field="payer" ctrl="editleft" disable_on="add,edit,ref"/>
 	<br class="sep"/>

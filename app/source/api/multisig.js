@@ -28,7 +28,7 @@ async function genkey() {
 	};
 }
 
-module.exports = {
+const multisig = module.exports = {
 	create : async function(d) {
 		try {
 			// check the patameters
@@ -372,5 +372,15 @@ module.exports = {
 				executer : d.sender,
 			},
 		};
+	},
+
+	exec : async d => {
+		const transaction = multisig.get_execute_data(d);
+		try {
+			return await eos.pushAction({ actions :[ transaction ] });
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
 	}
 };

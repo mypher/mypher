@@ -635,7 +635,6 @@ class Task {
 						sender : Account.user,
 						multisig : data.multisig,
 						quantity : data.amount,
-						memo : 'cipher:' + data.cipher + ', task:' + data.name,
 						proposal_name,
 						tformalid : data.tformalid,
 					}]

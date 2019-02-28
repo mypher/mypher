@@ -29,13 +29,15 @@ class PayReq {
 				this.data.approve_payment = ms.approved;
 				if (ms.transaction[0]&&ms.transaction[0].data) {
 					const data = ms.transaction[0].data;
-					this.data.receipient = data.to;
+					this.data.recipient = data.to;
 					this.data.quantity = data.quantity;
 					this.data.payer = data.from;
+					this.data.memo = data.memo;
 				} else {
 					this.data.payer = '';
-					this.data.receipient = '';
+					this.data.recipient = '';
 					this.data.quantity = '';
+					this.data.memo = '';
 				}
 				if (this.data.payer) {
 					ms = await Rpc.call('multisig.search', [{id:this.data.payer}]);
@@ -59,19 +61,6 @@ class PayReq {
 				History.run(_L('USER'), user);
 			},
 			change : elm => {
-				Rpc.call('person.list_byname', [elm.input.val()])
-				.then(ret => {
-					let l = [];
-					ret.forEach(v => {
-						l.push({
-							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
-						});
-					});
-					elm.obj.pulldown(l);
-				}).catch(e => {
-					UI.alert(e);
-				});
 			},
 			name : async l => {
 				try {
@@ -93,6 +82,7 @@ class PayReq {
 		};
 		await Util.load(this.div, 'parts/payreq.html', this.mode, {
 			button,
+			approve_payment : userevt,
 			eos_approvers : userevt, 
 		});
 		Util.setData(this.div, this.data);
@@ -100,13 +90,91 @@ class PayReq {
 
 	async initButtons() {
 		const btns = [];
+		const type = await this.getType();
+		if (type.canApprove) {
+			btns.push({
+				text : 'SIGN_TO_PAYMENT_REQ',
+				click : () => {
+					this.sign();
+				}
+			});
+		}
+		if (type.canReqPay) {
+			btns.push({
+				text : 'GET_PAID',
+				click : () => {
+					this.get_paid();
+				}
+			});
+		}
 		btns.push({
-			texxt : 'BACK',
+			text : 'BACK',
 			click : () => {
 				this.term();
 			}
 		});
 		return btns;
+	}
+
+	async getType() {
+		const d = this.data;
+		const approver = d.eos_approvers.includes(Account.user);
+		const approved = d.approve_payment.includes(Account.user);
+
+		return {
+			recipient : (Account.user===d.recipient),
+			canApprove : approver&&!approved,
+			canReqPay : d.approve_payment.length>=d.nof_eos_approvers,
+		};
+	}
+
+	async sign() {
+		try {
+			await Rpc.call(
+				'multisig.sign',
+				[{
+					sender : Account.user,
+					proposer : this.data.recipient,
+					proposal_name : this.data.proposal_name
+				}]
+			);
+			this.draw();
+		} catch (e) {
+			UI.alert(e);
+		}
+	}
+
+	async get_paid() {
+		const taskinf = /task:.*#(.*)/.exec(this.data.memo);
+		if (taskinf) {
+			try {
+				await Rpc.call(
+					'task.exec_payment',
+					[{
+						sender : Account.user,
+						proposal_name : this.data.proposal_name,
+						tformalid : RegExp.$1
+					}]
+				);
+				UI.alert('SUCCESS_TO_GET_PAID');
+			} catch (e) {
+				UI.alert(e);
+			}
+		} else {
+			try {
+				await Rpc.call(
+					'multisig.exec',
+					[{
+						sender : Account.user,
+						proposal_name : this.data.proposal_name,
+					}]
+				);
+				UI.alert('SUCCESS_TO_GET_PAID');
+			} catch (e) {
+				UI.alert(e);
+			}
+		}
+		this.draw();
 	}
 
 }

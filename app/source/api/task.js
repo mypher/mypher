@@ -112,6 +112,34 @@ module.exports = {
 		}
 	},
 
+	get_formal : async function(d) {
+		try {
+			const tformal = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'tformal'
+			}, d.tformalid);
+			if (tformal===null||tformal.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			const tdraft = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : tformal[0].cipherid,
+				table : 'tdraft'
+			}, tformal[0].tdraftid);
+			if (tdraft===null||tdraft.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			return {
+				tdraft : this.conv4disp(tdraft[0]),
+				tformal : this.conv4disp(tformal[0])
+			};
+		} catch (e) {
+			log.error(e);
+			return cmn.parseEosError(e);
+		}
+	},
+
 	get : async function(d) {
 		try {
 			const tdraft = await eos.getDataWithPKey({
@@ -457,20 +485,21 @@ module.exports = {
 
 	},
 
-	/*
-		sender
-		multisig
-		quantity
-		memo
-		proposal_name
-		tformalid
-	*/
 	request_payment : async function(d) {
-		const transaction = await multisig.get_propose_data(d);
-		if (transaction.code) {
-			return transaction;
-		}
 		try {
+			const tformal = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'tformal'
+			}, d.tformalid);
+			if (tformal===null||tformal.length===0) {
+				return {code:'NOT_FOUND'};
+			}
+			d.memo = 'task:' + tformal.name + '#' + d.tformalid;
+			const transaction = await multisig.get_propose_data(d);
+			if (transaction.code) {
+				return transaction;
+			}
 			await eos.pushAction({
 				actions :[
 				transaction, {

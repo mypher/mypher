@@ -46,6 +46,7 @@ select {
 .special {
 	border: 3px double #ccc;
 	padding: 8px;
+	margin: 8px 0px 8px 0px;
 }
 
 .slline {
