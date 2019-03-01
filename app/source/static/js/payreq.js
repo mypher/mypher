@@ -176,7 +176,6 @@ class PayReq {
 		}
 		this.draw();
 	}
-
 }
 
 //# sourceURL=payreq.js

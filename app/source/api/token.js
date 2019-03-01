@@ -119,6 +119,28 @@ module.exports = {
 		}
 	},
 
+	get_issued_data : async function(d) {
+		try {
+			const token = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'token',
+			}, d.tokenid);
+			const issue = await eos.getDataWithPKey({
+				code : 'myphersystem',
+				scope : d.tokenid,
+				table : 'issue',
+			}, d.personid);
+			return {
+				token : (token.length===1) ? this.conv4disp(token[0]) : {},
+				issue : (issue.length===1) ? issue[0] : {}
+			};
+		} catch (e) {
+			return cmn.parseEosError(e);
+		}
+
+	},
+
 	list_for_person : async function(d) {
 		try {
 			let min = cmn.number_null;

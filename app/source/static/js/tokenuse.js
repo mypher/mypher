@@ -13,6 +13,7 @@ class TokenUse extends View {
 			tokenid : d.tokenid,
 			token : d.token,
 		};
+		this.mode = MODE.REF;
 		this.div = d.div;
 		this.term = d.term;
 	}
@@ -20,12 +21,15 @@ class TokenUse extends View {
 	async get() {
 		try {
 			const info = await Rpc.call(
-				'token.get',
-				[{tokenid:this.data.tokenid}]
+				'token.get_issued_data',
+				[{
+					tokenid : this.data.tokenid,
+					personid : this.data.personid,
+				}]
 			);
-			info.cdraftid = this.data.cdraftid;
-			info.editors = this.data.editors;
-			this.data = info;
+			this.data = info.token;
+			this.data.personid = info.issue.owner;
+			this.data.quantity = info.issue.quantity;
 		} catch (e) {
 			UI.alert(e);
 		}
@@ -62,9 +66,9 @@ class TokenUse extends View {
 	async set(data) {
 		this.data = data;
 		Util.setData(this.div, {
-			token : this.data.token + '(' + this.data.tokenid + ')',
+			token : this.data.name + '(' + this.data.tokenid + ')',
 			quantity : this.data.quantity,
-			way2use : 0,
+			disposal : 0,
 			use_quantity : 0,
 		});
 	}
