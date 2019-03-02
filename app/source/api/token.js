@@ -129,7 +129,7 @@ module.exports = {
 			const issue = await eos.getDataWithPKey({
 				code : 'myphersystem',
 				scope : d.tokenid,
-				table : 'issue',
+				table : 'issued',
 			}, d.personid);
 			return {
 				token : (token.length===1) ? this.conv4disp(token[0]) : {},
@@ -165,7 +165,7 @@ module.exports = {
 				const idata = await eos.getData({
 					code : 'myphersystem',
 					scope : v.tokenid,
-					table : 'issue',
+					table : 'issued',
 					limit : 1,
 					lower_bound : d.personid,
 				});

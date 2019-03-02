@@ -44,8 +44,16 @@ public:
 	enum Disposal {
 		NO,
 		YES,
-		// user for validatig a value
+		// use for validatig a value
 		DISPOSAL_MAX
+	};
+
+	enum ISSUE_STATUS {
+		OWN,
+		REQPAY,
+		SELL,
+		// use for validatig a value
+		ISSUE_STATUS_MAX	
 	};
 
 	/**
@@ -78,13 +86,17 @@ public:
 	/**
 	 * @brief information of issuing information of token 
 	 */
-	struct [[eosio::table]] issue {
-		account_name owner;
-		uint64_t	 quantity;
+	struct [[eosio::table]] issued {
+		uint64_t		issueid;
+		account_name	owner;
+		uint64_t		quantity;
+		uint8_t			status;
+		account_name	payinf;
 		
-		account_name primary_key() const { return owner; }
+		uint64_t primary_key() const { return issueid; }
+		uint64_t secondary_key() const { return (uint64_t)owner; }
 
-		EOSLIB_SERIALIZE( issue, (owner)(quantity) )
+		EOSLIB_SERIALIZE( issued, (issueid)(owner)(quantity)(status)(payinf) )
 	};
 
 	/**
@@ -100,9 +112,10 @@ public:
 	 * @brief the definition of the table for "issue"
 	 */
 	typedef eosio::multi_index<
-			N(issue),
-			issue
-	> issue_data;
+			N(issued),
+			issued,
+			indexed_by<N(secondary_key), const_mem_fun<issued, uint64_t, &issued::secondary_key>>
+	> issued_data;
 
 	/**
 	 * @brief create new token
@@ -139,6 +152,12 @@ public:
 	[[eosio::action]]
 	void tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity);
 
+	/**
+	 * @brief use a token 
+	 */
+	[[eosio::action]]
+	void tkreqpay(const account_name sender, const uint64_t tokenid, const uint64_t quantity, const account_name proposal_name);
+
 	//[[eosio::action]]
 	//void approve2ex(const account_name sender, const uint64_t tokenid);
 
@@ -165,6 +184,7 @@ private:
 	bool is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid);
 	void distribute(const account_name sender, const uint64_t cipherid, 
 					const uint64_t tokenid, const uint64_t quantity);
+	void can_use(const token& tok, const issued& isu, const uint64_t quantity);
 	//void transfer_currency(const account_name send, const account_name issuer, const uint32_t issuer2, const uint32_t quantity);
 
 	static uint64_t get_available_amount(const uint64_t tokenid);

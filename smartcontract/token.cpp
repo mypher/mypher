@@ -191,13 +191,14 @@ void Token::tktransfer(const account_name sender,
 				const uint64_t tokenid, const account_name recipient, const uint64_t quantity) {
 	// check the receiver
 	eosio_assert_code(Person::exists(recipient), INVALID_RECIPIENT);
-	issue_data d(self, tokenid);
-	auto rec = d.find(sender);
+	issued_data d(self, tokenid);
+	auto idx = d.get_index<N(secondary_key)>();
+	auto rec = idx.find(sender);
 	// check if sender's amount is enough to send 
-	eosio_assert_code(rec!=d.end(), INSUFFICIENT_AMOUNT);
+	eosio_assert_code(rec!=idx.end(), INSUFFICIENT_AMOUNT);
 	eosio_assert_code(rec->quantity>=quantity, INSUFFICIENT_AMOUNT);
 	// transfer the token
-	d.modify(rec, sender, [&](auto& dd) {
+	idx.modify(rec, sender, [&](auto& dd) {
 		dd.quantity -= quantity;
 	});
 	set_amount(sender, tokenid, recipient, quantity);
@@ -205,27 +206,14 @@ void Token::tktransfer(const account_name sender,
 
 void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity) {
 	token_data d(self, self);
-	issue_data d2(self, tokenid);
+	issued_data d2(self, tokenid);
+	auto idx = d2.get_index<N(secondary_key)>();
 
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
-	auto rec2 = d2.find(sender);
-	eosio_assert_code(rec2!=d2.end(), TOKEN_NOT_OWNED_BY_SENDER);
-	switch (rec->when) {
-	case When::UNALLOW:
-		eosio_assert_code(0, NOT_FULFILL_REQUIREMENT);
-	case When::COMPLETE_TASK:
-		eosio_assert_code(Task::is_results_approved(rec->taskid), NOT_FULFILL_REQUIREMENT);
-		break;
-	case When::OVER_ISSUER_OWNED_TOKEN:
-		eosio_assert_code(is_sufficient_owned_token(rec->issuer, rec->extokenid, rec->reftoken), NOT_FULFILL_REQUIREMENT);
-		break;
-	case When::ALWAYS:
-		// always allow
-		break;
-	case When::FLAG:
-		eosio_assert_code(0, NOT_IMPLEMENT_YET);
-	}
+	auto rec2 = idx.find(sender);
+	eosio_assert_code(rec2!=idx.end(), TOKEN_NOT_OWNED_BY_SENDER);
+	can_use(*rec, *rec2, quantity);
 
 	switch (rec->type) {
 	case Type::NONE:
@@ -239,7 +227,49 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	case Type::DISTRIBUTE_CRYPTOCURRENCY:
 		eosio_assert_code(0, NOT_IMPLEMENT_YET);
 	}
-	eosio::print("##token::use is not implemented");
+}
+
+// it is the premise that eosio.msig::propose is called in the same set of transactions
+void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const uint64_t quantity, const account_name proposal_name) {
+	token_data d(self, self);
+	issued_data d2(self, tokenid);
+	auto idx = d2.get_index<N(secondary_key)>();
+	auto rec = d.find(tokenid);
+	eosio_assert_code(rec!=d.end(), NOT_FOUND);
+	auto rec2 = idx.find(sender);
+	eosio_assert_code(rec2!=idx.end(), TOKEN_NOT_OWNED_BY_SENDER);
+	can_use(*rec, *rec2, quantity);
+	eosio_assert_code(rec->type==Type::DISTRIBUTE_CRYPTOCURRENCY, INVALID_PARAM);
+	idx.modify(rec2, sender, [&]( auto& a) {
+		a.quantity -= quantity;
+	});
+	auto prikey = d2.available_primary_key();
+	d2.emplace( sender, [&]( auto& a) {
+		a.issueid = prikey;
+		a.owner = sender;
+		a.quantity = quantity;
+		a.status = REQPAY;
+		a.payinf = proposal_name;
+	});
+}
+
+void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {
+	eosio_assert_code(isu.quantity>=quantity, INSUFFICIENT_AMOUNT);
+	switch (tok.when) {
+	case When::UNALLOW:
+		eosio_assert_code(0, NOT_FULFILL_REQUIREMENT);
+	case When::COMPLETE_TASK:
+		eosio_assert_code(Task::is_results_approved(tok.taskid), NOT_FULFILL_REQUIREMENT);
+		break;
+	case When::OVER_ISSUER_OWNED_TOKEN:
+		eosio_assert_code(is_sufficient_owned_token(tok.issuer, tok.extokenid, tok.reftoken), NOT_FULFILL_REQUIREMENT);
+		break;
+	case When::ALWAYS:
+		// always allow
+		break;
+	case When::FLAG:
+		eosio_assert_code(0, NOT_IMPLEMENT_YET);
+	}
 }
 
 void Token::distribute(const account_name sender, const uint64_t cipherid,  
@@ -259,7 +289,7 @@ void Token::transfer_currency(const account_name sender,
 
 uint64_t Token::get_available_amount(const uint64_t tokenid) {
 	token_data d(SELF, SELF);
-	issue_data d2(SELF, tokenid);
+	issued_data d2(SELF, tokenid);
 
 	auto rec = d.find(tokenid);
 	if (rec==d.end()) {
@@ -273,21 +303,24 @@ uint64_t Token::get_available_amount(const uint64_t tokenid) {
 }
 
 bool Token::is_issued(const uint64_t tokenid) {
-	issue_data d(SELF, tokenid);
+	issued_data d(SELF, tokenid);
 	return (d.begin()!=d.end());
 }
 
 void Token::set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint64_t quantity) {
-	issue_data d(SELF, tokenid);
-	auto rec = d.find(user);
+	issued_data d(SELF, tokenid);
+	auto idx = d.get_index<N(secondary_key)>();
+	auto rec = idx.find(user);
 	// first time to issue to specified receiver
-	if (rec==d.end()) {
+	if (rec==idx.end()) {
+		uint64_t id = d.available_primary_key();
 		d.emplace(sender, [&](auto& dd) {
+			dd.issueid = id;
 			dd.owner = user;
 			dd.quantity = quantity;
 		});
 	} else {
-		d.modify(rec, sender, [&](auto& dd) {
+		idx.modify(rec, sender, [&](auto& dd) {
 			dd.quantity += quantity;
 		});
 	}
