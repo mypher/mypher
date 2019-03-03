@@ -5,6 +5,13 @@
 
 class Token extends View {
 
+	static TYPE = {
+		NONE : 0,
+		PUBLISH_QRCODE : 1,
+		DISTRIBUTE_TOKEN : 2,
+		DISTRIBUTE_CRYPTOCURRENCY : 3,
+	}
+	
 	constructor(d) {
 		super();
 		this.div = d.div;

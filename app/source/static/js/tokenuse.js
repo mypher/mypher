@@ -27,7 +27,12 @@ class TokenUse extends View {
 					personid : this.data.personid,
 				}]
 			);
+			const token = await Rpc.call(
+				'token.get',
+				[{tokenid:this.data.tokenid}]
+			);
 			this.data = info.token;
+			this.data.type = token.type;
 			this.data.personid = info.issue.owner;
 			this.data.quantity = info.issue.quantity;
 		} catch (e) {
@@ -43,15 +48,7 @@ class TokenUse extends View {
 			button : [{
 				text : 'USE',
 				click : async () => {
-					try {
-						await Rpc.call('token.use', [{
-							sender : this.data.personid,
-							tokenid : this.data.tokenid,
-							quantity : $('[field="use_quantity"]').val(),
-						}]);
-					} catch (e) {
-						UI.alert(e);
-					}
+					await this.use();
 				}
 			},{
 				text : 'BACK',
@@ -61,6 +58,48 @@ class TokenUse extends View {
 			}],
 		});
 		this.set(this.data);
+	}
+
+	async use() {
+		if (parseInt(this.data.type)===Token.TYPE.DISTRIBUTE_CRYPTOCURRENCY) {
+			const div = UI.popup(600,200);
+			const click = async () => {
+				try {
+					const proposal_name = div.find('[field="propose_name"]').eq(0).val();
+					await Rpc.call('token.reqpay', [{
+						sender : this.data.personid,
+						tokenid : this.data.tokenid,
+						quantity : $('[field="use_quantity"]').val(),
+						proposal_name,
+					}]);
+					UI.closePopup(); // ReqPay
+					UI.closePopup(); // TOkenUSe
+				} catch (e) {
+					UI.alert(e);
+				}
+			}
+			await Util.load(div, 'parts/reqpay.html', MODE.NEW, {
+				button : [{
+					text : 'PROPOSE_PAYMENTS',
+					click,
+				},{
+					text : 'BACK',
+					click : () => {
+						UI.closePopup();
+					}
+				}]
+			});
+		} else {
+			try {
+				await Rpc.call('token.use', [{
+					sender : this.data.personid,
+					tokenid : this.data.tokenid,
+					quantity : $('[field="use_quantity"]').val(),
+				}]);
+			} catch (e) {
+				UI.alert(e);
+			}
+		}
 	}
 
 	async set(data) {
