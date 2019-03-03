@@ -21,6 +21,10 @@ module.exports = {
 		d.reftoken = cmn.st2num(d.reftoken);
 		d.rcalctype = cmn.st2ui8(d.rcalctype);
 		d.nofdesttoken = cmn.st2num(d.nofdesttoken);
+		if (d.nofdesteos) {
+			d.nofdesteos *= 10000;
+		}
+		d.nofdesteos = cmn.st2num(d.nofdesteos);
 		return d;
 	},
 	conv4disp : function(d) {
@@ -33,6 +37,10 @@ module.exports = {
 		d.reftoken = cmn.num2st(d.reftoken);
 		d.rcalctype = cmn.ui82st(d.rcalctype);
 		d.nofdesttoken = cmn.num2st(d.nofdesttoken);
+		if (d.nofdesteos) {
+			d.nofdesteos /= 10000;
+		}
+		d.nofdesteos = cmn.num2st(d.nofdesteos);
 		return d;
 	},
 
@@ -126,14 +134,14 @@ module.exports = {
 				scope : 'myphersystem',
 				table : 'token',
 			}, d.tokenid);
-			const issue = await eos.getDataWithPKey({
+			const issue = await eos.getDataWithSubKey({
 				code : 'myphersystem',
 				scope : d.tokenid,
 				table : 'issued',
-			}, d.personid);
+			}, 2, 'i64', d.personid, d.personid + 1);
 			return {
 				token : (token.length===1) ? this.conv4disp(token[0]) : {},
-				issue : (issue.length===1) ? issue[0] : {}
+				issue : (issue.length>0) ? issue[0] : {}
 			};
 		} catch (e) {
 			return cmn.parseEosError(e);
@@ -162,13 +170,11 @@ module.exports = {
 			let ret = [];
 			for (let i in data) {
 				const v  = data[i];
-				const idata = await eos.getData({
+				const idata = await eos.getDataWithSubKey({
 					code : 'myphersystem',
 					scope : v.tokenid,
 					table : 'issued',
-					limit : 1,
-					lower_bound : d.personid,
-				});
+				}, 2, 'i64', d.personid, d.personid + 1);
 				//const d = cipher.getFormalFromCipherID({cipherid:v.issuer});
 				const pdata = await eos.getData({
 					code : 'myphersystem',
@@ -181,11 +187,16 @@ module.exports = {
 				if (pdata.length===1) {
 					issuer = pdata[0];
 				}
-				ret.push({
-					tokenid : v.tokenid,
-					issuer : issuer,
-					name : v.name,
-					quantity : idata[0].quantity,
+				if (!idata) continue;
+				idata.forEach(issued=> {
+					ret.push({
+						tokenid : v.tokenid,
+						issuer : issuer,
+						name : v.name,
+						quantity : issued.quantity,
+						status : issued.status,
+						payinf : issued.payinf,
+					});
 				});
 			}
 			return ret;

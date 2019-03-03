@@ -17,7 +17,10 @@ module.exports = {
 		d.tdraftid = cmn.st2num(d.tdraftid);
 		d.rewardid = cmn.st2num(d.rewardid);
 		d.noftoken = cmn.st2num(d.noftoken);
-		d.amount = cmn.st2num(d.amount*10000);
+		if (d.amount) {
+			d.amount *= 10000;
+		}
+		d.amount = cmn.st2num(d.amount);
 		d.nofapproval = cmn.st2num(d.nofapproval);
 		return d;		
 	},
@@ -26,7 +29,10 @@ module.exports = {
 		d.tdraftid = cmn.num2st(d.tdraftid);
 		d.rewardid = cmn.num2st(d.rewardid);
 		d.noftoken = cmn.num2st(d.noftoken);
-		d.amount = cmn.num2st(d.amount/10000);
+		if (d.amount) {
+			d.amount /= 10000;
+		}
+		d.amount = cmn.num2st(d.amount);
 		d.nofapproval = cmn.num2st(d.nofapproval);
 		return d;		
 	},
