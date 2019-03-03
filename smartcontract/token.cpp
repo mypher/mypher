@@ -9,6 +9,8 @@
 #include "cipher.hpp"
 #include "person.hpp"
 #include "task.hpp"
+#include "multisig.hpp"
+//#include <sstream>
 
 namespace mypher {
 
@@ -17,7 +19,7 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken, 
-			   const uint8_t rcalctype, const uint64_t nofdesttoken, const double_t nofdesteos) {
+			   const uint8_t rcalctype, const uint64_t nofdesttoken, const uint64_t nofdesteos) {
 
 	token_data d(self, self);
 	uint64_t id = d.available_primary_key();
@@ -56,7 +58,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 			   const string& name, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint32_t reftoken,  
-			   const uint8_t rcalctype, const uint32_t nofdesttoken, double_t nofdesteos ) {
+			   const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos ) {
 
 	token_data d(self, self);
 	auto rec = d.find(tokenid);
@@ -119,7 +121,7 @@ void Token::check_data( const account_name sender,
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken,
 			   const uint8_t rcalctype, const uint64_t nofdesttoken,
-			   const double_t nofdesteos ) {
+			   const uint64_t nofdesteos ) {
 
 	// check if sender is login user
 	require_auth(sender);
@@ -229,10 +231,11 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	}
 }
 
-// it is the premise that eosio.msig::propose is called in the same set of transactions
 void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const uint64_t quantity, const account_name proposal_name) {
 	token_data d(self, self);
 	issued_data d2(self, tokenid);
+	Cipher::cformal_data d3(self, self);
+
 	auto idx = d2.get_index<N(secondary_key)>();
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -244,13 +247,23 @@ void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const ui
 		a.quantity -= quantity;
 	});
 	auto prikey = d2.available_primary_key();
-	d2.emplace( sender, [&]( auto& a) {
+	d2.emplace(sender, [&](auto& a) {
 		a.issueid = prikey;
 		a.owner = sender;
 		a.quantity = quantity;
 		a.status = REQPAY;
 		a.payinf = proposal_name;
 	});
+
+	auto rec3 = d3.find(rec->issuer);
+	eosio_assert_code(rec3!=d3.end(), NOT_FOUND);
+	action propose;
+
+	sprintf(Mypher::buf, "token#%d", tokenid);
+
+	MultiSig::makeProposeAction(
+		propose, rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, string{Mypher::buf});
+	propose.send();
 }
 
 void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {

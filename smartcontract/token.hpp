@@ -72,7 +72,7 @@ public:
 		uint64_t		 		reftoken;
 		uint8_t 				rcalctype;
 		uint64_t 				nofdesttoken;
-		double_t 				nofdesteos;
+		uint64_t 				nofdesteos;
 		vector<account_name> 	approval_4ex;
 
 		uint64_t primary_key() const { return tokenid; }
@@ -126,7 +126,7 @@ public:
 			const uint64_t limit, const uint8_t when, 
 			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
 			const uint64_t extokenid, const uint64_t reftoken, 
-			const uint8_t rcalctype, const uint64_t nofdesttoken, const double_t nofdesteos);
+			const uint8_t rcalctype, const uint64_t nofdesttoken, const uint64_t nofdesteos);
 
 	/**
 	 * @brief update token data
@@ -137,7 +137,7 @@ public:
 			const string& name, const uint64_t limit, const uint8_t when, 
 			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
 			const uint64_t extokenid, const uint32_t reftoken,  
-			const uint8_t rcalctype, const uint32_t nofdesttoken, double_t nofdesteos);
+			const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos);
 
 	/**
 	 * @brief transfer a token 
@@ -179,7 +179,7 @@ private:
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken,  
 			   const uint8_t rcalctype, const uint64_t nofdevtoken,
-			   const double_t nofdesteos );
+			   const uint64_t nofdesteos );
 
 	bool is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid);
 	void distribute(const account_name sender, const uint64_t cipherid, 

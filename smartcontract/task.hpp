@@ -17,7 +17,7 @@ namespace mypher {
 
 /**
  * @defgroup mypher
- * @class cipher
+ * @class Task
  * @brief the contract for dealing with task
  */
 class Task : virtual public MypherBase {
