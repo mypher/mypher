@@ -10,7 +10,9 @@
 #include "person.hpp"
 #include "task.hpp"
 #include "multisig.hpp"
-//#include <sstream>
+#include "common/prim.hpp"
+#include <stdio.h>
+#include <eosiolib/transaction.hpp>
 
 namespace mypher {
 
@@ -257,13 +259,29 @@ void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const ui
 
 	auto rec3 = d3.find(rec->issuer);
 	eosio_assert_code(rec3!=d3.end(), NOT_FOUND);
-	action propose;
-
-	sprintf(Mypher::buf, "token#%d", tokenid);
-
-	MultiSig::makeProposeAction(
-		propose, rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, string{Mypher::buf});
-	propose.send();
+	//action propose;
+	string memo("token#");
+	char tmp[50];
+	Prim::itoa16(tmp, tokenid);
+	memo += tmp;
+	//MultiSig::makeProposeAction(
+	//	propose, rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
+	//propose.send();
+	transaction trans;
+	trans.actions.push_back(action(
+		permission_level{rec3->multisig, N(active)},
+		N(eosio.token),              
+  		N(transfer),
+   		std::make_tuple(rec3->multisig, sender, "1.0001 SYS", "test")
+	));
+	permission_level perm[1] = {permission_level{rec3->multisig, N(active)}};
+	action(
+		permission_level{sender, N(active)},
+		N(eosio.msig), N(propose), 
+		std::make_tuple(sender, proposal_name, perm, trans)
+	).send();
+	//MultiSig::sendProposeAction(
+	//	rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
 }
 
 void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {

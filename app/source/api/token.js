@@ -85,6 +85,8 @@ module.exports = {
 
 	reqpay : async function(d) {
 		try {
+			d.tokenid = cmn.st2num(d.tokenid);
+			d.quantity = cmn.st2num(d.quantity);
 			d = await eos.pushAction({
 				actions :[{
 					account : 'myphersystem',

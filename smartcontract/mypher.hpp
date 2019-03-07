@@ -26,8 +26,6 @@ public:
 	Mypher(account_name _self) 
 	: contract(_self)
 	{self = _self;}  
-
-	static char buf[50];
 };
 
 #endif // MYPHER_HPP

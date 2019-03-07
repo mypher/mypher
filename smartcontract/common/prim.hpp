@@ -11,11 +11,12 @@
 #include "type.hpp"
 
 namespace mypher {
-	class prim {
+	class Prim {
+	private:
+		static const char* chars;  
 	public:
-		//static void st2vec(const std::string& src, std::vector<std::string>& dst);
-		//static void copyvec(std::vector<std::string>& dst, const std::vector<std::string>& src);
-		//static void copyvec(std::vector<account_name>& dst, const std::vector<account_name>& src);
+		static void itoa16(char *buf, const uint64_t& v);
+		static void itoad(char *buf, const uint64_t& v);
 	};
 };
 
