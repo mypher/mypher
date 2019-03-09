@@ -242,6 +242,12 @@ void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const ui
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	auto rec2 = idx.find(sender);
+	for (; rec2!=idx.end(); ++rec2) {
+		if (rec2->payinf==N("")) {
+			break;
+		}
+		eosio_assert_code(rec2->owner==sender, TOKEN_NOT_OWNED_BY_SENDER);
+	}
 	eosio_assert_code(rec2!=idx.end(), TOKEN_NOT_OWNED_BY_SENDER);
 	can_use(*rec, *rec2, quantity);
 	eosio_assert_code(rec->type==Type::DISTRIBUTE_CRYPTOCURRENCY, INVALID_PARAM);

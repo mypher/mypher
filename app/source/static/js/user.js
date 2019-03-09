@@ -103,15 +103,17 @@ User.prototype = {
 		const col = (this.data.personid===Account.user) 
 			? [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
-					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 4, label : _L('NAME2'), name : 'name' },
+					{ width : 2, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 3, label : _L('NAME2'), name : 'name' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
+					{ width : 2, label : _L('PAYINF'), name : 'payinf' },
 					{ width : 2, label : _L(''), btn : 'USE_EX' },
 			] : [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
-					{ width : 4, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 5, label : _L('NAME2'), name : 'name' },
+					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
+					{ width : 4, label : _L('NAME2'), name : 'name' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
+					{ width : 2, label : _L('PAYINF'), name : 'payinf' },
 			];
 		const col2 = [
 			{ width : 10, label : _L('NAME2'), name : 'proposal_name' },
@@ -187,7 +189,8 @@ User.prototype = {
 								tokenid : v.tokenid,
 								issuer : conv(v.issuer),
 								name : v.name,
-								quantity : v.quantity
+								quantity : v.quantity,
+								payinf : v.payinf
 							});
 						});
 						list.show(l);
