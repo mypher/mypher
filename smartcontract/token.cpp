@@ -267,21 +267,8 @@ void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const ui
 	//MultiSig::makeProposeAction(
 	//	propose, rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
 	//propose.send();
-	transaction trans;
-	trans.actions.push_back(action(
-		permission_level{rec3->multisig, N(active)},
-		N(eosio.token),              
-  		N(transfer),
-   		std::make_tuple(rec3->multisig, sender, "1.0001 SYS", "test")
-	));
-	permission_level perm[1] = {permission_level{rec3->multisig, N(active)}};
-	action(
-		permission_level{sender, N(active)},
-		N(eosio.msig), N(propose), 
-		std::make_tuple(sender, proposal_name, perm, trans)
-	).send();
-	//MultiSig::sendProposeAction(
-	//	rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
+	MultiSig::sendProposeAction(
+		rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
 }
 
 void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {

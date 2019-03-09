@@ -98,7 +98,7 @@ module.exports = {
 					data:d,
 				}]
 			});
-			return {}
+			return {};
 		} catch (e) {
 			return cmn.parseEosError(e);
 		}

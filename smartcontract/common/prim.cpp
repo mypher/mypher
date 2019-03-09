@@ -15,32 +15,4 @@ namespace mypher {
 		}
 		buf[16] = 0x0;
 	}
-
-	void Prim::itoad(char *buf, const uint64_t& v) {
-		int i = 0;
-		int n1 = v;
-		bool padded = false;
-		while(n1!=0)
-		{
-			buf[i++] = n1%10+'0';
-			n1=n1/10;
-			if (i==4) {
-				buf[i++] = '.';
-			}
-		}
-		while(i<4) {
-			buf[i++] = '0';
-		}
-		if (i==4) {
-			buf[i++] = '.';
-			buf[i++] = '0';
-		}
-		buf[i] = '\0';
-		for(int t = 0; t < i/2; t++)
-		{
-			buf[t] ^= buf[i-t-1];
-			buf[i-t-1] ^= buf[t];
-			buf[t] ^= buf[i-t-1];
-		}
-	}
 };

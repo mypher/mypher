@@ -57,7 +57,7 @@ module.exports = {
 
 	pushAction : async function(d) {
 		try {
-			return await this.api.transact(d,{blocksBehind: 3, expireSeconds: 30});
+			return await this.api.transact(d,{blocksBehind: 5, expireSeconds: 2000});
 		} catch (e) {
 			throw e;
 		}

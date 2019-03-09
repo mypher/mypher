@@ -22,8 +22,6 @@ namespace mypher {
 class MultiSig {
 
 public:
-	static void makeProposeAction(action& out, const account_name& multisig, const account_name& proposal_name,
-		const account_name& recipient, const uint64_t& amount, const string& memo);
 
 	static void sendProposeAction(const account_name& multisig, const account_name& proposal_name,
 		const account_name& recipient, const uint64_t& amount, const string& memo);

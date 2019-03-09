@@ -16,7 +16,6 @@ namespace mypher {
 		static const char* chars;  
 	public:
 		static void itoa16(char *buf, const uint64_t& v);
-		static void itoad(char *buf, const uint64_t& v);
 	};
 };
 
