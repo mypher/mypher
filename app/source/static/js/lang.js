@@ -172,6 +172,7 @@ var $L = {
 		'IN_REQUEST_PAYMENT' : '支払い申請中',
 		'RECIPIENT' : '受取人',
 		'PAYINF' : '支払申請名',
+		'EXPIRATION' : '有効期限',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

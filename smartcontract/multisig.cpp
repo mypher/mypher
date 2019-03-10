@@ -17,7 +17,7 @@ namespace mypher {
 void MultiSig::sendProposeAction(const account_name& multisig, const name& proposal_name,
 		const account_name& recipient, const uint64_t& amount, const string& memo, const vector<account_name>& approvals) {
 
-	transaction trans(time_point_sec(now() + 1000));
+	transaction trans(time_point_sec(now())+days(3));
 	vector<permission_level> perm;
 	for (auto it=approvals.begin(); it != approvals.end(); ++it) {
 		perm.push_back(permission_level{*it, N(active)});

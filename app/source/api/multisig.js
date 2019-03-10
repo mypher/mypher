@@ -225,6 +225,7 @@ const multisig = module.exports = {
 					}
 					return v;
 				}));
+				data[0].expiration = mstrans.expiration;
 			}
 			const data2 = await eos.getDataWithPKey({
 				code : 'eosio.msig',

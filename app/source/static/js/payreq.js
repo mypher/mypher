@@ -27,6 +27,11 @@ class PayReq {
 					[{account : this.data.proposer, proposal_name : this.data.proposal_name}]
 				);
 				this.data.approve_payment = ms.approved;
+				const expiration = new Date(ms.expiration);
+				this.data.expiration = [
+					expiration.toLocaleDateString(),
+					expiration.toLocaleTimeString(),
+				].join(' ');
 				if (ms.transaction[0]&&ms.transaction[0].data) {
 					const data = ms.transaction[0].data;
 					this.data.recipient = data.to;
