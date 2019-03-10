@@ -14,12 +14,14 @@ using namespace eosio;
 
 namespace mypher {
 
-void MultiSig::sendProposeAction(const account_name& multisig, const account_name& proposal_name,
-		const account_name& recipient, const uint64_t& amount, const string& memo) {
+void MultiSig::sendProposeAction(const account_name& multisig, const name& proposal_name,
+		const account_name& recipient, const uint64_t& amount, const string& memo, const vector<account_name>& approvals) {
 
 	transaction trans(time_point_sec(now() + 1000));
 	vector<permission_level> perm;
-	perm.push_back(permission_level{multisig, N(active)});
+	for (auto it=approvals.begin(); it != approvals.end(); ++it) {
+		perm.push_back(permission_level{*it, N(active)});
+	}
 	asset ast(amount);
 	trans.actions.push_back(action(
 		permission_level{multisig, N(active)},
@@ -30,7 +32,16 @@ void MultiSig::sendProposeAction(const account_name& multisig, const account_nam
 	action(
 		permission_level{recipient, N(active)},
 		N(eosio.msig), N(propose), 
-		std::make_tuple(recipient, eosio::name{proposal_name}, perm, trans)
+		std::make_tuple(recipient, proposal_name, perm, trans)
+	).send();
+}
+
+void MultiSig::exec(const account_name& proposer, const name& proposal_name){
+	action(
+		permission_level{proposer, N(active)},
+		N(eosio.msig),              
+  		N(exec),
+   		std::make_tuple(proposer, proposal_name, proposer)
 	).send();
 }
 

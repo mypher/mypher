@@ -24,6 +24,7 @@ function parse(txt) {
 		'double_t' : 'float64',
 		'string' : 'string',
 		'account_name' : 'name',
+		'name' : 'name',
 		'bool' : 'bool',
 		'vector<uint64_t>' : 'uint64[]',
 		'vector<uint32_t>' : 'uint32[]',
@@ -31,6 +32,7 @@ function parse(txt) {
 		'vector<uint8_t>' : 'uint8[]',
 		'vector<string>' : 'string[]',
 		'vector<account_name>' : 'name[]',
+		'vector<name>' : 'name[]',
 		'vector<bool>' : 'bool[]'
 	};
 	let type = undefined;

@@ -23,8 +23,10 @@ class MultiSig {
 
 public:
 
-	static void sendProposeAction(const account_name& multisig, const account_name& proposal_name,
-		const account_name& recipient, const uint64_t& amount, const string& memo);
+	static void sendProposeAction(const account_name& multisig, const name& proposal_name,
+		const account_name& recipient, const uint64_t& amount, const string& memo, const vector<account_name>& approvals);
+
+	static void exec(const account_name& proposer, const name& proposal_name);
 };
 
 } // mypher

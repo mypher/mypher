@@ -107,7 +107,7 @@ User.prototype = {
 					{ width : 3, label : _L('NAME2'), name : 'name' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
 					{ width : 2, label : _L('PAYINF'), name : 'payinf' },
-					{ width : 2, label : _L(''), btn : 'USE_EX' },
+					{ width : 2, label : _L(''), btn : 'USE_EX', name : 'useex' },
 			] : [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
 					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
@@ -190,7 +190,8 @@ User.prototype = {
 								issuer : conv(v.issuer),
 								name : v.name,
 								quantity : v.quantity,
-								payinf : v.payinf
+								payinf : v.payinf,
+								useex : (v.payinf==='')
 							});
 						});
 						list.show(l);
@@ -237,18 +238,18 @@ User.prototype = {
 					});
 				},
 				onselect : (d, list) => {
-				},
-				onbutton : (d, list) => {
 					const div = UI.popup(800,600);
 					const pr = new PayReq({
 						div,
 						proposer : this.data.personid,
-						proposal_name : d.val.proposal_name,
+						proposal_name : d.proposal_name,
 						term : () => {
 							UI.closePopup();
 						}
 					});
 					pr.draw();
+				},
+				onbutton : (d, list) => {
 				}
 			}
 		});

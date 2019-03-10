@@ -91,7 +91,7 @@ public:
 		account_name	owner;
 		uint64_t		quantity;
 		uint8_t			status;
-		account_name	payinf;
+		name			payinf;
 		
 		uint64_t primary_key() const { return issueid; }
 		uint64_t secondary_key() const { return (uint64_t)owner; }
@@ -147,19 +147,23 @@ public:
 				const uint64_t tokenid, const account_name recipient, const uint64_t quantity); 
 
 	/**
-	 * @brief use a token 
+	 * @brief use some tokens 
 	 */
 	[[eosio::action]]
 	void tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity);
 
 	/**
-	 * @brief use a token 
+	 * @brief request payments
 	 */
 	[[eosio::action]]
-	void tkreqpay(const account_name sender, const uint64_t tokenid, const uint64_t quantity, const account_name proposal_name);
+	void tkreqpay(const account_name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
+					const name& proposal_name, const vector<account_name>& approvals);
 
-	//[[eosio::action]]
-	//void approve2ex(const account_name sender, const uint64_t tokenid);
+	/**
+	 * @brief get paid
+	 */
+	[[eosio::action]]
+	void tkgetpay(const account_name& sender, const uint64_t& tokenid, const name& proposal_name);
 
 	/*******************************************************************
 	  methods only called from inside of the myphersystem contract

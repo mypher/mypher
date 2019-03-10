@@ -71,8 +71,10 @@ List.prototype = {
 			for ( var j=0; j<col.length; j++ ) {
 				html.push('<div class="col-' + col[j].width + '"><div>');
 				if (col[j].btn) {
-					html.push('<div class="lstbtn" key="' + i + '" btn="' 
-						+ col[j].btn + '">' + _L(col[j].btn)+ '</div>');
+					if (data[i][col[j].name]) {
+						html.push('<div class="lstbtn" key="' + i + '" btn="' 
+							+ col[j].btn + '">' + _L(col[j].btn)+ '</div>');
+					}
 				} else {
 					html.push(data[i][col[j].name]);
 				}

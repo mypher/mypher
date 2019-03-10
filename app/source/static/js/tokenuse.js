@@ -33,6 +33,7 @@ class TokenUse extends View {
 			);
 			this.data = info.token;
 			this.data.type = token.type;
+			this.data.issuer = token.issuer;
 			this.data.personid = info.issue.owner;
 			this.data.quantity = info.issue.quantity;
 		} catch (e) {
@@ -65,12 +66,16 @@ class TokenUse extends View {
 			const div = UI.popup(600,200);
 			const click = async () => {
 				try {
+					const cipher = await Rpc.call('cipher.get', [{cipherid:this.data.issuer}]);
 					const proposal_name = div.find('[field="propose_name"]').eq(0).val();
+					const ms = await Rpc.call('multisig.search', [{id:cipher.multisig}]);
+					this.data.eos_approvers = ms.coowner;
 					await Rpc.call('token.reqpay', [{
 						sender : this.data.personid,
 						tokenid : this.data.tokenid,
 						quantity : $('[field="use_quantity"]').val(),
 						proposal_name,
+						approvals : ms.coowner,
 					}]);
 					UI.closePopup(); // ReqPay
 					UI.closePopup(); // TOkenUSe

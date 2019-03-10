@@ -99,7 +99,7 @@ class PayReq {
 				}
 			});
 		}
-		if (type.canReqPay) {
+		if (type.canReqPay&&type.recipient) {
 			btns.push({
 				text : 'GET_PAID',
 				click : () => {
@@ -145,34 +145,17 @@ class PayReq {
 	}
 
 	async get_paid() {
-		const taskinf = /task:.*#(.*)/.exec(this.data.memo);
-		if (taskinf) {
-			try {
-				await Rpc.call(
-					'task.exec_payment',
-					[{
-						sender : Account.user,
-						proposal_name : this.data.proposal_name,
-						tformalid : RegExp.$1
-					}]
-				);
-				UI.alert('SUCCESS_TO_GET_PAID');
-			} catch (e) {
-				UI.alert(e);
-			}
-		} else {
-			try {
-				await Rpc.call(
-					'multisig.exec',
-					[{
-						sender : Account.user,
-						proposal_name : this.data.proposal_name,
-					}]
-				);
-				UI.alert('SUCCESS_TO_GET_PAID');
-			} catch (e) {
-				UI.alert(e);
-			}
+		try {
+			await Rpc.call(
+				'multisig.exec',
+				[{
+					sender : Account.user,
+					proposal_name : this.data.proposal_name,
+				}]
+			);
+			UI.alert('SUCCESS_TO_GET_PAID');
+		} catch (e) {
+			UI.alert(e);
 		}
 		this.draw();
 	}

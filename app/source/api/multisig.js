@@ -375,9 +375,40 @@ const multisig = module.exports = {
 	},
 
 	exec : async d => {
-		const transaction = multisig.get_execute_data(d);
+		const info = await multisig.get_tran_info({account:d.sender, proposal_name:d.proposal_name});
+		if (info.code) {
+			return info;
+		}
+		let memo;
 		try {
-			return await eos.pushAction({ actions :[ transaction ] });
+			memo = info.transaction[0].data.memo.split('#');
+			if (memo.length!==2) {
+				return {code:'INVALID_PARAMS'};
+			}
+			memo[1] = cmn.a16toi(memo[1]);
+		} catch (e) {
+			return {code:'INVALID_PARAMS'};
+		}
+		try {
+			if (memo[0]=='token') {
+				await eos.pushAction({
+					actions :[{
+						account : 'myphersystem',
+						name : 'tkgetpay',
+						authorization: [{
+							actor: d.sender,
+							permission: 'active',
+						}],
+						data: {
+							sender : d.sender,
+							tokenid : memo[1],
+							proposal_name : d.proposal_name
+						},
+					}]
+				});
+				await cmn.waitcommit(ret);
+			}
+			return {};
 		} catch (e) {
 			log.error(e);
 			return cmn.parseEosError(e);

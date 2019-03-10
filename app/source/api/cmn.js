@@ -85,6 +85,14 @@ module.exports = {
 		}
 	},
 
+	a16toi : d => {
+		let ret = 0;
+		for (let i=0; i<d.length; i++) {
+			ret += parseInt(d[i],16)<<(i<<2);
+		}
+		return ret;
+	},
+
 	isKey : d => {
 		return (typeof(d)==='string') && (d.length===64);
 	},

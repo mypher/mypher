@@ -233,7 +233,8 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	}
 }
 
-void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const uint64_t quantity, const account_name proposal_name) {
+void Token::tkreqpay(const account_name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
+	const name& proposal_name, const vector<account_name>& approvals) {
 	token_data d(self, self);
 	issued_data d2(self, tokenid);
 	Cipher::cformal_data d3(self, self);
@@ -270,11 +271,25 @@ void Token::tkreqpay(const account_name sender, const uint64_t tokenid, const ui
 	char tmp[50];
 	Prim::itoa16(tmp, tokenid);
 	memo += tmp;
-	//MultiSig::makeProposeAction(
-	//	propose, rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
-	//propose.send();
 	MultiSig::sendProposeAction(
-		rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo);
+		rec3->multisig, proposal_name, sender, quantity*rec->nofdesteos, memo, approvals);
+}
+
+
+void Token::tkgetpay(const account_name& sender, const uint64_t& tokenid, const name& proposal_name) {
+	// check if sender is login user
+	require_auth(sender);
+	issued_data d(self, tokenid);
+	auto idx = d.get_index<N(secondary_key)>();
+	auto rec = idx.find(sender);
+	for (; rec!=idx.end(); ++rec) {
+		if (rec->payinf==proposal_name) {
+			break;
+		}
+	}
+	eosio_assert_code(rec!=idx.end(), NOT_FOUND);
+	MultiSig::exec(sender, proposal_name);
+	idx.erase(rec);
 }
 
 void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {
