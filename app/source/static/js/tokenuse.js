@@ -70,9 +70,10 @@ class TokenUse extends View {
 					const proposal_name = div.find('[field="propose_name"]').eq(0).val();
 					const ms = await Rpc.call('multisig.search', [{id:cipher.multisig}]);
 					this.data.eos_approvers = ms.coowner;
-					await Rpc.call('token.reqpay', [{
+					await Rpc.call('token.request_payment', [{
 						sender : this.data.personid,
 						tokenid : this.data.tokenid,
+						issuer : this.data.issuer,
 						quantity : $('[field="use_quantity"]').val(),
 						proposal_name,
 						approvals : ms.coowner,

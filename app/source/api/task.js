@@ -493,41 +493,25 @@ module.exports = {
 
 	request_payment : async function(d) {
 		try {
-			const tformal = await eos.getDataWithPKey({
-				code : 'myphersystem',
-				scope : 'myphersystem',
-				table : 'tformal'
-			}, d.tformalid);
-			if (tformal===null||tformal.length===0) {
-				return {code:'NOT_FOUND'};
-			}
-			d.memo = 'task:' + tformal.name + '#' + d.tformalid;
-			const transaction = await multisig.get_propose_data(d);
-			if (transaction.code) {
-				return transaction;
-			}
+			const ms = await multisig.search({id:d.multisig});
+			d.approvals = ms.coowner;
 			await eos.pushAction({
-				actions :[
-				transaction, {
+				actions :[{
 					account : 'myphersystem',
 					name : 'tareqpay',
 					authorization: [{
 						actor: d.sender,
 						permission: 'active',
 					}],
-					data: {
-						sender : d.sender,
-						tformalid : d.tformalid,
-						payment : d.proposal_name,
-					},
+					data: d,
 				}]
 			});
 			return {};
 		} catch (e) {
-			log.error(e);
 			return cmn.parseEosError(e);
 		}
 	},
+
 	cancel_request_payment : async function(d) {
 		const transaction = await multisig.get_cancel_propose_data(d);
 		try {

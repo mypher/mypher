@@ -9,7 +9,10 @@
 #include "token.hpp"
 #include "cipher.hpp"
 #include "person.hpp"
+#include "common/prim.hpp"
 #include "common/validator.hpp"
+#include "multisig.hpp"
+
 using namespace eosio;
 using namespace std;
 
@@ -180,7 +183,7 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 			auto result = std::remove(dd.approve_pic.begin(), dd.approve_pic.end(), sender);
 			dd.approve_pic.erase(result, dd.approve_pic.end());
 			dd.results = "";
-			dd.payment = "";
+			dd.payment = name{N("")};
 		}
 		dd.approve_results = vector<account_name>{};
 	});
@@ -330,7 +333,9 @@ void Task::taprrslt( const account_name sender, const uint64_t tformalid, const 
 	});
 }
 
-void Task::tareqpay( const account_name sender, const uint64_t tformalid, const string& payment) {
+void Task::tareqpay( const account_name sender, const uint64_t tformalid, 
+		const name& proposal_name, const vector<account_name>& approvals) {
+
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
@@ -355,11 +360,22 @@ void Task::tareqpay( const account_name sender, const uint64_t tformalid, const 
 
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
-		dd.payment = payment;
+		dd.payment = proposal_name;
 	});
+
+	Cipher::cformal_data d3(self, self);
+	auto rec3 = d3.find(tfrec->cipherid);
+	eosio_assert_code(rec3!=d3.end(), NOT_FOUND);
+
+	string memo("task#");
+	char tmp[17];
+	Prim::itoa16(tmp, tformalid);
+	memo += tmp;
+	MultiSig::sendProposeAction(
+		rec3->multisig, proposal_name, sender, tdrec->amount, memo, approvals);
 }
 
-void Task::tafinish( const account_name sender, const uint64_t tformalid) {
+void Task::tafinish( const account_name& sender, const uint64_t& tformalid, const name& proposal_name) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
@@ -374,11 +390,14 @@ void Task::tafinish( const account_name sender, const uint64_t tformalid) {
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
-	
+	// check if proposal_name is correct
+	eosio_assert_code(tfrec->payment==proposal_name, INVALID_PARAM);
+
 	// check if pic is sender
 	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 
+	MultiSig::exec(sender, proposal_name);
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.completed = true;
@@ -491,7 +510,7 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 			dd.name = rec->name;
 			dd.tags = rec->tags;
 			dd.results = "";
-			dd.payment = "";
+			dd.payment = name{N("")};
 			dd.completed = false;
 		});	
 	}

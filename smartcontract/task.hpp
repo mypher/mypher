@@ -37,7 +37,7 @@ public:
 		vector<account_name> approve_results;
 		vector<string> tags;
 		string results;
-		string payment;
+		eosio::name payment;
 		bool completed;
 
 		uint64_t primary_key() const { return tformalid; }
@@ -137,13 +137,14 @@ public:
 	 * @brief request the payments
 	 */
 	[[eosio::action]]
-	void tareqpay( const account_name sender, const uint64_t tformalid, const string& payment);
+	void tareqpay( const account_name sender, const uint64_t tformalid, 
+		const name& proposal_name, const vector<account_name>& approvals);
 
 	/**
 	 * @brief finish the task
 	 */
 	[[eosio::action]]
-	void tafinish( const account_name sender, const uint64_t tformalid);
+	void tafinish( const account_name& sender, const uint64_t& tformalid, const name& proposal_name);
 
 	static bool exists(const uint64_t cipherid, const uint64_t tdraftid);
 

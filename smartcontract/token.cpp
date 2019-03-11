@@ -235,6 +235,10 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 
 void Token::tkreqpay(const account_name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
 	const name& proposal_name, const vector<account_name>& approvals) {
+	
+	// check if sender is fulfill the required auth
+	require_auth(sender);
+	
 	token_data d(self, self);
 	issued_data d2(self, tokenid);
 	Cipher::cformal_data d3(self, self);
@@ -268,7 +272,7 @@ void Token::tkreqpay(const account_name& sender, const uint64_t& tokenid, const 
 	eosio_assert_code(rec3!=d3.end(), NOT_FOUND);
 	//action propose;
 	string memo("token#");
-	char tmp[50];
+	char tmp[17];
 	Prim::itoa16(tmp, tokenid);
 	memo += tmp;
 	MultiSig::sendProposeAction(

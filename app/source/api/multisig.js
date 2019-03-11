@@ -408,6 +408,22 @@ const multisig = module.exports = {
 					}]
 				});
 				await cmn.waitcommit(ret);
+			} else {
+				await eos.pushAction({
+				actions :[{
+						account : 'myphersystem',
+						name : 'tafinish',
+						authorization: [{
+							actor: d.sender,
+							permission: 'active',
+						}],
+						data: {
+							sender : d.sender,
+							tformalid : memo[1],
+							proposal_name : d.proposal_name
+						},
+					}]
+				});
 			}
 			return {};
 		} catch (e) {
