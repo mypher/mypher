@@ -98,8 +98,7 @@ const multisig = module.exports = {
 					}]
 				});
 			} catch (e) {
-				log.debug(e);
-				return {code:e};
+				return cmn.parseEosError(e);
 			}
 
 			let api;
@@ -359,21 +358,6 @@ const multisig = module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
-	get_execute_data : d => {
-		return {
-			account : 'eosio.msig',
-			name : 'exec',
-			authorization: [{
-				actor: d.sender,
-				permission: 'active',
-			}],
-			data:{
-				proposer : d.sender,
-				proposal_name : d.proposal_name,
-				executer : d.sender,
-			},
-		};
-	},
 
 	exec : async d => {
 		const info = await multisig.get_tran_info({account:d.sender, proposal_name:d.proposal_name});
@@ -392,7 +376,7 @@ const multisig = module.exports = {
 		}
 		try {
 			if (memo[0]=='token') {
-				await eos.pushAction({
+				const ret = await eos.pushAction({
 					actions :[{
 						account : 'myphersystem',
 						name : 'tkgetpay',
@@ -409,8 +393,8 @@ const multisig = module.exports = {
 				});
 				await cmn.waitcommit(ret);
 			} else {
-				await eos.pushAction({
-				actions :[{
+				const ret = await eos.pushAction({
+					actions :[{
 						account : 'myphersystem',
 						name : 'tafinish',
 						authorization: [{
@@ -424,6 +408,7 @@ const multisig = module.exports = {
 						},
 					}]
 				});
+				await cmn.waitcommit(ret);
 			}
 			return {};
 		} catch (e) {

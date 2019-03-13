@@ -536,27 +536,4 @@ module.exports = {
 			return cmn.parseEosError(e);
 		}
 	},
-	exec_payment : async function(d) {
-		const transaction = multisig.get_execute_data(d);
-		try {
-			return await eos.pushAction({
-				actions :[
-				transaction, {
-					account : 'myphersystem',
-					name : 'tafinish',
-					authorization: [{
-						actor: d.sender,
-						permission: 'active',
-					}],
-					data: {
-						sender : d.sender,
-						tformalid : d.tformalid,
-					},
-				}]
-			});
-		} catch (e) {
-			log.error(e);
-			return cmn.parseEosError(e);
-		}
-	},
 };

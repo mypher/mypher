@@ -37,6 +37,9 @@ void MultiSig::sendProposeAction(const account_name& multisig, const name& propo
 }
 
 void MultiSig::exec(const account_name& proposer, const name& proposal_name){
+	eosio::print(name{proposer});
+	eosio::print("#");
+	eosio::print(proposal_name);
 	action(
 		permission_level{proposer, N(active)},
 		N(eosio.msig),              

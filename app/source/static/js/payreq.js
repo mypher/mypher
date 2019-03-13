@@ -159,6 +159,7 @@ class PayReq {
 				}]
 			);
 			UI.alert('SUCCESS_TO_GET_PAID');
+			this.draw();
 		} catch (e) {
 			UI.alert(e);
 		}

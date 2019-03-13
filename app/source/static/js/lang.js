@@ -246,7 +246,7 @@ var __r = [
 ];
 
 function _L(id, prm) {
-	var w = $L[Util.getLocale()][id]||'';
+	var w = $L[Util.getLocale()][id]||id;
 	prm = prm||[];
 	for ( var i=0; i<prm.length; i++) {
 		w = w.replace(__r[i], prm[i]);

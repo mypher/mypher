@@ -127,7 +127,7 @@ class Task {
 				if (this.data.payment) {
 					ms = await Rpc.call(
 						'multisig.get_tran_info',
-						[{account : this.data.pic, proposal_name : this.data.payment}]
+						[{account : this.data.pic[0], proposal_name : this.data.payment}]
 					);
 					this.data.approve_payment = ms.approved;
 				}
@@ -240,7 +240,7 @@ class Task {
 				if (stat===vali.STAT.RECRUITMENT) {
 					btns.push({
 						text : 'APPLY_FOR_PIC',
-							click : () => {
+						click : () => {
 							this.apply_for_pic();
 						}
 					});
@@ -679,11 +679,10 @@ class Task {
 		try {
 			const data = this.get();
 			await Rpc.call(
-				'task.exec_payment',
+				'multisig.exec',
 				[{
 					sender : Account.user,
 					proposal_name : data.payment,
-					tformalid : data.tformalid
 				}]
 			);
 			this.draw();

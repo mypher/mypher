@@ -25,6 +25,7 @@ function parse(txt) {
 		'string' : 'string',
 		'account_name' : 'name',
 		'name' : 'name',
+		'eosio::name' : 'name',
 		'bool' : 'bool',
 		'vector<uint64_t>' : 'uint64[]',
 		'vector<uint32_t>' : 'uint32[]',

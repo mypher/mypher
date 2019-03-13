@@ -395,8 +395,8 @@ module.exports = {
 			if (err2!==null&&err2.length===3) {
 				return {code:'E9998', data:[err2[1], err2[2]]};
 			} else if (e.json.code!==undefined) {
-				return {code:'EI' + e.json.code};
-			} else {	
+				return {code:e.message};
+			} else {
 				return {code:'E9999'};
 			}
 		}
