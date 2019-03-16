@@ -4,8 +4,8 @@
 //
 'use_strict';
 
-let http = require('http');
-let fs = require('fs');
+const http = require('http');
+const fs = require('fs');
 let allconf = require('config');
 let api = require('./api/list');
 let log = require('./cmn/logger')('sv.sv');
