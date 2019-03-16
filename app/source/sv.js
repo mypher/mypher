@@ -6,7 +6,7 @@
 
 const http = require('http');
 const fs = require('fs');
-let allconf = require('config');
+const allconf = require('config');
 let api = require('./api/list');
 let log = require('./cmn/logger')('sv.sv');
 
