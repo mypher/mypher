@@ -27,7 +27,7 @@ false : () => {
 				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 3,
-				name : 'testta',
+				taname : 'testta',
 				rewardid : 0xffffffff,
 				noftoken : 0xffffffff,
 				amount : 0xffffffff,
@@ -58,8 +58,8 @@ false : () => {
 			const ret = await tools.push(N, _P({cdraftid:2}));
 			assert.equal(ret,tools.message(2));
 		});
-		it('name is of insufficient length',  async () => {
-			const ret = await tools.push(N, _P({name:'12345'}));
+		it('taname is of insufficient length',  async () => {
+			const ret = await tools.push(N, _P({taname:'12345'}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is more than number of approvers',  async () => {
@@ -110,7 +110,7 @@ false : () => {
 				cipherid  : 0,
 				cdraftid : 3,
 				tdraftid  : 0,
-				name   : '1234567',
+				taname   : '1234567',
 				rewardid : 0xffffffff,
 				noftoken : 0xffffffff,
 				amount : 0xffffffff,
@@ -144,8 +144,8 @@ false : () => {
 		it('already not draft', async() => {
 			// TODO:
 		});
-		it('name is of insufficient length',  async () => {
-			const ret = await tools.push(N, _P({name:'12345'}));
+		it('taname is of insufficient length',  async () => {
+			const ret = await tools.push(N, _P({taname:'12345'}));
 			assert.equal(ret,tools.message(2));
 		});
 		it('"nofapproval" is more than number of approvers',  async () => {
@@ -407,7 +407,7 @@ false : () => {
 				sender : 'mypherutest1',
 				cipherid : 0,
 				cdraftid : 3,
-				name : 'testta',
+				taname : 'testta',
 				rewardid : 0xffffffff,
 				noftoken : 0xffffffff,
 				amount : 0xffffffff,

@@ -32,9 +32,9 @@ public:
 		uint64_t tformalid;
 		uint64_t cipherid; 
 		uint64_t tdraftid; 
-		string name;
-		vector<account_name> approve_pic;
-		vector<account_name> approve_results;
+		string taname;
+		vector<eosio::name> approve_pic;
+		vector<eosio::name> approve_results;
 		vector<string> tags;
 		string results;
 		eosio::name payment;
@@ -43,7 +43,7 @@ public:
 		uint64_t primary_key() const { return tformalid; }
 		uint64_t secondary_key() const { return cipherid; }
 
-		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(name)(approve_pic)
+		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(taname)(approve_pic)
 						(approve_results)(tags)(results)(payment)(completed) )
 	};
 
@@ -52,18 +52,18 @@ public:
 	 */
 	struct [[eosio::table]] tdraft {
 		uint64_t tdraftid;
-		string name;
+		string taname;
 		uint64_t rewardid;
 		uint64_t noftoken;
 		uint64_t amount;
 		uint64_t nofapproval;
-		vector<account_name> approvers;
-		vector<account_name> pic;
+		vector<eosio::name> approvers;
+		vector<eosio::name> pic;
 		string hash;
 		vector<string> tags;
 
 		uint64_t primary_key() const { return tdraftid; }
-		EOSLIB_SERIALIZE( tdraft,(tdraftid)(name)(rewardid)(noftoken)(amount)
+		EOSLIB_SERIALIZE( tdraft,(tdraftid)(taname)(rewardid)(noftoken)(amount)
 						(nofapproval)(approvers)(pic)(hash)(tags) )
 	};
 
@@ -88,11 +88,11 @@ public:
 	 * @brief create new task
 	 */
 	[[eosio::action]]
-	void tanew(	const account_name sender, const uint64_t cipherid, uint64_t cdraftid,
-				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
+	void tanew(	const eosio::name sender, const uint64_t cipherid, uint64_t cdraftid,
+				const string& taname, const uint64_t rewardid, const uint64_t noftoken, 
 				const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, 
 				const string& hash,
 				const vector<string>& tags);
 
@@ -100,66 +100,66 @@ public:
 	 * @brief update task data
 	 */
 	[[eosio::action]]
-	void taupdate( const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
+	void taupdate( const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid,
 				const uint64_t tdraftid, 
-				const string& name,  
+				const string& taname,  
 				const uint64_t rewardid, const uint64_t noftoken, 
 				const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const string& hash, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags);
 	
 	/**
 	 * @brief approve a pic 
 	 */
 	[[eosio::action]]
-	void taaprvpic( const account_name sender, const uint64_t tformalid, const bool vec);
+	void taaprvpic( const eosio::name sender, const uint64_t tformalid, const bool vec);
 
 	/**
 	 * @brief approve results
 	 */
 	[[eosio::action]]
-	void taaprvrslt( const account_name sender, const uint64_t tformalid, const bool vec);
+	void taaprvrslt( const eosio::name sender, const uint64_t tformalid, const bool vec);
 
 	/**
 	 * @brief apply for pic of a task
 	 */
 	[[eosio::action]]
-	void taaplypic( const account_name sender, const uint64_t tformalid, const bool vec);
+	void taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec);
 
 	/**
 	 * @brief present the results
 	 */
 	[[eosio::action]]
-	void taprrslt( const account_name sender, const uint64_t tformalid, const string& results);
+	void taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results);
 
 	/**
 	 * @brief request the payments
 	 */
 	[[eosio::action]]
-	void tareqpay( const account_name sender, const uint64_t tformalid, 
-		const name& proposal_name, const vector<account_name>& approvals);
+	void tareqpay( const eosio::name sender, const uint64_t tformalid, 
+		const name& proposal_name, const vector<eosio::name>& approvals);
 
 	/**
 	 * @brief finish the task
 	 */
 	[[eosio::action]]
-	void tafinish( const account_name& sender, const uint64_t& tformalid, const name& proposal_name);
+	void tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name);
 
 	static bool exists(const uint64_t cipherid, const uint64_t tdraftid);
 
 	static bool exists(const uint64_t tformalid);
 	static bool is_results_approved(const uint64_t tformalid);
-	static void formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist);
+	static void formalize(const eosio::name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist);
 	static bool pic_approved(const uint64_t tformalid);
 
 private:
 	void check_data( 
-				const account_name sender, const uint64_t cipherid,
-				const string& name, const uint64_t rewardid, 
+				const eosio::name sender, const uint64_t cipherid,
+				const string& taname, const uint64_t rewardid, 
 				const uint64_t noftoken, const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const string& hash, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags);
 	bool is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uint64_t cdraftid);
 };

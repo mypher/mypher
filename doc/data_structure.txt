@@ -10,7 +10,7 @@ package Cipher <<Frame>> {
 		version : uint16
 		no : uint16
 		formal : bool
-		name : string
+		cname : string
 		tags : string[]
 		editors : name[]
 		hash : ipfskey
@@ -29,7 +29,7 @@ package Cipher <<Frame>> {
 		-ciperid : CIPHERID
 		cdraftid : CDRAFTID
 		multisig : name
-		name : string
+		cname : string
 		tags : string[]
 	}
 }
@@ -39,7 +39,7 @@ package Token <<Frame>> {
 		"myphersystem"
 		--
 		-tokenid : TOKENID
-		name : string
+		tkname : string
 		issuer : CIPHERID
 		limit : uint64
 		when : uint8
@@ -71,7 +71,7 @@ package Task <<Frame>> {
 		-tformalid : TFORMALID
 		cipherid : CIPHERID
 		tdraftid : TDRAFTID
-		name : string
+		taname : string
 		approve_pic : name[]
 		approve_results : name[]
 		tags : string[]
@@ -84,7 +84,7 @@ package Task <<Frame>> {
 		CIPHERID
 		--
 		-tdraftid : TDRAFTID
-		name : string
+		taname : string
 		rewardid : TOKENID
 		quantity : uint64
 		nofapproval : uint8
@@ -100,7 +100,7 @@ package Person <<Frame>> {
 		"myphersystem"
 		--
 		-personid : name
-		name : string
+		pname : string
 		tags : string[]
 		hash : string
 		tokenlist : TOKENID[]

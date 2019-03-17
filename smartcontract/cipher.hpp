@@ -30,13 +30,13 @@ public:
 	struct [[eosio::table]] cformal {
 	 	uint64_t		cipherid;
 		uint64_t		cdraftid;
-		account_name	multisig;
-		string			name;
+		eosio::name		multisig;
+		string			cname;
 		vector<string>	tags;
 
 		uint64_t primary_key() const { return cipherid; }
 		
-		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(multisig)(name)(tags))
+		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(multisig)(cname)(tags))
 	};
 
 	/**
@@ -47,13 +47,13 @@ public:
 	    uint16_t				version;
 	    uint16_t				no;
 		bool					formal;
-		string					name;
+		string					cname;
 		vector<string>			tags;
-		vector<account_name>	editors;
+		vector<eosio::name>	editors;
 		string					hash;
 		uint16_t				nofapproval;
-		vector<account_name>	approvers;
-		vector<account_name>	approved;
+		vector<eosio::name>	approvers;
+		vector<eosio::name>	approved;
 		vector<uint64_t>		tasklist;
 		vector<uint64_t>		tokenlist;
 
@@ -62,7 +62,7 @@ public:
 			return gen_secondary_key(version, no);	
 		}
 		
-		EOSLIB_SERIALIZE(cdraft, (cdraftid)(version)(no)(formal)(name)
+		EOSLIB_SERIALIZE(cdraft, (cdraftid)(version)(no)(formal)(cname)
 			(tags)(editors)(hash)(nofapproval)(approvers)(approved)(tasklist)(tokenlist))
 	};
 
@@ -70,7 +70,7 @@ public:
 	 * @brief the definition of the table for "cformal"
 	 */
 	typedef eosio::multi_index< 
-			N(cformal), 
+			"cformal"_n, 
 			cformal
 	> cformal_data;
 
@@ -78,60 +78,60 @@ public:
 	 * @brief the definition of the table for key of "cdraft"
 	 */
 	typedef eosio::multi_index< 
-			N(cdraft), 
+			"cdraft"_n, 
 			cdraft,
-			indexed_by<N(secondary_key), const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
+			indexed_by<"key2"_n, const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
 	> cdraft_data;
 
 	/**
 	 * @brief create new cipher
 	 */
 	[[eosio::action]]
-	void cnew(const account_name sender, 
-				const string& name, const vector<account_name>& editors,
-				const account_name multisig,
+	void cnew(const eosio::name sender, 
+				const string& cname, const vector<eosio::name>& editors,
+				const eosio::name multisig,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<account_name>& approvers);
+				uint16_t nofapproval, const vector<eosio::name>& approvers);
 	/**
 	 * @brief create new draft from specified version 
 	 */
 	[[eosio::action]]
-	void cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	void cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 	/**
 	 * @brief update draft data 
 	 */
 	[[eosio::action]]
-	void cupdate(const account_name sender, const uint64_t cipherid, 
+	void cupdate(const eosio::name sender, const uint64_t cipherid, 
 				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
-				const string& name, const vector<string>& tags, 
-				const vector<account_name>& editors, const string& hash,
-				const uint16_t nofapproval, const vector<account_name>& approvers,
+				const string& cname, const vector<string>& tags, 
+				const vector<eosio::name>& editors, const string& hash,
+				const uint16_t nofapproval, const vector<eosio::name>& approvers,
 				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
 
 	/**
 	 * @brief approve a draft 
 	 */
 	[[eosio::action]]
-	void capprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	void capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 	/**
 	 * @brief reverse approval for a draft 
 	 */
 	[[eosio::action]]
-	void crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	void crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
 
 private:
-	bool can_edit(const account_name& sender, const vector<account_name>& editors);
+	bool can_edit(const eosio::name& sender, const vector<eosio::name>& editors);
 	/**
 	 * @brief generate version and no for new draft 
 	 */
 	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no);
 
-	void check_data(const account_name sender, 
-				const string& name, const vector<account_name>& editors,
+	void check_data(const eosio::name sender, 
+				const string& cname, const vector<eosio::name>& editors,
 				const vector<string>& tags, const string& hash,
-				const uint16_t nofapproval, const vector<account_name>& approvers);
+				const uint16_t nofapproval, const vector<eosio::name>& approvers);
 	void validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& tasklist);
 	void validate_tokenlist(const vector<uint64_t>& tokenlist);
 

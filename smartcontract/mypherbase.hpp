@@ -16,7 +16,7 @@ namespace mypher {
 
 class MypherBase {
 protected:
-	account_name self;
+	eosio::name self;
 
 };
 

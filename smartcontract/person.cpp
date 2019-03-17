@@ -8,7 +8,7 @@
 
 namespace mypher {
 
-void Person::pupdate(const account_name personid, const string& name, const std::vector<std::string>& tags, const std::string& hash) {
+void Person::pupdate(const eosio::name personid, const string& pname, const std::vector<std::string>& tags, const std::string& hash) {
 	require_auth(personid);
 
 	person_data d(self, self);
@@ -19,30 +19,30 @@ void Person::pupdate(const account_name personid, const string& name, const std:
 		// register the attributes
 		d.emplace(personid, [&](auto& dd) {
 			dd.personid = personid;
-			dd.name = name;
+			dd.pname = pname;
 			dd.tags = tags;
 			dd.hash = hash;
 		});
 	} else {
 		// update the attributes
 		d.modify(to, personid, [&](auto& dd) {
-			dd.name = name;
+			dd.pname = pname;
 			dd.tags = tags;
 			dd.hash = hash;
 		});	
 	}
 }
 
-bool Person::check_list(const vector<account_name>& list) {
+bool Person::check_list(const vector<eosio::name>& list) {
 	person_data d(SELF, SELF);
 
-	vector<account_name> sort;
+	vector<eosio::name> sort;
 	for (auto it = list.begin(); it != list.end(); ++it ) {
 		sort.push_back(*it);
 	}
 	std::sort(sort.begin(), sort.end());
 
-	account_name prev = N("");
+	eosio::name prev = N("");
 	for (auto it = list.begin(); it != list.end(); ++it ) {
 		if (*it==prev) return false; // if there is duplicate data, invalid
 		auto elm = d.find(*it);
@@ -52,7 +52,7 @@ bool Person::check_list(const vector<account_name>& list) {
 	return true;
 }
 
-bool Person::exists(const account_name user) {
+bool Person::exists(const eosio::name user) {
 	person_data d(SELF, SELF);
 	return d.find(user)!=d.end();
 }

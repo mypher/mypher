@@ -16,8 +16,8 @@
 
 namespace mypher {
 
-void Token::tknew(const account_name sender, const uint64_t cdraftid,
-			   const string& name, const uint64_t issuer,
+void Token::tknew(const eosio::name sender, const uint64_t cdraftid,
+			   const string& tkname, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken, 
@@ -26,12 +26,12 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 	token_data d(self, self);
 	uint64_t id = d.available_primary_key();
 	// common check
-	check_data(sender, name, issuer, limit, when, disposal, type, 
+	check_data(sender, tkname, issuer, limit, when, disposal, type, 
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 	// create new token
 	d.emplace(sender, [&](auto& dd) {
 		dd.tokenid = id;
-		dd.name = name;
+		dd.tkname = tkname;
 		dd.issuer = issuer;
 		dd.limit = limit;
 		dd.when = when;
@@ -55,9 +55,9 @@ void Token::tknew(const account_name sender, const uint64_t cdraftid,
 	});
 }
 
-void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
+void Token::tkupdate(const eosio::name sender, const uint64_t cdraftid,
 			   const uint64_t tokenid,
-			   const string& name, const uint64_t limit, const uint8_t when, 
+			   const string& tkname, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint32_t reftoken,  
 			   const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos ) {
@@ -71,7 +71,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 	eosio_assert_code(!is_issued(tokenid), TOKEN_ALREADY_ISSUED);
 
 	// check if specified cid is valid	
-	check_data(sender, name, rec->issuer, limit, when, disposal, type, 
+	check_data(sender, tkname, rec->issuer, limit, when, disposal, type, 
 			taskid, extokenid, reftoken, rcalctype, nofdesttoken, nofdesteos);
 
 	// if specified token is shared between some drafts, generates copy of the draft
@@ -79,7 +79,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 		uint64_t id = d.available_primary_key();
 		d.emplace(sender, [&](auto& dd) {
 			dd.tokenid = id;
-			dd.name = name;
+			dd.tkname = tkname;
 			dd.issuer = rec->issuer;
 			dd.limit = limit;
 			dd.when = when;
@@ -102,7 +102,7 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 		});
 	} else {
 		d.modify(rec, sender, [&](auto& dd){
-			dd.name = name;
+			dd.tkname = tkname;
 			dd.limit = limit;
 			dd.when = when;
 			dd.disposal = disposal;
@@ -117,8 +117,8 @@ void Token::tkupdate(const account_name sender, const uint64_t cdraftid,
 	}
 }
 
-void Token::check_data( const account_name sender, 
-			   const string& name, const uint64_t issuer,
+void Token::check_data( const eosio::name sender, 
+			   const string& tkname, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken,
@@ -176,8 +176,8 @@ bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid, const uin
 	return false;
 }
 
-void Token::issue(const account_name sender, const uint64_t cipherid,
-			   const uint64_t tokenid, const account_name recipient, const uint64_t quantity) {
+void Token::issue(const eosio::name sender, const uint64_t cipherid,
+			   const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity) {
 	// check limit
 	eosio_assert_code(get_available_amount(tokenid)>=quantity, INSUFFICIENT_AMOUNT);
 	// check token issuer
@@ -191,8 +191,8 @@ void Token::issue(const account_name sender, const uint64_t cipherid,
 	set_amount(sender, tokenid, recipient, quantity);
 }
 
-void Token::tktransfer(const account_name sender, 
-				const uint64_t tokenid, const account_name recipient, const uint64_t quantity) {
+void Token::tktransfer(const eosio::name sender, 
+				const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity) {
 	// check the receiver
 	eosio_assert_code(Person::exists(recipient), INVALID_RECIPIENT);
 	issued_data d(self, tokenid);
@@ -208,7 +208,7 @@ void Token::tktransfer(const account_name sender,
 	set_amount(sender, tokenid, recipient, quantity);
 }
 
-void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint64_t quantity) {
+void Token::tkuse(const eosio::name sender, const uint64_t tokenid, const uint64_t quantity) {
 	token_data d(self, self);
 	issued_data d2(self, tokenid);
 	auto idx = d2.get_index<N(secondary_key)>();
@@ -233,8 +233,8 @@ void Token::tkuse(const account_name sender, const uint64_t tokenid, const uint6
 	}
 }
 
-void Token::tkreqpay(const account_name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
-	const name& proposal_name, const vector<account_name>& approvals) {
+void Token::tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
+	const name& proposal_name, const vector<eosio::name>& approvals) {
 	
 	// check if sender is fulfill the required auth
 	require_auth(sender);
@@ -280,7 +280,7 @@ void Token::tkreqpay(const account_name& sender, const uint64_t& tokenid, const 
 }
 
 
-void Token::tkgetpay(const account_name& sender, const uint64_t& tokenid, const name& proposal_name) {
+void Token::tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const name& proposal_name) {
 	// check if sender is login user
 	require_auth(sender);
 	issued_data d(self, tokenid);
@@ -315,13 +315,13 @@ void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity
 	}
 }
 
-void Token::distribute(const account_name sender, const uint64_t cipherid,  
+void Token::distribute(const eosio::name sender, const uint64_t cipherid,  
 					const uint64_t tokenid, const uint64_t quantity) {
 	eosio_assert_code(0, NOT_IMPLEMENT_YET);
 }
 /*
-void Token::transfer_currency(const account_name sender, 
-				const account_name issuer, const uint32_t issuer2, const uint32_t quantity) {
+void Token::transfer_currency(const eosio::name sender, 
+				const eosio::name issuer, const uint32_t issuer2, const uint32_t quantity) {
 	// TODO:
 	action(
 		permission_level {sender,N(active)},
@@ -350,7 +350,7 @@ bool Token::is_issued(const uint64_t tokenid) {
 	return (d.begin()!=d.end());
 }
 
-void Token::set_amount(const account_name sender, const uint64_t tokenid, const account_name user, const uint64_t quantity) {
+void Token::set_amount(const eosio::name sender, const uint64_t tokenid, const eosio::name user, const uint64_t quantity) {
 	issued_data d(SELF, tokenid);
 	auto idx = d.get_index<N(secondary_key)>();
 	auto rec = idx.find(user);

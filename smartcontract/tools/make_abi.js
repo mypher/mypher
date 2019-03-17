@@ -23,7 +23,6 @@ function parse(txt) {
 		'uint8_t' : 'uint8',
 		'double_t' : 'float64',
 		'string' : 'string',
-		'account_name' : 'name',
 		'name' : 'name',
 		'eosio::name' : 'name',
 		'bool' : 'bool',
@@ -32,7 +31,7 @@ function parse(txt) {
 		'vector<uint16_t>' : 'uint16[]',
 		'vector<uint8_t>' : 'uint8[]',
 		'vector<string>' : 'string[]',
-		'vector<account_name>' : 'name[]',
+		'vector<eosio::name>' : 'name[]',
 		'vector<name>' : 'name[]',
 		'vector<bool>' : 'bool[]'
 	};

@@ -17,7 +17,7 @@ false : () => {
 		const _P = p => {
 			let ret = {
 				sender : 'mypherutest1',
-				name : 'test111',
+				cname : 'test111',
 				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',
@@ -78,7 +78,7 @@ false : () => {
 			const expect1 = {
 				cipherid : 0,
 				cdraftid : 0,
-				name : 'test111',
+				cname : 'test111',
 				tags : ['aaa', 'えい']
 			};
 			const expect2 = {
@@ -87,7 +87,7 @@ false : () => {
 				no : 1,
 				formal : 1,
 				multisig : 'multisigacnt',
-				name : 'test111',
+				cname : 'test111',
 				tags : ['aaa', 'えい'],
 				editors : ['mypherutest1', 'mypherutest2'],
 				hash : '',
@@ -162,7 +162,7 @@ false : () => {
 				version : 2,
 				no : 1,
 				sender : 'mypherutest1',
-				name : 'changed',
+				cname : 'changed',
 				editors : ['mypherutest1', 'mypherutest3'],
 				tags : ['abc', '漢字', 'i'],
 				hash : '',
@@ -215,12 +215,12 @@ false : () => {
 			ret = await tools.push(N, _P({nofapproval:2}));
 			tools.checkIfSent(ret);
 		});
-		it('"name" is of invalid length',  async () => {
-			let ret = await tools.push(N, _P({name:'12345'}));
+		it('"cname" is of invalid length',  async () => {
+			let ret = await tools.push(N, _P({cname:'12345'}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({name:''}));
+			ret = await tools.push(N, _P({cname:''}));
 			assert.equal(ret,tools.message(2));
-			ret = await tools.push(N, _P({name:'123456'}));
+			ret = await tools.push(N, _P({cname:'123456'}));
 			tools.checkIfSent(ret);
 		});
 		it('"tasklist" has invalid task',  async () => {
@@ -289,7 +289,7 @@ false : () => {
 		});
 		it('check if approved is cleared after updating',  async () => {
 			let p = await tools.getHead({n:'cdraft',s:0, c:2});
-			Object.assign(p[1],{cipherid:0, sender:'mypherutest3', name:'123456'}); 
+			Object.assign(p[1],{cipherid:0, sender:'mypherutest3', cname:'123456'}); 
 			ret = await tools.push('cupdate', p[1]);
 			tools.checkIfSent(ret);
 			await tools.sleep(500);
@@ -380,7 +380,7 @@ false : () => {
 		const _P = p => {
 			let ret = {
 				sender : 'mypherutest1',
-				name : 'test111',
+				cname : 'test111',
 				editors : ['mypherutest1', 'mypherutest2'],
 				tags : ['aaa', 'えい'],
 				hash : '',

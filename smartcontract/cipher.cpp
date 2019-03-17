@@ -51,13 +51,13 @@ bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 	return (rec2->version<version);
 }
 
-void Cipher::cnew(const account_name sender, 
-				const string& name, const vector<account_name>& editors,
-				const account_name multisig,
+void Cipher::cnew(const eosio::name sender, 
+				const string& cname, const vector<eosio::name>& editors,
+				const eosio::name multisig,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<account_name>& approvers) {
+				uint16_t nofapproval, const vector<eosio::name>& approvers) {
 	// check data
-	check_data(sender, name, editors, tags, hash, nofapproval, approvers);
+	check_data(sender, cname, editors, tags, hash, nofapproval, approvers);
 
 	eosio_assert_code(is_account(multisig), INVALID_MULTISIG);
 
@@ -71,7 +71,7 @@ void Cipher::cnew(const account_name sender,
 	 	dd.cipherid = cipherid;
 		dd.cdraftid = cdraftid;
 		dd.multisig = multisig;
-		dd.name = name;
+		dd.cname = cname;
 		dd.tags = tags;
 	});
 
@@ -81,7 +81,7 @@ void Cipher::cnew(const account_name sender,
 		dd.version = 1;
 		dd.no = 1;
 		dd.formal = true;
-		dd.name = name;
+		dd.cname = cname;
 		dd.tags = tags;
 		dd.editors = editors;
 		dd.hash = hash;
@@ -93,14 +93,14 @@ void Cipher::cnew(const account_name sender,
 
 }
 
-void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Cipher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	
 	require_auth(sender);
 
 	cdraft_data d(self, cipherid);
 	uint64_t newid = d.available_primary_key();
 	uint16_t version, no;
-	vector<account_name> editors;
+	vector<eosio::name> editors;
 
 	auto rec = d.find(cdraftid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -113,7 +113,7 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 		dd.version = version;
 		dd.no = no;
 		dd.formal = false;
-		dd.name = rec->name;
+		dd.cname = rec->cname;
 		dd.tags = rec->tags;
 		dd.editors.push_back(sender);
 		dd.hash = rec->hash;
@@ -124,15 +124,15 @@ void Cipher::cnewdraft(const account_name sender, const uint64_t cipherid, const
 	});
 }
 
-void Cipher::cupdate(const account_name sender, const uint64_t cipherid, 
+void Cipher::cupdate(const eosio::name sender, const uint64_t cipherid, 
 				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
-				const string& name, const vector<string>& tags, 
-				const vector<account_name>& editors, const string& hash,
-				const uint16_t nofapproval, const vector<account_name>& approvers,
+				const string& cname, const vector<string>& tags, 
+				const vector<eosio::name>& editors, const string& hash,
+				const uint16_t nofapproval, const vector<eosio::name>& approvers,
 				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist) {
 
     // common check
-	check_data(sender, name, editors, tags, hash, nofapproval, approvers);
+	check_data(sender, cname, editors, tags, hash, nofapproval, approvers);
 
 	// check if version is already formal
 	eosio_assert_code(is_draft_version(cipherid, version), ALREADY_FORMAL);
@@ -150,7 +150,7 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	eosio_assert_code(can_edit(sender, rec->editors), SENDER_CANT_EDIT);
 	// update data
 	d.modify(rec, sender, [&](auto& dd) {
-		dd.name = name;
+		dd.cname = cname;
 		dd.tags = tags;
 		dd.editors = editors;
 		dd.hash = hash;
@@ -162,7 +162,7 @@ void Cipher::cupdate(const account_name sender, const uint64_t cipherid,
 	});
 }
 
-void Cipher::capprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Cipher::capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	// check if sender is logined user
 	require_auth(sender);
 
@@ -194,14 +194,14 @@ void Cipher::capprove(const account_name sender, const uint64_t cipherid, const 
 		auto rec2 = d2.find(cipherid);
 		d2.modify(rec2, sender, [&](auto& dd) {
 			dd.cdraftid = rec->cdraftid;
-			dd.name = rec->name;
+			dd.cname = rec->cname;
 			dd.tags = rec->tags;
 		});
 		Task::formalize(sender, cipherid, rec->tasklist);
 	}
 }
 
-void Cipher::crevapprove(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Cipher::crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	require_auth(sender);
 
 	// check if sender is logined user
@@ -225,7 +225,7 @@ void Cipher::crevapprove(const account_name sender, const uint64_t cipherid, con
 	});
 }
 
-bool Cipher::can_edit(const account_name& sender, const vector<account_name>& editors) {
+bool Cipher::can_edit(const eosio::name& sender, const vector<eosio::name>& editors) {
 	auto found = std::find(editors.begin(), editors.end(), sender);
 	return (found!=editors.end());
 }
@@ -237,15 +237,15 @@ bool Cipher::exists(const uint64_t cipherid) {
 	return (rec!=d.end());
 }
 
-void Cipher::check_data(const account_name sender, 
-				const string& name, const vector<account_name>& editors,
+void Cipher::check_data(const eosio::name sender, 
+				const string& cname, const vector<eosio::name>& editors,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<account_name>& approvers) {
+				uint16_t nofapproval, const vector<eosio::name>& approvers) {
 	// check if sender is logined user
 	require_auth(sender);
 
-	// check if "name" is of sufficient length
-	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
+	// check if "cname" is of sufficient length
+	eosio_assert_code(cname.length()>=NAME_MINLEN, INVALID_PARAM);
 
 	// check if editors is valid
 	eosio_assert_code(editors.size()>0, INVALID_PARAM);

@@ -40,7 +40,7 @@ false : () => {
 			let ret = {
 				sender : 'mypherutest1', 
 				cdraftid : 5,
-				name : '1234567', 
+				tkname : '1234567', 
 				issuer : 0,
 				limit : 10000, 
 				when : 3,
@@ -98,7 +98,7 @@ false : () => {
 			let ret = await tools.push(N, _P({when:1, taskid:0}));
 			const expect = {
 				tokenid: 0,
-				name: '1234567',
+				tkname: '1234567',
 				issuer: 0,
 				limit: 10000,
 				when: 1,
@@ -159,7 +159,7 @@ false : () => {
 				sender : 'mypherutest1', 
 				cdraftid : 5,
 				tokenid : 0,
-				name : '1234567', 
+				tkname : '1234567', 
 				limit : 10000, 
 				when : 3,
 				disposal : 1,
@@ -204,7 +204,7 @@ false : () => {
 			let ret = await tools.push(N, _P({when:1, taskid:0}));
 			const expect = {
 				tokenid: 0,
-				name: '1234567',
+				tkname: '1234567',
 				issuer: 0,
 				limit: 10000,
 				when: 1,

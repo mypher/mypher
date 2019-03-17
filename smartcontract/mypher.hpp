@@ -23,7 +23,7 @@ class Mypher : public contract,
 			   public mypher::Task {
 
 public:
-	Mypher(account_name _self) 
+	Mypher(eosio::name _self) 
 	: contract(_self)
 	{self = _self;}  
 };

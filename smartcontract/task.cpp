@@ -18,11 +18,11 @@ using namespace std;
 
 namespace mypher {
 
-void Task::tanew(const account_name sender, const uint64_t cipherid, const uint64_t cdraftid,
-				const string& name, const uint64_t rewardid, const uint64_t noftoken, 
+void Task::tanew(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid,
+				const string& taname, const uint64_t rewardid, const uint64_t noftoken, 
 				const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, 
 				const string& hash,
 				const vector<string>& tags) {
 
@@ -38,13 +38,13 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
 
 	// common check
-	check_data(sender, cipherid, name, rewardid, noftoken, amount, nofapproval, approvers, 
+	check_data(sender, cipherid, taname, rewardid, noftoken, amount, nofapproval, approvers, 
 				pic, hash, tags);
 	
 	// create new draft of task
 	d.emplace(sender, [&](auto& dd) {
 		dd.tdraftid = newid;
-		dd.name = name;
+		dd.taname = taname;
 		dd.rewardid = rewardid;
 		dd.noftoken = noftoken;
 		dd.amount = amount;
@@ -61,14 +61,14 @@ void Task::tanew(const account_name sender, const uint64_t cipherid, const uint6
 	});
 }
 
-void Task::taupdate( const account_name sender, 
+void Task::taupdate( const eosio::name sender, 
 				const uint64_t cipherid, const uint64_t cdraftid,
 				const uint64_t tdraftid, 
-				const string& name,  
+				const string& taname,  
 				const uint64_t rewardid, const uint64_t noftoken, 
 				const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const string& hash, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags) {
 
 	tdraft_data d(self, cipherid);
@@ -85,14 +85,14 @@ void Task::taupdate( const account_name sender,
 	eosio_assert_code(Cipher::is_draft_version(cipherid, crec->version), INVALID_PARAM);
 	
 	// check data
-	check_data(sender, cipherid, name, rewardid, noftoken, amount, nofapproval, approvers, pic, hash, tags);
+	check_data(sender, cipherid, taname, rewardid, noftoken, amount, nofapproval, approvers, pic, hash, tags);
 
 	// if task is shared between some drafts, generates copy
 	if (is_shared(tdraftid, cipherid, cdraftid)) {
 		uint64_t newid = d.available_primary_key();
 		d.emplace(sender, [&](auto& dd) {
 			dd.tdraftid = newid;
-			dd.name = name;
+			dd.taname = taname;
 			dd.rewardid = rewardid;
 			dd.noftoken = noftoken;
 			dd.amount = amount;
@@ -105,11 +105,11 @@ void Task::taupdate( const account_name sender,
 		// update tasklist in a draft of cipher clear approval list
 		cd.modify(crec, sender, [&](auto& dd){
 			std::replace(dd.tasklist.begin(), dd.tasklist.end(), rec->tdraftid, newid);
-			dd.approved = vector<account_name>{};
+			dd.approved = vector<eosio::name>{};
 		});
 	} else {
 		d.modify(rec, sender, [&](auto& dd){
-			dd.name = name;
+			dd.taname = taname;
 			dd.rewardid = rewardid;
 			dd.noftoken = noftoken;
 			dd.amount = amount;
@@ -121,13 +121,13 @@ void Task::taupdate( const account_name sender,
 		});
 		// clear approval list
 		cd.modify(crec, sender, [&](auto& dd){
-			dd.approved = vector<account_name>{};
+			dd.approved = vector<eosio::name>{};
 		});
 	}
 }
 
 
-void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const bool vec) {
+void Task::taaprvpic(const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is valid
 	require_auth(sender);
 
@@ -185,11 +185,11 @@ void Task::taaprvpic(const account_name sender, const uint64_t tformalid, const 
 			dd.results = "";
 			dd.payment = name{N("")};
 		}
-		dd.approve_results = vector<account_name>{};
+		dd.approve_results = vector<eosio::name>{};
 	});
 }
 
-void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, const bool vec) {
+void Task::taaprvrslt( const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is valid
 	require_auth(sender);
 
@@ -263,7 +263,7 @@ void Task::taaprvrslt( const account_name sender, const uint64_t tformalid, cons
 	}
 }
 
-void Task::taaplypic( const account_name sender, const uint64_t tformalid, const bool vec) {
+void Task::taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 	
@@ -290,7 +290,7 @@ void Task::taaplypic( const account_name sender, const uint64_t tformalid, const
 
 	tdd.modify(tdrec, sender, [&](auto& dd){
 		if (vec) { // approve
-			dd.pic = vector<account_name>{sender};	
+			dd.pic = vector<eosio::name>{sender};	
 		} else { // cancel approval
 			auto result = std::remove(dd.pic.begin(), dd.pic.end(), sender);
 			dd.pic.erase(result, dd.pic.end());
@@ -299,13 +299,13 @@ void Task::taaplypic( const account_name sender, const uint64_t tformalid, const
 	if (!vec) {
 		tfd.modify(tfrec, sender, [&](auto& dd) {
 			// initialize approval for pic
-			dd.approve_pic = vector<account_name>{};
+			dd.approve_pic = vector<eosio::name>{};
 			// initialize approval for results 
-			dd.approve_results = vector<account_name>{};
+			dd.approve_results = vector<eosio::name>{};
 		});
 	}
 }
-void Task::taprrslt( const account_name sender, const uint64_t tformalid, const string& results) {
+void Task::taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
@@ -328,13 +328,13 @@ void Task::taprrslt( const account_name sender, const uint64_t tformalid, const 
 	eosio_assert_code(Task::is_results_approved(tformalid)==false, TASK_COMPLETED);
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
-		dd.approve_results = vector<account_name>{};
+		dd.approve_results = vector<eosio::name>{};
 		dd.results = results;
 	});
 }
 
-void Task::tareqpay( const account_name sender, const uint64_t tformalid, 
-		const name& proposal_name, const vector<account_name>& approvals) {
+void Task::tareqpay( const eosio::name sender, const uint64_t tformalid, 
+		const name& proposal_name, const vector<eosio::name>& approvals) {
 
 	// check if sender is fulfill the required auth
 	require_auth(sender);
@@ -375,7 +375,7 @@ void Task::tareqpay( const account_name sender, const uint64_t tformalid,
 		rec3->multisig, proposal_name, sender, tdrec->amount, memo, approvals);
 }
 
-void Task::tafinish( const account_name& sender, const uint64_t& tformalid, const name& proposal_name) {
+void Task::tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
@@ -404,18 +404,18 @@ void Task::tafinish( const account_name& sender, const uint64_t& tformalid, cons
 	});
 }
 
-void Task::check_data( const account_name sender, const uint64_t cipherid,
-				const string& name, const uint64_t rewardid, 
+void Task::check_data( const eosio::name sender, const uint64_t cipherid,
+				const string& taname, const uint64_t rewardid, 
 				const uint64_t noftoken, const uint64_t amount, const uint8_t nofapproval, 
-				const vector<account_name>& approvers, 
-				const vector<account_name>& pic, const string& hash, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags) {
 
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
-	// check if name is set
-	eosio_assert_code(name.length()>=NAME_MINLEN, INVALID_PARAM);
+	// check if taname is set
+	eosio_assert_code(taname.length()>=NAME_MINLEN, INVALID_PARAM);
 	
 	// check if approver data is comformable
 	eosio_assert_code((size_t)nofapproval<=approvers.size(), INVALID_PARAM);
@@ -485,7 +485,7 @@ bool Task::is_results_approved(const uint64_t tformalid) {
 	return false;
 }
 
-void Task::formalize(const account_name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist) {
+void Task::formalize(const eosio::name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist) {
 	tformal_data tfd(SELF, SELF); 
 	tdraft_data tdd(SELF, cipherid);
 
@@ -507,7 +507,7 @@ void Task::formalize(const account_name sender, const uint64_t cipherid, const v
 			dd.tformalid = newid;
 			dd.cipherid = cipherid; 
 			dd.tdraftid = rec->tdraftid; 
-			dd.name = rec->name;
+			dd.taname = rec->taname;
 			dd.tags = rec->tags;
 			dd.results = "";
 			dd.payment = name{N("")};

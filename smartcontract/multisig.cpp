@@ -14,8 +14,8 @@ using namespace eosio;
 
 namespace mypher {
 
-void MultiSig::sendProposeAction(const account_name& multisig, const name& proposal_name,
-		const account_name& recipient, const uint64_t& amount, const string& memo, const vector<account_name>& approvals) {
+void MultiSig::sendProposeAction(const eosio::name& multisig, const name& proposal_name,
+		const eosio::name& recipient, const uint64_t& amount, const string& memo, const vector<eosio::name>& approvals) {
 
 	transaction trans(time_point_sec(now())+days(3)); // TODO:
 	vector<permission_level> perm;
@@ -36,7 +36,7 @@ void MultiSig::sendProposeAction(const account_name& multisig, const name& propo
 	).send();
 }
 
-void MultiSig::exec(const account_name& proposer, const name& proposal_name){
+void MultiSig::exec(const eosio::name& proposer, const name& proposal_name){
 	eosio::print(name{proposer});
 	eosio::print("#");
 	eosio::print(proposal_name);
