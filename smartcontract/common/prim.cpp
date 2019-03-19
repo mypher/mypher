@@ -6,13 +6,17 @@
 #include <boost/algorithm/string.hpp>
 #include "prim.hpp"
 
-namespace mypher {
-	const char* Prim::chars = "0123456789abcdef";
+const char* Prim::chars = "0123456789abcdef";
 
-	void Prim::itoa16(char *buf, const uint64_t& v) {
-		for (int i=0; i<16; i++) {
-			buf[i] = chars[(v>>(i<<2)) & (0xf)];
-		}
-		buf[16] = 0x0;
+void Prim::itoa16(char *buf, const uint64_t& v) {
+	for (int i=0; i<16; i++) {
+		buf[i] = chars[(v>>(i<<2)) & (0xf)];
 	}
-};
+	buf[16] = 0x0;
+}
+
+
+uint64_t Prim::gen_secondary_key(const uint16_t& ver, const uint16_t& no) {
+	uint64_t ret = (uint64_t{ver} << 16) | no;
+	return ret;
+}

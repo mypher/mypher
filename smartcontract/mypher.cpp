@@ -5,7 +5,7 @@
 
 #include "mypher.hpp"
 
-EOSIO_ABI( Mypher, 
+EOSIO_DISPATCH( Mypher, 
 	(pupdate)
 	(cnew)(cnewdraft)(cupdate)(capprove)(crevapprove)
 	(tknew)(tkupdate)(tktransfer)(tkuse)(tkreqpay)(tkgetpay)

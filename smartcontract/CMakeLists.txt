@@ -10,7 +10,7 @@ project(mypher VERSION 0.0.1)
 
 #configure_file(${CMAKE_SOURCE_DIR}/myphersystem.abi myphersystem.abi COPYONLY)
 #set(CMAKE_MODULE_PATH "${EOSIO_CDT_ROOT}/lib")
-add_contract( myphersystem myphersystem mypherbase.cpp mypher.cpp person.cpp cipher.cpp token.cpp task.cpp multisig.cpp common/prim.cpp common/validator.cpp)
+add_contract( myphersystem myphersystem mypher.cpp person.cpp cipher.cpp token.cpp task.cpp multisig.cpp common/prim.cpp common/validator.cpp)
 
 #add_custom_command(
 #	OUTPUT myphersystem.abi

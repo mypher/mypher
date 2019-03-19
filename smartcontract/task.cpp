@@ -5,20 +5,13 @@
 
 #include <eosiolib/print.hpp>
 #include <boost/range/iterator_range.hpp>
-#include "task.hpp"
-#include "token.hpp"
-#include "cipher.hpp"
-#include "person.hpp"
 #include "common/prim.hpp"
 #include "common/validator.hpp"
-#include "multisig.hpp"
 
 using namespace eosio;
 using namespace std;
 
-namespace mypher {
-
-void Task::tanew(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid,
+void Mypher::tanew(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid,
 				const string& taname, const uint64_t rewardid, const uint64_t noftoken, 
 				const uint64_t amount, const uint8_t nofapproval, 
 				const vector<eosio::name>& approvers, 
@@ -26,11 +19,11 @@ void Task::tanew(const eosio::name sender, const uint64_t cipherid, const uint64
 				const string& hash,
 				const vector<string>& tags) {
 
-	tdraft_data d(self, cipherid);
+	tdraft_data d(SELF, cipherid);
 	uint64_t newid = d.available_primary_key();
 
 	// check if specified draft of cipher exists
-	Cipher::cdraft_data cd(self, cipherid);
+	Cipher::cdraft_data cd(SELF, cipherid);
 	auto crec = cd.find(cdraftid);
 	eosio_assert_code(crec!=cd.end(), NOT_FOUND);
 	
@@ -61,7 +54,7 @@ void Task::tanew(const eosio::name sender, const uint64_t cipherid, const uint64
 	});
 }
 
-void Task::taupdate( const eosio::name sender, 
+void Mypher::taupdate( const eosio::name sender, 
 				const uint64_t cipherid, const uint64_t cdraftid,
 				const uint64_t tdraftid, 
 				const string& taname,  
@@ -71,13 +64,13 @@ void Task::taupdate( const eosio::name sender,
 				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags) {
 
-	tdraft_data d(self, cipherid);
+	tdraft_data d(SELF, cipherid);
 	auto rec = d.find(tdraftid);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	
 	// get linked cdraft data
-	Cipher::cdraft_data cd(self, cipherid);
+	Cipher::cdraft_data cd(SELF, cipherid);
 	auto crec = cd.find(cdraftid);
 	eosio_assert_code(crec!=cd.end(), INVALID_PARAM);
 
@@ -127,30 +120,30 @@ void Task::taupdate( const eosio::name sender,
 }
 
 
-void Task::taaprvpic(const eosio::name sender, const uint64_t tformalid, const bool vec) {
+void Mypher::taaprvpic(const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is valid
 	require_auth(sender);
 
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
 
 	// get cformal data
-	Cipher::cformal_data cfd(self, self);
+	Cipher::cformal_data cfd(SELF, SELF);
 	auto cfrec = cfd.find(tfrec->cipherid);
 	// check if data exists
 	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
 
 	// get cdraft data
-	Cipher::cdraft_data cdd(self, tfrec->cipherid);
+	Cipher::cdraft_data cdd(SELF, tfrec->cipherid);
 	auto cdrec = cdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(cdrec!=cdd.end(), INVALID_PARAM);
@@ -183,36 +176,36 @@ void Task::taaprvpic(const eosio::name sender, const uint64_t tformalid, const b
 			auto result = std::remove(dd.approve_pic.begin(), dd.approve_pic.end(), sender);
 			dd.approve_pic.erase(result, dd.approve_pic.end());
 			dd.results = "";
-			dd.payment = name{N("")};
+			dd.payment = name{""_n};
 		}
 		dd.approve_results = vector<eosio::name>{};
 	});
 }
 
-void Task::taaprvrslt( const eosio::name sender, const uint64_t tformalid, const bool vec) {
+void Mypher::taaprvrslt( const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is valid
 	require_auth(sender);
 
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
 
 	// get cformal data
-	Cipher::cformal_data cfd(self, self);
+	Cipher::cformal_data cfd(SELF, SELF);
 	auto cfrec = cfd.find(tfrec->cipherid);
 	// check if data exists
 	eosio_assert_code(cfrec!=cfd.end(), INVALID_PARAM);
 
 	// get cdraft data
-	Cipher::cdraft_data cdd(self, tfrec->cipherid);
+	Cipher::cdraft_data cdd(SELF, tfrec->cipherid);
 	auto cdrec = cdd.find(tfrec->tdraftid);
 
 	// check if data exists
@@ -263,18 +256,18 @@ void Task::taaprvrslt( const eosio::name sender, const uint64_t tformalid, const
 	}
 }
 
-void Task::taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec) {
+void Mypher::taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 	
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
@@ -305,18 +298,18 @@ void Task::taaplypic( const eosio::name sender, const uint64_t tformalid, const 
 		});
 	}
 }
-void Task::taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results) {
+void Mypher::taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
@@ -325,7 +318,7 @@ void Task::taprrslt( const eosio::name sender, const uint64_t tformalid, const s
 	auto result = std::find(tdrec->pic.begin(), tdrec->pic.end(), sender);
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 	// check if results already approved
-	eosio_assert_code(Task::is_results_approved(tformalid)==false, TASK_COMPLETED);
+	eosio_assert_code(Mypher::is_results_approved(tformalid)==false, TASK_COMPLETED);
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.approve_results = vector<eosio::name>{};
@@ -333,20 +326,20 @@ void Task::taprrslt( const eosio::name sender, const uint64_t tformalid, const s
 	});
 }
 
-void Task::tareqpay( const eosio::name sender, const uint64_t tformalid, 
+void Mypher::tareqpay( const eosio::name sender, const uint64_t tformalid, 
 		const name& proposal_name, const vector<eosio::name>& approvals) {
 
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
@@ -356,14 +349,14 @@ void Task::tareqpay( const eosio::name sender, const uint64_t tformalid,
 	eosio_assert_code(result!=tdrec->pic.end(), PIC_IS_NOT_SENDER);
 
 	// check if results is not approved yet
-	eosio_assert_code(Task::is_results_approved(tformalid)==true, RESULTS_IN_REVIEW);
+	eosio_assert_code(Mypher::is_results_approved(tformalid)==true, RESULTS_IN_REVIEW);
 
 	// set results to tformal
 	tfd.modify(tfrec, sender, [&](auto& dd) {
 		dd.payment = proposal_name;
 	});
 
-	Cipher::cformal_data d3(self, self);
+	Cipher::cformal_data d3(SELF, SELF);
 	auto rec3 = d3.find(tfrec->cipherid);
 	eosio_assert_code(rec3!=d3.end(), NOT_FOUND);
 
@@ -375,18 +368,18 @@ void Task::tareqpay( const eosio::name sender, const uint64_t tformalid,
 		rec3->multisig, proposal_name, sender, tdrec->amount, memo, approvals);
 }
 
-void Task::tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name) {
+void Mypher::tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name) {
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 
 	// get tformal data	
-	tformal_data tfd(self, self);
+	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// check if data exists
 	eosio_assert_code(tfrec!=tfd.end(), NOT_FOUND);
 
 	// get tdraft data 
-	tdraft_data tdd(self, tfrec->cipherid);
+	tdraft_data tdd(SELF, tfrec->cipherid);
 	auto tdrec = tdd.find(tfrec->tdraftid);
 	// check if data exists
 	eosio_assert_code(tdrec!=tdd.end(), NOT_FOUND);
@@ -404,7 +397,7 @@ void Task::tafinish( const eosio::name& sender, const uint64_t& tformalid, const
 	});
 }
 
-void Task::check_data( const eosio::name sender, const uint64_t cipherid,
+void Mypher::check_data( const eosio::name sender, const uint64_t cipherid,
 				const string& taname, const uint64_t rewardid, 
 				const uint64_t noftoken, const uint64_t amount, const uint8_t nofapproval, 
 				const vector<eosio::name>& approvers, 
@@ -444,7 +437,7 @@ void Task::check_data( const eosio::name sender, const uint64_t cipherid,
 	Validator::check_hash(hash);
 }
 
-bool Task::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uint64_t cdraftid) {
+bool Mypher::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uint64_t cdraftid) {
 	Cipher::cdraft_data d(SELF, cipherid);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
 		auto found = std::find(it->tasklist.begin(), it->tasklist.end(), tdraftid);
@@ -453,17 +446,17 @@ bool Task::is_shared(const uint64_t tdraftid, const uint64_t cipherid, const uin
 	return false;
 }
 
-bool Task::exists(const uint64_t cipherid, const uint64_t tdraftid) {
+bool Mypher::exists(const uint64_t cipherid, const uint64_t tdraftid) {
 	tdraft_data d(SELF, cipherid);
 	return (d.find(tdraftid)!=d.end());
 }
 
-bool Task::exists(const uint64_t tformalid) {
+bool Mypher::exists(const uint64_t tformalid) {
 	tformal_data d(SELF, SELF);
 	return (d.find(tformalid)!=d.end());
 }
 
-bool Task::is_results_approved(const uint64_t tformalid) {
+bool Mypher::is_results_approved(const uint64_t tformalid) {
 	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
 	// get tdraft data 
@@ -485,12 +478,12 @@ bool Task::is_results_approved(const uint64_t tformalid) {
 	return false;
 }
 
-void Task::formalize(const eosio::name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist) {
+void Mypher::formalize(const eosio::name sender, const uint64_t cipherid, const vector<uint64_t>& tasklist) {
 	tformal_data tfd(SELF, SELF); 
 	tdraft_data tdd(SELF, cipherid);
 
 	// delete task list of the previous version
-	auto idx = tfd.get_index<N(secondary_key)>();
+	auto idx = tfd.get_index<"key2"_n>();
 	auto rec = idx.find(cipherid);
 	while(rec!=idx.end()) {
 		auto prev = rec;
@@ -510,13 +503,13 @@ void Task::formalize(const eosio::name sender, const uint64_t cipherid, const ve
 			dd.taname = rec->taname;
 			dd.tags = rec->tags;
 			dd.results = "";
-			dd.payment = name{N("")};
+			dd.payment = name{""_n};
 			dd.completed = false;
 		});	
 	}
 }
 
-bool Task::pic_approved(const uint64_t tformalid) {
+bool Mypher::pic_approved(const uint64_t tformalid) {
 	// get tformal data	
 	tformal_data tfd(SELF, SELF);
 	auto tfrec = tfd.find(tformalid);
@@ -549,5 +542,3 @@ bool Task::pic_approved(const uint64_t tformalid) {
 	} 
 	return true;
 }
-
-} // mypher

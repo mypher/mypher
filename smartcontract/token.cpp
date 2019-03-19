@@ -6,24 +6,18 @@
 #include "mypher.hpp"
 #include <eosiolib/print.hpp>
 #include "common/validator.hpp"
-#include "cipher.hpp"
-#include "person.hpp"
-#include "task.hpp"
-#include "multisig.hpp"
 #include "common/prim.hpp"
 #include <stdio.h>
 #include <eosiolib/transaction.hpp>
 
-namespace mypher {
-
-void Token::tknew(const eosio::name sender, const uint64_t cdraftid,
+void Mypher::tknew(const eosio::name sender, const uint64_t cdraftid,
 			   const string& tkname, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint64_t reftoken, 
 			   const uint8_t rcalctype, const uint64_t nofdesttoken, const uint64_t nofdesteos) {
 
-	token_data d(self, self);
+	token_data d(SELF, SELF);
 	uint64_t id = d.available_primary_key();
 	// common check
 	check_data(sender, tkname, issuer, limit, when, disposal, type, 
@@ -45,7 +39,7 @@ void Token::tknew(const eosio::name sender, const uint64_t cdraftid,
 		dd.nofdesteos = nofdesteos;
 	});
 	// update cipher information
-	Cipher::cdraft_data d2(self, issuer);
+	Cipher::cdraft_data d2(SELF, issuer);
 	auto rec = d2.find(cdraftid);
 	eosio_assert_code(rec!=d2.end(), NOT_FOUND);
 	eosio_assert_code(Cipher::is_draft_version(issuer, rec->version), ALREADY_FORMAL);
@@ -55,14 +49,14 @@ void Token::tknew(const eosio::name sender, const uint64_t cdraftid,
 	});
 }
 
-void Token::tkupdate(const eosio::name sender, const uint64_t cdraftid,
+void Mypher::tkupdate(const eosio::name sender, const uint64_t cdraftid,
 			   const uint64_t tokenid,
 			   const string& tkname, const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
 			   const uint64_t extokenid, const uint32_t reftoken,  
 			   const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos ) {
 
-	token_data d(self, self);
+	token_data d(SELF, SELF);
 	auto rec = d.find(tokenid);
 	// check if data exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -93,7 +87,7 @@ void Token::tkupdate(const eosio::name sender, const uint64_t cdraftid,
 			dd.nofdesteos = nofdesteos;
 		});
 		// update the id registered in cipher to new one
-		Cipher::cdraft_data cd(self, rec->issuer);
+		Cipher::cdraft_data cd(SELF, rec->issuer);
 		auto crec = cd.find(cdraftid);
 		eosio_assert_code(Cipher::is_draft_version(rec->issuer, crec->version), ALREADY_FORMAL);
 		eosio_assert_code(crec!=cd.end(), INVALID_PARAM); 
@@ -117,7 +111,7 @@ void Token::tkupdate(const eosio::name sender, const uint64_t cdraftid,
 	}
 }
 
-void Token::check_data( const eosio::name sender, 
+void Mypher::check_data( const eosio::name sender, 
 			   const string& tkname, const uint64_t issuer,
 			   const uint64_t limit, const uint8_t when, 
 			   const uint8_t disposal,const uint8_t type, const uint64_t taskid, 
@@ -139,7 +133,7 @@ void Token::check_data( const eosio::name sender,
 	}
 	// check if token is exists
 	if (extokenid!=NUMBER_NULL) {
-		eosio_assert_code(Token::exists(extokenid), INVALID_PARAM);
+		eosio_assert_code(Mypher::exists(extokenid), INVALID_PARAM);
 	}
 	// check condition for each "type"
 	switch (type) {
@@ -163,7 +157,7 @@ void Token::check_data( const eosio::name sender,
 	}
 }
 
-bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid) {
+bool Mypher::is_shared(const uint64_t tokenid, const uint64_t cipherid, const uint64_t cdraftid) {
 	Cipher::cdraft_data d(SELF, cipherid);
 	eosio_assert_code(d.begin()!=d.end(), NOT_FOUND);
 	for (auto it=d.begin(); it!=d.end(); ++it) {
@@ -176,7 +170,7 @@ bool Token::is_shared(const uint64_t tokenid, const uint64_t cipherid, const uin
 	return false;
 }
 
-void Token::issue(const eosio::name sender, const uint64_t cipherid,
+void Mypher::issue(const eosio::name sender, const uint64_t cipherid,
 			   const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity) {
 	// check limit
 	eosio_assert_code(get_available_amount(tokenid)>=quantity, INSUFFICIENT_AMOUNT);
@@ -191,12 +185,12 @@ void Token::issue(const eosio::name sender, const uint64_t cipherid,
 	set_amount(sender, tokenid, recipient, quantity);
 }
 
-void Token::tktransfer(const eosio::name sender, 
+void Mypher::tktransfer(const eosio::name sender, 
 				const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity) {
 	// check the receiver
 	eosio_assert_code(Person::exists(recipient), INVALID_RECIPIENT);
-	issued_data d(self, tokenid);
-	auto idx = d.get_index<N(secondary_key)>();
+	issued_data d(SELF, tokenid);
+	auto idx = d.get_index<"key2"_n>();
 	auto rec = idx.find(sender);
 	// check if sender's amount is enough to send 
 	eosio_assert_code(rec!=idx.end(), INSUFFICIENT_AMOUNT);
@@ -208,10 +202,10 @@ void Token::tktransfer(const eosio::name sender,
 	set_amount(sender, tokenid, recipient, quantity);
 }
 
-void Token::tkuse(const eosio::name sender, const uint64_t tokenid, const uint64_t quantity) {
-	token_data d(self, self);
-	issued_data d2(self, tokenid);
-	auto idx = d2.get_index<N(secondary_key)>();
+void Mypher::tkuse(const eosio::name sender, const uint64_t tokenid, const uint64_t quantity) {
+	token_data d(SELF, SELF);
+	issued_data d2(SELF, tokenid);
+	auto idx = d2.get_index<"key2"_n>();
 
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -233,22 +227,22 @@ void Token::tkuse(const eosio::name sender, const uint64_t tokenid, const uint64
 	}
 }
 
-void Token::tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
+void Mypher::tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
 	const name& proposal_name, const vector<eosio::name>& approvals) {
 	
 	// check if sender is fulfill the required auth
 	require_auth(sender);
 	
-	token_data d(self, self);
-	issued_data d2(self, tokenid);
-	Cipher::cformal_data d3(self, self);
+	token_data d(SELF, SELF);
+	issued_data d2(SELF, tokenid);
+	Cipher::cformal_data d3(SELF, SELF);
 
-	auto idx = d2.get_index<N(secondary_key)>();
+	auto idx = d2.get_index<"key2"_n>();
 	auto rec = d.find(tokenid);
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
 	auto rec2 = idx.find(sender);
 	for (; rec2!=idx.end(); ++rec2) {
-		if (rec2->payinf==N("")) {
+		if (rec2->payinf==""_n) {
 			break;
 		}
 		eosio_assert_code(rec2->owner==sender, TOKEN_NOT_OWNED_BY_SENDER);
@@ -280,11 +274,11 @@ void Token::tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const u
 }
 
 
-void Token::tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const name& proposal_name) {
+void Mypher::tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const name& proposal_name) {
 	// check if sender is login user
 	require_auth(sender);
-	issued_data d(self, tokenid);
-	auto idx = d.get_index<N(secondary_key)>();
+	issued_data d(SELF, tokenid);
+	auto idx = d.get_index<"key2"_n>();
 	auto rec = idx.find(sender);
 	for (; rec!=idx.end(); ++rec) {
 		if (rec->payinf==proposal_name) {
@@ -296,7 +290,7 @@ void Token::tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const n
 	idx.erase(rec);
 }
 
-void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity) {
+void Mypher::can_use(const token& tok, const issued& isu, const uint64_t quantity) {
 	eosio_assert_code(isu.quantity>=quantity, INSUFFICIENT_AMOUNT);
 	switch (tok.when) {
 	case When::UNALLOW:
@@ -315,22 +309,12 @@ void Token::can_use(const token& tok, const issued& isu, const uint64_t quantity
 	}
 }
 
-void Token::distribute(const eosio::name sender, const uint64_t cipherid,  
+void Mypher::distribute(const eosio::name sender, const uint64_t cipherid,  
 					const uint64_t tokenid, const uint64_t quantity) {
 	eosio_assert_code(0, NOT_IMPLEMENT_YET);
 }
-/*
-void Token::transfer_currency(const eosio::name sender, 
-				const eosio::name issuer, const uint32_t issuer2, const uint32_t quantity) {
-	// TODO:
-	action(
-		permission_level {sender,N(active)},
-        N(eosio.token),N(transfer),
-        std::make_tuple(self,N(eosio.token),asset(quantity,N(eos)),"")
-	).send();
-}*/
 
-uint64_t Token::get_available_amount(const uint64_t tokenid) {
+uint64_t Mypher::get_available_amount(const uint64_t tokenid) {
 	token_data d(SELF, SELF);
 	issued_data d2(SELF, tokenid);
 
@@ -345,14 +329,14 @@ uint64_t Token::get_available_amount(const uint64_t tokenid) {
 	return rec->limit - used;
 }
 
-bool Token::is_issued(const uint64_t tokenid) {
+bool Mypher::is_issued(const uint64_t tokenid) {
 	issued_data d(SELF, tokenid);
 	return (d.begin()!=d.end());
 }
 
-void Token::set_amount(const eosio::name sender, const uint64_t tokenid, const eosio::name user, const uint64_t quantity) {
+void Mypher::set_amount(const eosio::name sender, const uint64_t tokenid, const eosio::name user, const uint64_t quantity) {
 	issued_data d(SELF, tokenid);
-	auto idx = d.get_index<N(secondary_key)>();
+	auto idx = d.get_index<"key2"_n>();
 	auto rec = idx.find(user);
 	// first time to issue to specified receiver
 	if (rec==idx.end()) {
@@ -379,13 +363,11 @@ void Token::set_amount(const eosio::name sender, const uint64_t tokenid, const e
 	}
 }
 
-bool Token::is_sufficient_owned_token(const uint64_t issuer, const uint64_t tokenid, const uint64_t amount) {
+bool Mypher::is_sufficient_owned_token(const uint64_t issuer, const uint64_t tokenid, const uint64_t amount) {
 	return (get_available_amount(tokenid) > amount);
 }
 
-bool Token::exists(const uint64_t tokenid) {
+bool Mypher::exists(const uint64_t tokenid) {
 	token_data d(SELF, SELF);
 	return (d.begin()!=d.end());
 }
-
-} // mypher

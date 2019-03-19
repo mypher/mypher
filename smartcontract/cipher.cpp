@@ -8,31 +8,22 @@
 #include "mypher.hpp"
 #include "common/prim.hpp"
 #include "common/validator.hpp"
-#include "token.hpp"
-#include "task.hpp"
-
-namespace mypher {
 
 using namespace eosio;
 
-uint64_t Cipher::gen_secondary_key(const uint16_t& ver, const uint16_t& no) {
-	uint64_t ret = (uint64_t{ver} << 16) | no;
-	return ret;
-}
-
-void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no ) {
-	cformal_data d1(self, self);
+void Mypher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no ) {
+	cformal_data d1(SELF, SELF);
 	auto rec1 = d1.find(cipherid);
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
 	
-	cdraft_data d2(self, cipherid);
+	cdraft_data d2(SELF, cipherid);
 	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 
 	// version is next number of formal version
 	version = rec2->version + 1;
 
-	auto idx = d2.get_index<N(secondary_key)>();
+	auto idx = d2.get_index<"key2"_n>();
 	auto rec3 = idx.rbegin();
 	eosio_assert_code(rec3!=idx.rend(), NOT_FOUND);
 	
@@ -41,7 +32,7 @@ void Cipher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& n
 	no = (rec2->version==rec3->version) ? 1 : rec3->no + 1;
 }
 
-bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
+bool Mypher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 	cformal_data d1(SELF, SELF);
 	auto rec1 = d1.find(cipherid);
 	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
@@ -51,7 +42,7 @@ bool Cipher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
 	return (rec2->version<version);
 }
 
-void Cipher::cnew(const eosio::name sender, 
+void Mypher::cnew(const eosio::name sender, 
 				const string& cname, const vector<eosio::name>& editors,
 				const eosio::name multisig,
 				const vector<string>& tags, const string& hash,
@@ -61,9 +52,9 @@ void Cipher::cnew(const eosio::name sender,
 
 	eosio_assert_code(is_account(multisig), INVALID_MULTISIG);
 
-	cformal_data d1(self, self);
+	cformal_data d1(SELF, SELF);
 	uint64_t cipherid = d1.available_primary_key();
-	cdraft_data d2(self, cipherid);
+	cdraft_data d2(SELF, cipherid);
 	uint64_t cdraftid = d2.available_primary_key();
 
 	// insert new formal version
@@ -93,11 +84,11 @@ void Cipher::cnew(const eosio::name sender,
 
 }
 
-void Cipher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	
 	require_auth(sender);
 
-	cdraft_data d(self, cipherid);
+	cdraft_data d(SELF, cipherid);
 	uint64_t newid = d.available_primary_key();
 	uint16_t version, no;
 	vector<eosio::name> editors;
@@ -124,7 +115,7 @@ void Cipher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const 
 	});
 }
 
-void Cipher::cupdate(const eosio::name sender, const uint64_t cipherid, 
+void Mypher::cupdate(const eosio::name sender, const uint64_t cipherid, 
 				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
 				const string& cname, const vector<string>& tags, 
 				const vector<eosio::name>& editors, const string& hash,
@@ -141,7 +132,7 @@ void Cipher::cupdate(const eosio::name sender, const uint64_t cipherid,
 	// check if token list is valid
 	validate_tokenlist(tokenlist);
 
-	cdraft_data d(self, cipherid);
+	cdraft_data d(SELF, cipherid);
 	auto rec = d.find(cdraftid);
 	// check if draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -162,11 +153,11 @@ void Cipher::cupdate(const eosio::name sender, const uint64_t cipherid,
 	});
 }
 
-void Cipher::capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	// check if sender is logined user
 	require_auth(sender);
 
-	cdraft_data d(self, cipherid);
+	cdraft_data d(SELF, cipherid);
 	auto rec = d.find(cdraftid);
 	// check if the draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -190,7 +181,7 @@ void Cipher::capprove(const eosio::name sender, const uint64_t cipherid, const u
 	});
 	// update formal information if the draft became formal version
 	if (formal) {
-		cformal_data d2(self, self);
+		cformal_data d2(SELF, SELF);
 		auto rec2 = d2.find(cipherid);
 		d2.modify(rec2, sender, [&](auto& dd) {
 			dd.cdraftid = rec->cdraftid;
@@ -201,11 +192,11 @@ void Cipher::capprove(const eosio::name sender, const uint64_t cipherid, const u
 	}
 }
 
-void Cipher::crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
 	require_auth(sender);
 
 	// check if sender is logined user
-	cdraft_data d(self, cipherid);
+	cdraft_data d(SELF, cipherid);
 	// check if data is registered
 	auto rec = d.find(cdraftid);
 	// check if the draft is exists
@@ -225,19 +216,19 @@ void Cipher::crevapprove(const eosio::name sender, const uint64_t cipherid, cons
 	});
 }
 
-bool Cipher::can_edit(const eosio::name& sender, const vector<eosio::name>& editors) {
+bool Mypher::can_edit(const eosio::name& sender, const vector<eosio::name>& editors) {
 	auto found = std::find(editors.begin(), editors.end(), sender);
 	return (found!=editors.end());
 }
 
 
-bool Cipher::exists(const uint64_t cipherid) {
+bool Mypher::exists(const uint64_t cipherid) {
 	cformal_data d(SELF, SELF);
 	auto rec = d.find(cipherid);
 	return (rec!=d.end());
 }
 
-void Cipher::check_data(const eosio::name sender, 
+void Mypher::check_data(const eosio::name sender, 
 				const string& cname, const vector<eosio::name>& editors,
 				const vector<string>& tags, const string& hash,
 				uint16_t nofapproval, const vector<eosio::name>& approvers) {
@@ -263,7 +254,7 @@ void Cipher::check_data(const eosio::name sender,
 	Validator::check_hash(hash);
 }
 
-void Cipher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& list) {
+void Mypher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& list) {
 	Task::tdraft_data d(SELF, cipherid);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
@@ -271,7 +262,7 @@ void Cipher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& 
 	}
 }
 
-void Cipher::validate_tokenlist(const vector<uint64_t>& list) {
+void Mypher::validate_tokenlist(const vector<uint64_t>& list) {
 	Token::token_data d(SELF, SELF);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
@@ -279,10 +270,9 @@ void Cipher::validate_tokenlist(const vector<uint64_t>& list) {
 	}
 }
 
-bool Cipher::is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid) {
+bool Mypher::is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid) {
 	cdraft_data d(SELF, cipherid);
 	auto rec = d.find(cdraftid);
 	return (rec!=d.end());
 }
 
-} // mypher

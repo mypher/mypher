@@ -10,13 +10,12 @@
 #include <vector>
 #include "type.hpp"
 
-namespace mypher {
-	class Prim {
-	private:
-		static const char* chars;  
-	public:
-		static void itoa16(char *buf, const uint64_t& v);
-	};
+class Prim {
+private:
+	static const char* chars;  
+public:
+	static void itoa16(char *buf, const uint64_t& v);
+	static uint64_t gen_secondary_key(const uint16_t& version, const uint16_t& no);
 };
 
 #endif // COMMON_PRIM_HPP
