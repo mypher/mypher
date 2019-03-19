@@ -4,26 +4,24 @@
 //
 
 #include <eosiolib/print.hpp>
-#include <boost/range/iterator_range.hpp>
 #include "mypher.hpp"
 #include "common/prim.hpp"
 #include "common/validator.hpp"
 
 using namespace eosio;
 
-void Mypher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no ) {
-	cformal_data d1(SELF, SELF);
-	auto rec1 = d1.find(cipherid);
-	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
+void Mypher::gen_draftno(const uint64_t& cipherid, uint16_t& version, uint16_t& no ) {
+	auto rec1 = cformal_data.find(cipherid);
+	eosio_assert_code(rec1!=cformal_data.end(), NOT_FOUND);
 	
-	cdraft_data d2(SELF, cipherid);
+	cdraft_def d2(_self, cipherid);
 	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 
 	// version is next number of formal version
 	version = rec2->version + 1;
 
-	auto idx = d2.get_index<"key2"_n>();
+	auto idx = d2.get_index<KEY2>();
 	auto rec3 = idx.rbegin();
 	eosio_assert_code(rec3!=idx.rend(), NOT_FOUND);
 	
@@ -33,32 +31,30 @@ void Mypher::gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& n
 }
 
 bool Mypher::is_draft_version(const uint64_t cipherid, const uint16_t version) {
-	cformal_data d1(SELF, SELF);
-	auto rec1 = d1.find(cipherid);
-	eosio_assert_code(rec1!=d1.end(), NOT_FOUND);
-	cdraft_data d2(SELF,cipherid);
+	auto rec1 = cformal_data.find(cipherid);
+	eosio_assert_code(rec1!=cformal_data.end(), NOT_FOUND);
+	cdraft_def d2(_self,cipherid);
 	auto rec2 = d2.find(rec1->cdraftid);
 	eosio_assert_code(rec2!=d2.end(), NOT_FOUND);
 	return (rec2->version<version);
 }
 
-void Mypher::cnew(const eosio::name sender, 
+void Mypher::cnew(const eosio::name& sender, 
 				const string& cname, const vector<eosio::name>& editors,
-				const eosio::name multisig,
+				const eosio::name& multisig,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<eosio::name>& approvers) {
-	// check data
-	check_data(sender, cname, editors, tags, hash, nofapproval, approvers);
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers) {
+	
+	check_data4cipher(sender, cname, editors, tags, hash, nofapproval, approvers);
 
 	eosio_assert_code(is_account(multisig), INVALID_MULTISIG);
 
-	cformal_data d1(SELF, SELF);
-	uint64_t cipherid = d1.available_primary_key();
-	cdraft_data d2(SELF, cipherid);
+	uint64_t cipherid = cformal_data.available_primary_key();
+	cdraft_def d2(_self, cipherid);
 	uint64_t cdraftid = d2.available_primary_key();
 
 	// insert new formal version
-	d1.emplace(sender, [&](auto& dd) {
+	cformal_data.emplace(sender, [&](auto& dd) {
 	 	dd.cipherid = cipherid;
 		dd.cdraftid = cdraftid;
 		dd.multisig = multisig;
@@ -79,16 +75,13 @@ void Mypher::cnew(const eosio::name sender,
 		dd.nofapproval = nofapproval;
 		dd.approvers = approvers;
 	});
-
-	// create account
-
 }
 
-void Mypher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::cnewdraft(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid) {
 	
 	require_auth(sender);
 
-	cdraft_data d(SELF, cipherid);
+	cdraft_def d(_self, cipherid);
 	uint64_t newid = d.available_primary_key();
 	uint16_t version, no;
 	vector<eosio::name> editors;
@@ -115,15 +108,15 @@ void Mypher::cnewdraft(const eosio::name sender, const uint64_t cipherid, const 
 	});
 }
 
-void Mypher::cupdate(const eosio::name sender, const uint64_t cipherid, 
-				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
+void Mypher::cupdate(const eosio::name& sender, const uint64_t& cipherid, 
+				const uint64_t& cdraftid, const uint16_t& version, const uint16_t& no, 
 				const string& cname, const vector<string>& tags, 
 				const vector<eosio::name>& editors, const string& hash,
-				const uint16_t nofapproval, const vector<eosio::name>& approvers,
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers,
 				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist) {
 
     // common check
-	check_data(sender, cname, editors, tags, hash, nofapproval, approvers);
+	check_data4cipher(sender, cname, editors, tags, hash, nofapproval, approvers);
 
 	// check if version is already formal
 	eosio_assert_code(is_draft_version(cipherid, version), ALREADY_FORMAL);
@@ -132,7 +125,7 @@ void Mypher::cupdate(const eosio::name sender, const uint64_t cipherid,
 	// check if token list is valid
 	validate_tokenlist(tokenlist);
 
-	cdraft_data d(SELF, cipherid);
+	cdraft_def d(_self, cipherid);
 	auto rec = d.find(cdraftid);
 	// check if draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -153,11 +146,11 @@ void Mypher::cupdate(const eosio::name sender, const uint64_t cipherid,
 	});
 }
 
-void Mypher::capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::capprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid) {
 	// check if sender is logined user
 	require_auth(sender);
 
-	cdraft_data d(SELF, cipherid);
+	cdraft_def d(_self, cipherid);
 	auto rec = d.find(cdraftid);
 	// check if the draft is exists
 	eosio_assert_code(rec!=d.end(), NOT_FOUND);
@@ -181,22 +174,21 @@ void Mypher::capprove(const eosio::name sender, const uint64_t cipherid, const u
 	});
 	// update formal information if the draft became formal version
 	if (formal) {
-		cformal_data d2(SELF, SELF);
-		auto rec2 = d2.find(cipherid);
-		d2.modify(rec2, sender, [&](auto& dd) {
+		auto rec2 = cformal_data.find(cipherid);
+		cformal_data.modify(rec2, sender, [&](auto& dd) {
 			dd.cdraftid = rec->cdraftid;
 			dd.cname = rec->cname;
 			dd.tags = rec->tags;
 		});
-		Task::formalize(sender, cipherid, rec->tasklist);
+		formalize(sender, cipherid, rec->tasklist);
 	}
 }
 
-void Mypher::crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid) {
+void Mypher::crevapprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid) {
 	require_auth(sender);
 
 	// check if sender is logined user
-	cdraft_data d(SELF, cipherid);
+	cdraft_def d(_self, cipherid);
 	// check if data is registered
 	auto rec = d.find(cdraftid);
 	// check if the draft is exists
@@ -222,29 +214,28 @@ bool Mypher::can_edit(const eosio::name& sender, const vector<eosio::name>& edit
 }
 
 
-bool Mypher::exists(const uint64_t cipherid) {
-	cformal_data d(SELF, SELF);
-	auto rec = d.find(cipherid);
-	return (rec!=d.end());
+bool Mypher::is_cipher_exists(const uint64_t& cipherid) {
+	auto rec = cformal_data.find(cipherid);
+	return (rec!=cformal_data.end());
 }
 
-void Mypher::check_data(const eosio::name sender, 
+void Mypher::check_data4cipher(const eosio::name& sender, 
 				const string& cname, const vector<eosio::name>& editors,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<eosio::name>& approvers) {
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers) {
 	// check if sender is logined user
 	require_auth(sender);
 
 	// check if "cname" is of sufficient length
-	eosio_assert_code(cname.length()>=NAME_MINLEN, INVALID_PARAM);
+	eosio_assert_code(cname.length()>=CIPHERNAME_MINLEN, INVALID_PARAM);
 
 	// check if editors is valid
 	eosio_assert_code(editors.size()>0, INVALID_PARAM);
-	eosio_assert_code(Person::check_list(editors), INVALID_PARAM);
+	eosio_assert_code(check_person_list(editors), INVALID_PARAM);
 
 	// check if approvers is valid
 	eosio_assert_code(approvers.size()>0, INVALID_PARAM);
-	eosio_assert_code(Person::check_list(approvers), INVALID_PARAM);
+	eosio_assert_code(check_person_list(approvers), INVALID_PARAM);
 
 	// check if nofapproval is valid
 	eosio_assert_code(nofapproval>0, INVALID_PARAM);
@@ -254,8 +245,8 @@ void Mypher::check_data(const eosio::name sender,
 	Validator::check_hash(hash);
 }
 
-void Mypher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& list) {
-	Task::tdraft_data d(SELF, cipherid);
+void Mypher::validate_tasklist(const uint64_t& cipherid, const vector<uint64_t>& list) {
+	tdraft_def d(_self, cipherid);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
 		auto rec = d.find(*it);
 		eosio_assert_code(rec!=d.end(), INVALID_PARAM);
@@ -263,15 +254,14 @@ void Mypher::validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& 
 }
 
 void Mypher::validate_tokenlist(const vector<uint64_t>& list) {
-	Token::token_data d(SELF, SELF);
 	for (auto it = list.begin(); it!=list.end(); ++it ) {
-		auto rec = d.find(*it);
-		eosio_assert_code(rec!=d.end(), INVALID_PARAM);
+		auto rec = token_data.find(*it);
+		eosio_assert_code(rec!=token_data.end(), INVALID_PARAM);
 	}
 }
 
-bool Mypher::is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid) {
-	cdraft_data d(SELF, cipherid);
+bool Mypher::is_cdraft_exists(const uint64_t& cipherid, const uint64_t& cdraftid) {
+	cdraft_def d(_self, cipherid);
 	auto rec = d.find(cdraftid);
 	return (rec!=d.end());
 }

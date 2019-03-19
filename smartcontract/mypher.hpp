@@ -14,12 +14,19 @@ using namespace eosio;
 using namespace std;
 
 #define NUMBER_NULL 0xffffffff
-#define SELF "myphersystem"_n
+#define KEY2 "key2"_n
+#define ACTIVE "active"_n
 
 class Mypher : public contract {
 
 public:
-	Mypher(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
+	Mypher(name receiver, name code, datastream<const char*> ds) 
+	: contract(receiver, code, ds) 
+	, person_data(receiver, receiver.value)
+	, cformal_data(receiver, receiver.value)
+	, tformal_data(receiver, receiver.value)
+	, token_data(receiver, receiver.value)
+	{}
 
 /***************************************************************
  * Person
@@ -40,23 +47,20 @@ public:
 		string hash;
 		vector<uint64_t> tokenlist;
 
-		auto primary_key() const { return personid; }
+		uint64_t primary_key() const { return personid.value; }
 
 		EOSLIB_SERIALIZE( person, (personid)(pname)(tags)(hash)(tokenlist) )
 	};
-	/**
-	 * @brief the definition of the table for "person"
-	 */
-	typedef eosio::multi_index<"person"_n, person> person_def;
-	person_def person_data;
+	eosio::multi_index<"person"_n, person> person_data;
 
 	/**
 	 * @brief create new person
 	 */
-	ACTION pupdate(const eosio::name personid, const string& pname, const vector<string>& tags, const string& hash);
+	ACTION pupdate(const eosio::name& personid, const string& pname, const vector<string>& tags, const string& hash);
 
-	bool check_list(const vector<eosio::name>& list);
+	bool check_person_list(const vector<eosio::name>& list);
 	bool is_person_exists(const eosio::name user);
+
 /***************************************************************
  * Cipher
  ***************************************************************/
@@ -78,7 +82,10 @@ public:
 		
 		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(multisig)(cname)(tags))
 	};
+private:
+	eosio::multi_index<"cformal"_n, cformal> cformal_data;
 
+public:
 	/**
 	 * @brief information of draft of cipher
 	 */
@@ -105,73 +112,60 @@ public:
 		EOSLIB_SERIALIZE(cdraft, (cdraftid)(version)(no)(formal)(cname)
 			(tags)(editors)(hash)(nofapproval)(approvers)(approved)(tasklist)(tokenlist))
 	};
-
-	/**
-	 * @brief the definition of the table for "cformal"
-	 */
 	typedef eosio::multi_index< 
-			"cformal"_n, 
-			cformal
-	> cformal_data;
-
-	/**
-	 * @brief the definition of the table for key of "cdraft"
-	 */
-	typedef eosio::multi_index< 
-			"cdraft"_n, 
-			cdraft,
-			indexed_by<"key2"_n, const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
-	> cdraft_data;
+			"cdraft"_n, cdraft,
+			indexed_by<KEY2, const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
+	> cdraft_def;
 
 	/**
 	 * @brief create new cipher
 	 */
-	ACTION cnew(const eosio::name sender, 
+	ACTION cnew(const eosio::name& sender, 
 				const string& cname, const vector<eosio::name>& editors,
-				const eosio::name multisig,
+				const eosio::name& multisig,
 				const vector<string>& tags, const string& hash,
-				uint16_t nofapproval, const vector<eosio::name>& approvers);
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers);
 	/**
 	 * @brief create new draft from specified version 
 	 */
-	ACTION cnewdraft(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	ACTION cnewdraft(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
 
 	/**
 	 * @brief update draft data 
 	 */
-	ACTION cupdate(const eosio::name sender, const uint64_t cipherid, 
-				const uint64_t cdraftid, const uint16_t version, const uint16_t no, 
+	ACTION cupdate(const eosio::name& sender, const uint64_t& cipherid, 
+				const uint64_t& cdraftid, const uint16_t& version, const uint16_t& no, 
 				const string& cname, const vector<string>& tags, 
 				const vector<eosio::name>& editors, const string& hash,
-				const uint16_t nofapproval, const vector<eosio::name>& approvers,
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers,
 				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
 
 	/**
 	 * @brief approve a draft 
 	 */
-	ACTION capprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	ACTION capprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
 
 	/**
 	 * @brief reverse approval for a draft 
 	 */
-	ACTION crevapprove(const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid);
+	ACTION crevapprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
 
 private:
 	bool can_edit(const eosio::name& sender, const vector<eosio::name>& editors);
 	/**
 	 * @brief generate version and no for new draft 
 	 */
-	void gen_draftno(const uint64_t cipherid, uint16_t& version, uint16_t& no);
+	void gen_draftno(const uint64_t& cipherid, uint16_t& version, uint16_t& no);
 
-	void check_data(const eosio::name sender, 
+	void check_data4cipher(const eosio::name& sender, 
 				const string& cname, const vector<eosio::name>& editors,
 				const vector<string>& tags, const string& hash,
-				const uint16_t nofapproval, const vector<eosio::name>& approvers);
-	void validate_tasklist(const uint64_t cipherid, const vector<uint64_t>& tasklist);
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers);
+	void validate_tasklist(const uint64_t& cipherid, const vector<uint64_t>& tasklist);
 	void validate_tokenlist(const vector<uint64_t>& tokenlist);
 	bool is_draft_version(const uint64_t cipherid, const uint16_t version);
-	bool exists(const uint64_t cipherid); 
-	bool is_draft_exists(const uint64_t cipherid, const uint64_t cdraftid);
+	bool is_cipher_exists(const uint64_t& cipherid); 
+	bool is_cdraft_exists(const uint64_t& cipherid, const uint64_t& cdraftid);
 
 /***************************************************************
  * Task
@@ -201,7 +195,13 @@ public:
 		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(taname)(approve_pic)
 						(approve_results)(tags)(results)(payment)(completed) )
 	};
+private:
+	eosio::multi_index<
+			"tformal"_n, tformal,
+			indexed_by<KEY2, const_mem_fun<tformal, uint64_t, &tformal::secondary_key>>
+	> tformal_data;
 
+public:
 	/**
 	 * @brief information for the draft version of task 
 	 */
@@ -221,30 +221,14 @@ public:
 		EOSLIB_SERIALIZE( tdraft,(tdraftid)(taname)(rewardid)(noftoken)(amount)
 						(nofapproval)(approvers)(pic)(hash)(tags) )
 	};
-
-	/**
-	 * @brief the definition of the table for "tformal"
-	 */
-	typedef eosio::multi_index<
-			"tformal"_n, 
-			tformal,
-			indexed_by<"key2"_n, const_mem_fun<tformal, uint64_t, &tformal::secondary_key>>
-	> tformal_data;
-
-	/**
-	 * @brief the definition of the table for "tdraft"
-	 */
-	typedef eosio::multi_index<
-			"tdraft"_n, 
-			tdraft
-	> tdraft_data;
+	typedef eosio::multi_index<"tdraft"_n, tdraft> tdraft_def;
 
 	/**
 	 * @brief create new task
 	 */
-	ACTION tanew( const eosio::name sender, const uint64_t cipherid, uint64_t cdraftid,
-				const string& taname, const uint64_t rewardid, const uint64_t noftoken, 
-				const uint64_t amount, const uint8_t nofapproval, 
+	ACTION tanew( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
+				const string& taname, const uint64_t& rewardid, const uint64_t& noftoken, 
+				const uint64_t& amount, const uint8_t& nofapproval, 
 				const vector<eosio::name>& approvers, 
 				const vector<eosio::name>& pic, 
 				const string& hash,
@@ -253,11 +237,11 @@ public:
 	/**
 	 * @brief update task data
 	 */
-	ACTION taupdate( const eosio::name sender, const uint64_t cipherid, const uint64_t cdraftid,
-				const uint64_t tdraftid, 
+	ACTION taupdate( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
+				const uint64_t& tdraftid, 
 				const string& taname,  
-				const uint64_t rewardid, const uint64_t noftoken, 
-				const uint64_t amount, const uint8_t nofapproval, 
+				const uint64_t& rewardid, const uint64_t& noftoken, 
+				const uint64_t& amount, const uint8_t& nofapproval, 
 				const vector<eosio::name>& approvers, 
 				const vector<eosio::name>& pic, const string& hash, 
 				const vector<string>& tags);
@@ -265,12 +249,12 @@ public:
 	/**
 	 * @brief approve a pic 
 	 */
-	ACTION taaprvpic( const eosio::name sender, const uint64_t tformalid, const bool vec);
+	ACTION taaprvpic( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
 
 	/**
 	 * @brief approve results
 	 */
-	ACTION taaprvrslt( const eosio::name sender, const uint64_t tformalid, const bool vec);
+	ACTION taaprvrslt( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
 
 	/**
 	 * @brief apply for pic of a task
@@ -389,24 +373,23 @@ public:
 
 		EOSLIB_SERIALIZE( issued, (issueid)(owner)(quantity)(status)(payinf) )
 	};
-
+private:
 	/**
 	 * @brief the definition of the table for "token"
 	 */
-	typedef eosio::multi_index<
-			"token"_n, 
-			token,
-			indexed_by<"key2"_n, const_mem_fun<token, uint64_t, &token::secondary_key>>
+	eosio::multi_index<
+			"token"_n, token,
+			indexed_by<KEY2, const_mem_fun<token, uint64_t, &token::secondary_key>>
 	> token_data;
 
+public:
 	/**
 	 * @brief the definition of the table for "issue"
 	 */
 	typedef eosio::multi_index<
-			"issued"_n,
-			issued,
-			indexed_by<"key2"_n, const_mem_fun<issued, uint64_t, &issued::secondary_key>>
-	> issued_data;
+			"issued"_n, issued,
+			indexed_by<KEY2, const_mem_fun<issued, uint64_t, &issued::secondary_key>>
+	> issued_def;
 
 	/**
 	 * @brief create new token
@@ -458,8 +441,8 @@ private:
 	/**
 	 * @brief issue a token 
 	 */
-	void issue(const eosio::name sender, const uint64_t cipherid,
-			   const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity);
+	void issue_token(const eosio::name& sender, const uint64_t& cipherid,
+			   const uint64_t& tokenid, const eosio::name& recipient, const uint64_t& quantity);
 	void check_data4token(
 			   const eosio::name sender, 
 			   const string& tkname, const uint64_t issuer,
@@ -480,6 +463,7 @@ private:
 	void set_amount(const eosio::name sender, const uint64_t tokenid, const eosio::name user, const uint64_t quantity);
 	bool is_sufficient_owned_token(const uint64_t issuer, const uint64_t tokenid, const uint64_t amount);
 	bool is_token_exists(const uint64_t tokenid);
+	void check_tokenowner(const uint64_t& tokenid, const uint64_t& cipherid);
 
 /***************************************************************
  * Multisig 
@@ -488,7 +472,7 @@ private:
 	void sendProposeAction(const eosio::name& multisig, const name& proposal_name,
 		const eosio::name& recipient, const uint64_t& amount, const string& memo, const vector<eosio::name>& approvals);
 
-	void exec(const eosio::name& proposer, const name& proposal_name);
+	void exec_multisig(const eosio::name& proposer, const name& proposal_name);
 };
 
 #endif // MYPHER_HPP

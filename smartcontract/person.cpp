@@ -6,7 +6,7 @@
 #include "mypher.hpp"
 #include <eosiolib/print.hpp>
 
-void Mypher::pupdate(const eosio::name personid, const string& pname, const std::vector<std::string>& tags, const std::string& hash) {
+void Mypher::pupdate(const eosio::name& personid, const string& pname, const std::vector<std::string>& tags, const std::string& hash) {
 	require_auth(personid);
 
 	// search the target data
@@ -15,23 +15,22 @@ void Mypher::pupdate(const eosio::name personid, const string& pname, const std:
 	if (to == person_data.end()) {
 		// register the attributes
 		person_data.emplace(personid, [&](auto& dd) {
-			dperson_data.personid = personid;
-			dperson_data.pname = pname;
-			dperson_data.tags = tags;
-			dperson_data.hash = hash;
+			dd.personid = personid;
+			dd.pname = pname;
+			dd.tags = tags;
+			dd.hash = hash;
 		});
 	} else {
 		// update the attributes
 		person_data.modify(to, personid, [&](auto& dd) {
-			dperson_data.pname = pname;
-			dperson_data.tags = tags;
-			dperson_data.hash = hash;
+			dd.pname = pname;
+			dd.tags = tags;
+			dd.hash = hash;
 		});	
 	}
 }
 
-bool Mypher::check_list(const vector<eosio::name>& list) {
-	person_data d(SELF, SELF);
+bool Mypher::check_person_list(const vector<eosio::name>& list) {
 
 	vector<eosio::name> sort;
 	for (auto it = list.begin(); it != list.end(); ++it ) {
@@ -42,15 +41,14 @@ bool Mypher::check_list(const vector<eosio::name>& list) {
 	eosio::name prev = ""_n;
 	for (auto it = list.begin(); it != list.end(); ++it ) {
 		if (*it==prev) return false; // if there is duplicate data, invalid
-		auto elm = d.find(*it);
-		if (elm == d.end()) return false; // if there is unregistered account, invalid
+		auto elm = person_data.find(it->value);
+		if (elm == person_data.end()) return false; // if there is unregistered account, invalid
 		prev = *it;
 	}
 	return true;
 }
 
-bool Mypher::exists(const eosio::name user) {
-	person_data d(SELF, SELF);
-	return d.find(user)!=d.end();
+bool Mypher::is_person_exists(const eosio::name user) {
+	return person_data.find(user.value)!=person_data.end();
 }
 

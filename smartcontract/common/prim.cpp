@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LGPL-3.0+
 //
 
-#include <boost/algorithm/string.hpp>
 #include "prim.hpp"
 
 const char* Prim::chars = "0123456789abcdef";

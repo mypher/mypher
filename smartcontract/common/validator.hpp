@@ -12,15 +12,11 @@
 using namespace std;
 using namespace eosio;
 
-namespace mypher {
-
 class Validator {
 public:
-	static void check_tokenowner(const uint64_t tokenid, const uint64_t cipherid);
 	static void check_hash(const string& hash);
 	//static void check_cipher(const uint64_t id);
 };
 
-}
 
 #endif // COMMON_VALIDATOR_HPP
