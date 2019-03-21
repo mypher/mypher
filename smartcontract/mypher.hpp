@@ -17,9 +17,11 @@ using namespace std;
 #define KEY2 "key2"_n
 #define ACTIVE "active"_n
 
-class Mypher : public contract {
+CONTRACT Mypher : public contract {
 
 public:
+	using contract::contract;
+
 	Mypher(name receiver, name code, datastream<const char*> ds) 
 	: contract(receiver, code, ds) 
 	, person_data(receiver, receiver.value)
@@ -28,15 +30,76 @@ public:
 	, token_data(receiver, receiver.value)
 	{}
 
+	// PERSON
+	ACTION pupdate(const eosio::name& personid, const string& pname, const vector<string>& tags, const string& hash);
+	// CIPHER
+	ACTION cnew(const eosio::name& sender, 
+				const string& cname, const vector<eosio::name>& editors,
+				const eosio::name& multisig,
+				const vector<string>& tags, const string& hash,
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers);
+	ACTION cnewdraft(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
+	ACTION cupdate(const eosio::name& sender, const uint64_t& cipherid, 
+				const uint64_t& cdraftid, const uint16_t& version, const uint16_t& no, 
+				const string& cname, const vector<string>& tags, 
+				const vector<eosio::name>& editors, const string& hash,
+				const uint16_t& nofapproval, const vector<eosio::name>& approvers,
+				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
+	ACTION capprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
+	ACTION crevapprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
+
+	// TASK
+	ACTION tanew( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
+				const string& taname, const uint64_t& rewardid, const uint64_t& noftoken, 
+				const uint64_t& amount, const uint8_t& nofapproval, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, 
+				const string& hash,
+				const vector<string>& tags);
+	ACTION taupdate( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
+				const uint64_t& tdraftid, 
+				const string& taname,  
+				const uint64_t& rewardid, const uint64_t& noftoken, 
+				const uint64_t& amount, const uint8_t& nofapproval, 
+				const vector<eosio::name>& approvers, 
+				const vector<eosio::name>& pic, const string& hash, 
+				const vector<string>& tags);
+	ACTION taaprvpic( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
+	ACTION taaprvrslt( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
+	ACTION taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec);
+	ACTION taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results);
+	ACTION tareqpay( const eosio::name sender, const uint64_t tformalid, 
+		const name& proposal_name, const vector<eosio::name>& approvals);
+	ACTION tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name);
+
+	//TOKEN
+	ACTION tknew(const eosio::name sender, const uint64_t cdraftid, 
+			const string& tkname, const uint64_t issuer,
+			const uint64_t limit, const uint8_t when, 
+			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
+			const uint64_t extokenid, const uint64_t reftoken, 
+			const uint8_t rcalctype, const uint64_t nofdesttoken, const uint64_t nofdesteos);
+	ACTION tkupdate(const eosio::name sender, const uint64_t cdraftid,
+			const uint64_t tokenid,
+			const string& tkname, const uint64_t limit, const uint8_t when, 
+			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
+			const uint64_t extokenid, const uint32_t reftoken,  
+			const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos);
+	ACTION tktransfer(const eosio::name sender, 
+				const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity); 
+	ACTION tkuse(const eosio::name sender, const uint64_t tokenid, const uint64_t quantity);
+	ACTION tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
+					const name& proposal_name, const vector<eosio::name>& approvals);
+	ACTION tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const name& proposal_name);
+
+private:
+
 /***************************************************************
  * Person
  ***************************************************************/
-private:
 	const static size_t MINLEN_NAME = 1;
 	const static size_t MAXLEN_NAME = 32;
 
-public:
-	using contract::contract;
 	/**
 	 * @brief information of person
 	 */
@@ -53,21 +116,14 @@ public:
 	};
 	eosio::multi_index<"person"_n, person> person_data;
 
-	/**
-	 * @brief create new person
-	 */
-	ACTION pupdate(const eosio::name& personid, const string& pname, const vector<string>& tags, const string& hash);
-
 	bool check_person_list(const vector<eosio::name>& list);
 	bool is_person_exists(const eosio::name user);
 
 /***************************************************************
  * Cipher
  ***************************************************************/
-private:
 	const static int CIPHERNAME_MINLEN = 6;
 
-public:
 	/**
 	 * @brief information of formal version of cipher
 	 */
@@ -82,10 +138,8 @@ public:
 		
 		EOSLIB_SERIALIZE(cformal, (cipherid)(cdraftid)(multisig)(cname)(tags))
 	};
-private:
 	eosio::multi_index<"cformal"_n, cformal> cformal_data;
 
-public:
 	/**
 	 * @brief information of draft of cipher
 	 */
@@ -117,40 +171,6 @@ public:
 			indexed_by<KEY2, const_mem_fun<cdraft, uint64_t, &cdraft::secondary_key>>
 	> cdraft_def;
 
-	/**
-	 * @brief create new cipher
-	 */
-	ACTION cnew(const eosio::name& sender, 
-				const string& cname, const vector<eosio::name>& editors,
-				const eosio::name& multisig,
-				const vector<string>& tags, const string& hash,
-				const uint16_t& nofapproval, const vector<eosio::name>& approvers);
-	/**
-	 * @brief create new draft from specified version 
-	 */
-	ACTION cnewdraft(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
-
-	/**
-	 * @brief update draft data 
-	 */
-	ACTION cupdate(const eosio::name& sender, const uint64_t& cipherid, 
-				const uint64_t& cdraftid, const uint16_t& version, const uint16_t& no, 
-				const string& cname, const vector<string>& tags, 
-				const vector<eosio::name>& editors, const string& hash,
-				const uint16_t& nofapproval, const vector<eosio::name>& approvers,
-				const vector<uint64_t>& tasklist, const vector<uint64_t>& tokenlist);
-
-	/**
-	 * @brief approve a draft 
-	 */
-	ACTION capprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
-
-	/**
-	 * @brief reverse approval for a draft 
-	 */
-	ACTION crevapprove(const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid);
-
-private:
 	bool can_edit(const eosio::name& sender, const vector<eosio::name>& editors);
 	/**
 	 * @brief generate version and no for new draft 
@@ -170,10 +190,8 @@ private:
 /***************************************************************
  * Task
  ***************************************************************/
-private:
 	const static int TASKNAME_MINLEN = 6;
 
-public:
 	/**
 	 * @brief information for the formal version of task 
 	 */
@@ -195,13 +213,11 @@ public:
 		EOSLIB_SERIALIZE( tformal, (tformalid)(cipherid)(tdraftid)(taname)(approve_pic)
 						(approve_results)(tags)(results)(payment)(completed) )
 	};
-private:
 	eosio::multi_index<
 			"tformal"_n, tformal,
 			indexed_by<KEY2, const_mem_fun<tformal, uint64_t, &tformal::secondary_key>>
 	> tformal_data;
 
-public:
 	/**
 	 * @brief information for the draft version of task 
 	 */
@@ -223,61 +239,6 @@ public:
 	};
 	typedef eosio::multi_index<"tdraft"_n, tdraft> tdraft_def;
 
-	/**
-	 * @brief create new task
-	 */
-	ACTION tanew( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
-				const string& taname, const uint64_t& rewardid, const uint64_t& noftoken, 
-				const uint64_t& amount, const uint8_t& nofapproval, 
-				const vector<eosio::name>& approvers, 
-				const vector<eosio::name>& pic, 
-				const string& hash,
-				const vector<string>& tags);
-
-	/**
-	 * @brief update task data
-	 */
-	ACTION taupdate( const eosio::name& sender, const uint64_t& cipherid, const uint64_t& cdraftid,
-				const uint64_t& tdraftid, 
-				const string& taname,  
-				const uint64_t& rewardid, const uint64_t& noftoken, 
-				const uint64_t& amount, const uint8_t& nofapproval, 
-				const vector<eosio::name>& approvers, 
-				const vector<eosio::name>& pic, const string& hash, 
-				const vector<string>& tags);
-	
-	/**
-	 * @brief approve a pic 
-	 */
-	ACTION taaprvpic( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
-
-	/**
-	 * @brief approve results
-	 */
-	ACTION taaprvrslt( const eosio::name& sender, const uint64_t& tformalid, const bool& vec);
-
-	/**
-	 * @brief apply for pic of a task
-	 */
-	ACTION taaplypic( const eosio::name sender, const uint64_t tformalid, const bool vec);
-
-	/**
-	 * @brief present the results
-	 */
-	ACTION taprrslt( const eosio::name sender, const uint64_t tformalid, const string& results);
-
-	/**
-	 * @brief request the payments
-	 */
-	ACTION tareqpay( const eosio::name sender, const uint64_t tformalid, 
-		const name& proposal_name, const vector<eosio::name>& approvals);
-
-	/**
-	 * @brief finish the task
-	 */
-	ACTION tafinish( const eosio::name& sender, const uint64_t& tformalid, const name& proposal_name);
-
-private:
 	bool is_tdraft_exists(const uint64_t cipherid, const uint64_t tdraftid);
 
 	bool is_tformal_exists(const uint64_t tformalid);
@@ -296,7 +257,6 @@ private:
 /***************************************************************
  * Token
  ***************************************************************/
-public:
 	enum Type {
 		NONE,
 		PUBLISH_QRCODE,
@@ -373,7 +333,6 @@ public:
 
 		EOSLIB_SERIALIZE( issued, (issueid)(owner)(quantity)(status)(payinf) )
 	};
-private:
 	/**
 	 * @brief the definition of the table for "token"
 	 */
@@ -382,7 +341,6 @@ private:
 			indexed_by<KEY2, const_mem_fun<token, uint64_t, &token::secondary_key>>
 	> token_data;
 
-public:
 	/**
 	 * @brief the definition of the table for "issue"
 	 */
@@ -391,53 +349,6 @@ public:
 			indexed_by<KEY2, const_mem_fun<issued, uint64_t, &issued::secondary_key>>
 	> issued_def;
 
-	/**
-	 * @brief create new token
-	 */
-	ACTION tknew(const eosio::name sender, const uint64_t cdraftid, 
-			const string& tkname, const uint64_t issuer,
-			const uint64_t limit, const uint8_t when, 
-			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
-			const uint64_t extokenid, const uint64_t reftoken, 
-			const uint8_t rcalctype, const uint64_t nofdesttoken, const uint64_t nofdesteos);
-
-	/**
-	 * @brief update token data
-	 */
-	ACTION tkupdate(const eosio::name sender, const uint64_t cdraftid,
-			const uint64_t tokenid,
-			const string& tkname, const uint64_t limit, const uint8_t when, 
-			const uint8_t disposal, const uint8_t type, const uint64_t taskid, 
-			const uint64_t extokenid, const uint32_t reftoken,  
-			const uint8_t rcalctype, const uint32_t nofdesttoken, uint64_t nofdesteos);
-
-	/**
-	 * @brief transfer a token 
-	 */
-	ACTION tktransfer(const eosio::name sender, 
-				const uint64_t tokenid, const eosio::name recipient, const uint64_t quantity); 
-
-	/**
-	 * @brief use some tokens 
-	 */
-	ACTION tkuse(const eosio::name sender, const uint64_t tokenid, const uint64_t quantity);
-
-	/**
-	 * @brief request payments
-	 */
-	ACTION tkreqpay(const eosio::name& sender, const uint64_t& tokenid, const uint64_t& quantity, 
-					const name& proposal_name, const vector<eosio::name>& approvals);
-
-	/**
-	 * @brief get paid
-	 */
-	ACTION tkgetpay(const eosio::name& sender, const uint64_t& tokenid, const name& proposal_name);
-
-	/*******************************************************************
-	  methods only called from inside of the myphersystem contract
-	 *******************************************************************/
-
-private:
 	/**
 	 * @brief issue a token 
 	 */
@@ -468,7 +379,6 @@ private:
 /***************************************************************
  * Multisig 
  ***************************************************************/
-private:
 	void sendProposeAction(const eosio::name& multisig, const name& proposal_name,
 		const eosio::name& recipient, const uint64_t& amount, const string& memo, const vector<eosio::name>& approvals);
 

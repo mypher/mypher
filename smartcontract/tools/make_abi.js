@@ -14,8 +14,8 @@ function parse(txt) {
 	let comment = false;
 	let table = null;
 	let action = null;
-	const tag_table = '[[eosio::table]]';
-	const tag_action = '[[eosio::action]]';
+	const tag_table = 'TABLE';
+	const tag_action = 'ACTION';
 	const dict = {
 		'uint64_t' : 'uint64',
 		'uint32_t' : 'uint32',
