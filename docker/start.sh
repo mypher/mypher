@@ -41,6 +41,7 @@ docker run \
 	-v ${SETTING}/data/ipfs:/ipfs \
 	mypher \
 	/bin/bash -c "/scripts/start.sh"
+#	/bin/bash -c "sleep 10000"
 
 #	-d \
 #	/bin/bash -c "sleep 10000"

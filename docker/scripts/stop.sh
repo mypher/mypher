@@ -12,9 +12,9 @@ function term() {
 echo "nodeos"
 #ps ax | grep "nodeos" | grep -v grep | awk '{print $1}' | xargs kill
 term `ps ax | grep "nodeos" | grep -v grep | awk '{print $1}'`
-echo "mongod"
+#echo "mongod"
 #ps ax | grep "mongod" | grep -v grep | awk '{print $1}' | xargs kill
-term `ps ax | grep "mongod" | grep -v grep | awk '{print $1}'`
+#term `ps ax | grep "mongod" | grep -v grep | awk '{print $1}'`
 echo "node"
 #ps ax | grep "node" | grep -v grep | awk '{print $1}' | xargs kill
 term `ps ax | grep "node" | grep -v grep | awk '{print $1}'` 

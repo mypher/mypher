@@ -75,7 +75,7 @@ function prepare_account_key() {
 function terminate() {
 	echo "###execute the process for preparing termination..."
 	ps ax | grep "nodeos" | grep -v grep | awk '{print $1}' | xargs kill
-	ps ax | grep "mongod" | grep -v grep | awk '{print $1}' | xargs kill
+	#ps ax | grep "mongod" | grep -v grep | awk '{print $1}' | xargs kill
 	ps ax | grep "node" | grep -v grep | awk '{print $1}' | xargs kill
 	sleep 10
 	exit 1
@@ -138,7 +138,7 @@ function wait2start() {
 }
 
 sleep 1
-mongod &
+#mongod &
 sleep 12
 pushd /app/source
 node main.js &
