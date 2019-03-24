@@ -19,7 +19,7 @@ function create_account() {
 		local OW_PUB=`cat /keys/$1.owner | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
 		AC_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
 		AC_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
-		cleos wallet import --private-key ${OW_PRI}
+        cleos wallet import --private-key ${OW_PRI}
 		cleos wallet import --private-key ${AC_PRI}
 		if [ -z "$2" ]; then
 			cleos -u ${GENESIS_URL} create account eosio $1 ${OW_PUB} ${AC_PUB}
