@@ -36,7 +36,7 @@ module.exports = {
 		let cmd = [ 
 			'cleos system newaccount eosio --transfer ',
 			d.id, d.active,
-			'--stake-net "', d.stakenet , ' SYS" --stake-cpu "', d.stakecpu, ' SYS" --buy-ram-kbytes ', d.buyram
+			'--stake-net "', d.stakenet , ' EOS" --stake-cpu "', d.stakecpu, ' EOS" --buy-ram-kbytes ', d.buyram
 		].join(' ');
 		try {
 			let ret = await cmn.cmd(cmd);
@@ -158,15 +158,15 @@ module.exports = {
 					],
 					"total_resources": {
 					  "owner": "testuser",
-					  "net_weight": "100000.0000 SYS",
-					  "cpu_weight": "100000.0000 SYS",
+					  "net_weight": "100000.0000 EOS",
+					  "cpu_weight": "100000.0000 EOS",
 					  "ram_bytes": 7971
 					},
 					"self_delegated_bandwidth": {
 					  "from": "testuser",
 					  "to": "testuser",
-					  "net_weight": "100000.0000 SYS",
-					  "cpu_weight": "100000.0000 SYS"
+					  "net_weight": "100000.0000 EOS",
+					  "cpu_weight": "100000.0000 EOS"
 					},
 					"refund_request": null,
 					"voter_info": {

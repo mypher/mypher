@@ -43,7 +43,7 @@ const multisig = module.exports = {
 			const keys = await genkey();
 
 			// create account
-			const unit = 'SYS';
+			const unit = 'EOS';
 			try {
 				await eos.pushAction({
 					actions :[{
@@ -263,7 +263,7 @@ const multisig = module.exports = {
 					data: {
 						from : d.multisig, 
 						to : d.sender, 
-						quantity : d.quantity + ' SYS', 
+						quantity : d.quantity + ' EOS', 
 						memo : d.memo, 
 					}
 				}
