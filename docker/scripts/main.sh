@@ -41,6 +41,38 @@ function create_account() {
 	fi
 }
 
+function create_account2() {
+	if [ -z "`cleos -u ${GENESIS_URL} get account $1`" ]; then
+		echo "###create an account for $1"
+		cleos create key --file /keys/$1.owner
+		cleos create key --file /keys/$1.active
+		local OW_PRI=`cat /keys/$1.owner | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		local OW_PUB=`cat /keys/$1.owner | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+		AC_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		AC_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+        cleos wallet import --private-key ${OW_PRI}
+		cleos wallet import --private-key ${AC_PRI}
+		if [ -z "$2" ]; then
+			#cleos -u ${GENESIS_URL} create account eosio $1 ${OW_PUB} ${AC_PUB}
+            cleos system newaccount eosio --transfer $1 ${AC_PUB} --stake-net "10000000.0000 EOS" --stake-cpu "1000000.0000 EOS" --buy-ram-kbytes 10000
+			if [ $? -ne 0 ]; then
+				echo "failed to create an account for $1"
+				terminate
+			fi
+		else
+			local ret=`curl -H 'Content-Type:application/json' -d '{"jsonrpc":"2.0","id":1,"method":"system.reg_account","params":[{"id":"'$1'","owner":"'${OW_PUB}'", "active":"'${AC_PUB}'"}]}' ${GENESIS_APP}`
+			if [ -n "`echo ${ret} | grep 'error'`" ]; then
+				echo "${ret}"
+				terminate
+			fi
+		fi
+	else
+		echo "the account for $1 is already created..."
+		AC_PRI=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
+		AC_PUB=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+	fi
+}
+
 function create_contract() {
 	echo "###create the contract of $1"
 	local hash=`cleos -u ${GENESIS_URL} get code $1`
@@ -115,18 +147,18 @@ function prepare_eosio() {
 	create_account eosio.saving
 	create_account eosio.stake
 	create_account eosio.vpay
-	create_account myphersystem
 	sleep 1
 	create_contract eosio.msig
 	create_contract eosio.sudo
 	create_contract eosio.token
-	cleos push action eosio.token create '[ "eosio", "10000000000.0000 SYS" ]' -p eosio.token@active
-	cleos push action eosio.token issue '[ "eosio", "50000000.0000 SYS", "memo" ]' -p eosio@active
-	#cleos push action eosio.token create '[ "eosio", "10000000000.0000 EOS" ]' -p eosio.token@active
-	#cleos push action eosio.token issue '[ "eosio", "50000000.0000 EOS", "memo" ]' -p eosio@active
+	sleep 1
+    cleos push action eosio.token create '[ "eosio", "10000000000.0000 EOS" ]' -p eosio.token@active
+	cleos push action eosio.token issue '[ "eosio", "50000000.0000 EOS", "memo" ]' -p eosio@active
 	sleep 1
 	create_contract2 eosio eosio.system
 	cleos push action eosio setpriv '["eosio.msig", 1]' -p eosio@active
+    cleos push action eosio init '[0, "4,EOS"]' -p eosio@active
+	sleep 1
 }
 
 function wait2start() {
@@ -184,7 +216,7 @@ if [ ${UNAME} = "myphersystem" ]; then
 			   --verbose-http-errors \
 			   -d /mnt/dev/data &
 		wait2start
-		create_contract myphersystem
+        sleep 1
 		onstart
 	else
 		nodeos --producer-name eosio \
@@ -195,6 +227,8 @@ if [ ${UNAME} = "myphersystem" ]; then
 			   -d /mnt/dev/data &
 		wait2start
 		prepare_eosio
+	    create_account2 myphersystem
+        sleep 1
 		create_contract myphersystem
 		onstart
 		#while read -r line
