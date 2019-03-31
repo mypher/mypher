@@ -53,7 +53,7 @@ class Token extends View {
 			const d = await  Rpc.call('cipher.get', [{
 				cipherid : this.data.issuer, 
 			}]);
-			this.data.cipher = d.name;
+			this.data.cipher = d.cname;
 		} catch (e) {
 			UI.alert(e);
 		}
@@ -198,7 +198,7 @@ class Token extends View {
 						l.forEach(v => {
 							ret.push({
 								key : v.cipherid,
-								name : v.name + '（' + v.cipherid + '）'
+								name : v.cname + '（' + v.cipherid + '）'
 							});
 						});
 						return ret;
@@ -243,7 +243,7 @@ class Token extends View {
 						ret.forEach(v => {
 							l.push({
 								key : v.tformalid,
-								name : v.name + '（' + v.tformalid + '）'
+								name : v.taname + '（' + v.tformalid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -258,7 +258,7 @@ class Token extends View {
 						l.forEach(v => {
 							ret.push({
 								key : v.tformalid,
-								name : v.name + '（' + v.tformalid + '）'
+								name : v.taname + '（' + v.tformalid + '）'
 							});
 						});
 						return ret;
@@ -284,7 +284,7 @@ class Token extends View {
 						ret.forEach(v => {
 							l.push({
 								key : v.tokenid,
-								name : v.name + '（' + v.tokenid + '）'
+								name : v.tkname + '（' + v.tokenid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -299,7 +299,7 @@ class Token extends View {
 						l.forEach(v => {
 							ret.push({
 								key : v.tokenid,
-								name : v.name + '（' + v.tokenid + '）'
+								name : v.tkname + '（' + v.tokenid + '）'
 							});
 						});
 						return ret;

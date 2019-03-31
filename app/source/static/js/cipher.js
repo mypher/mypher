@@ -192,7 +192,7 @@ class Cipher {
 					ret.forEach(v => {
 						l.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					elm.obj.pulldown(l);
@@ -207,7 +207,7 @@ class Cipher {
 					l.forEach(v => {
 						ret.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					return ret;
@@ -232,7 +232,7 @@ class Cipher {
 			tokenlist : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'tokenid' },
-					{ width : 6, label : _L('NAME2'), name : 'name' }
+					{ width : 6, label : _L('NAME2'), name : 'tkname' }
 				],
 				key : [],
 				ondata : (d, list) => {
@@ -274,7 +274,7 @@ class Cipher {
 			tasklist : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'tdraftid' },
-					{ width : 6, label : _L('NAME2'), name : 'name' }
+					{ width : 6, label : _L('NAME2'), name : 'taname' }
 				],
 				key : [],
 				ondata : (d, list) => {

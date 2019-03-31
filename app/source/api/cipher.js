@@ -39,9 +39,9 @@ module.exports = {
 				limit : -1,
 			});
 			let ret = [];
-			let ex = new RegExp(d.name);
+			let ex = new RegExp(d.cname);
 			data.forEach(v => {
-				if (ex.exec(v.name)!=null) {
+				if (ex.exec(v.cname)!=null) {
 					ret.push(v);
 				}
 			});
@@ -134,7 +134,7 @@ module.exports = {
 			data.forEach(v => {
 				ret.push({
 					cipherid : v.cipherid,
-					name : v.name,
+					cname : v.cname,
 				});
 			});
 			return ret;

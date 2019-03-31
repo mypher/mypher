@@ -118,9 +118,11 @@ function parse(txt) {
 				}
 			}
 		}
-		if (type===undefined) {
-			v = v.replace('&', '');
-			type = dict[v];
+		if (action||table) {
+			if (type===undefined) {
+				v = v.replace('&', '');
+				type = dict[v];
+			}
 		}
 	});
 }

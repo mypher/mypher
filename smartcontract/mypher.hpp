@@ -19,7 +19,7 @@ using namespace std;
 
 CONTRACT Mypher : public contract {
 
-public:
+public: 
 	using contract::contract;
 
 	Mypher(name receiver, name code, datastream<const char*> ds) 
@@ -31,7 +31,7 @@ public:
 	{}
 
 	// PERSON
-	ACTION pupdate(const eosio::name& personid, const string& pname, const vector<string>& tags, const string& hash);
+	ACTION pupdate(const eosio::name& personid, const string pname, const vector<string> tags, const string hash);
 	// CIPHER
 	ACTION cnew(const eosio::name& sender, 
 				const string& cname, const vector<eosio::name>& editors,

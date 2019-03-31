@@ -8,7 +8,7 @@ class TokenUse extends View {
 		super();
 		this.data = {
 			personid : d.personid,
-			name : d.name,
+			tkname : d.tkname,
 			quantity : d.quantity,
 			tokenid : d.tokenid,
 			token : d.token,
@@ -111,7 +111,7 @@ class TokenUse extends View {
 	async set(data) {
 		this.data = data;
 		Util.setData(this.div, {
-			token : this.data.name + '(' + this.data.tokenid + ')',
+			token : this.data.tkname + '(' + this.data.tokenid + ')',
 			quantity : this.data.quantity,
 			disposal : 0,
 			use_quantity : 0,

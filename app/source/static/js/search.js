@@ -72,7 +72,7 @@ Search.prototype = {
 					{
 						width : 4,
 						label : _L('NAME2'),
-						name : 'name'
+						name : 'pname'
 					},
 					{
 						width : 4,
@@ -101,7 +101,7 @@ Search.prototype = {
 	searchCipher : async function(d, f) {
 		try {
 			const data = (f==='0')
-				? await Rpc.call('cipher.list', [{name:d.name}])
+				? await Rpc.call('cipher.list', [{cname:d.name}])
 				: await Rpc.call('cipher.list_bytag', [{tag:d.name}]);
 			const list = new List({
 				div : $('#result'),
@@ -110,7 +110,7 @@ Search.prototype = {
 					{
 						width : 6,
 						label : _L('NAME2'),
-						name : 'name'
+						name : 'cname'
 					},
 					{
 						width : 6,
@@ -139,7 +139,7 @@ Search.prototype = {
 
 	searchTask : async function(d, f) {
 		try {
-			const data = await Rpc.call('task.list', [{name:d.name}]);
+			const data = await Rpc.call('task.list', [{taname:d.name}]);
 			const list = new List({
 				div : $('#result'),
 				type : MODE.REF,
@@ -147,7 +147,7 @@ Search.prototype = {
 					{
 						width : 6,
 						label : _L('NAME2'),
-						name : 'name'
+						name : 'taname'
 					},
 					{
 						width : 3,
@@ -183,7 +183,7 @@ Search.prototype = {
 
 	searchToken : async function(d, f) {
 		try {
-			const data = await Rpc.call('token.list', [{name:d.name}]);
+			const data = await Rpc.call('token.list', [{tkname:d.name}]);
 			const list = new List({
 				div : $('#result'),
 				type : MODE.REF,
@@ -191,7 +191,7 @@ Search.prototype = {
 					{
 						width : 6,
 						label : _L('NAME2'),
-						name : 'name'
+						name : 'tkname'
 					},
 					{
 						width : 6,

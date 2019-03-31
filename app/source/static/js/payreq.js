@@ -74,7 +74,7 @@ class PayReq {
 					l.forEach(v => {
 						ret.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					return ret;

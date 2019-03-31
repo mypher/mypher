@@ -75,7 +75,7 @@ module.exports = {
 
 	list : async d => {
 		try {
-			if (!cmn.isString(d.name)) {
+			if (!cmn.isString(d.taname)) {
 				return {code:'INVALID_PARAM'};
 			}
 			const data = await eos.getData({
@@ -86,7 +86,7 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach( v=> {
-				if (v.name.includes(d.name)) {
+				if (v.taname.includes(d.taname)) {
 					ret.push(v);
 				}
 			});
@@ -253,10 +253,10 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach(v => {
-				if (String(v.tformalid).includes(n) || v.name.includes(n)) {
+				if (String(v.tformalid).includes(n) || v.taname.includes(n)) {
 					ret.push({
 						tformalid : v.tformalid,
-						name : v.name,
+						taname : v.taname,
 						tags : v.tags
 					});
 				}
@@ -281,7 +281,7 @@ module.exports = {
 				if (d.list.includes(v.tdraftid)) {
 					ret.push({
 						tdraftid : v.tdraftid,
-						name : v.name,
+						taname : v.taname,
 						tags : v.tags
 					});
 				}
@@ -326,7 +326,7 @@ module.exports = {
 				if (dd.includes(v.tformalid)) {
 					ret.push({
 						tformalid : v.tformalid,
-						name : v.name,
+						taname : v.taname,
 					});
 				}
 			});

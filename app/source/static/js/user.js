@@ -104,14 +104,14 @@ User.prototype = {
 			? [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
 					{ width : 2, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 3, label : _L('NAME2'), name : 'name' },
+					{ width : 3, label : _L('NAME2'), name : 'tkname' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
 					{ width : 2, label : _L('PAYINF'), name : 'payinf' },
 					{ width : 2, label : _L(''), btn : 'USE_EX', name : 'useex' },
 			] : [
 					{ width : 1, label : _L('ID'), name : 'tokenid' },
 					{ width : 3, label : _L('ISSUER'), name : 'issuer' },
-					{ width : 4, label : _L('NAME2'), name : 'name' },
+					{ width : 4, label : _L('NAME2'), name : 'tkname' },
 					{ width : 2, label : _L('QUANTITY'), name : 'quantity' },
 					{ width : 2, label : _L('PAYINF'), name : 'payinf' },
 			];
@@ -135,7 +135,7 @@ User.prototype = {
 					ret.forEach(v => {
 						l.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					elm.obj.pulldown(l);
@@ -150,7 +150,7 @@ User.prototype = {
 					l.forEach(v => {
 						ret.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					return ret;
@@ -177,7 +177,7 @@ User.prototype = {
 						return;
 					}
 					const conv = o => {
-						return (o.name ? o.name : '') + '(' + o.cipherid + ')';
+						return (o.cname ? o.cname : '') + '(' + o.cipherid + ')';
 					}
 					Rpc.call('token.list_for_person', [{
 						list : this.data.tokenlist,
@@ -188,7 +188,7 @@ User.prototype = {
 							l.push({
 								tokenid : v.tokenid,
 								issuer : conv(v.issuer),
-								name : v.name,
+								name : v.tkname,
 								quantity : v.quantity,
 								payinf : v.payinf,
 								useex : (v.payinf==='')
@@ -212,9 +212,9 @@ User.prototype = {
 					const tu = new TokenUse({
 						div,
 						personid : self.data.personid,
-						person : self.data.name,
+						person : self.data.pname,
 						tokenid : d.val.tokenid,
-						token : d.val.name,
+						token : d.val.tkname,
 						quantity : d.val.quantity,
 						mode : MODE.EDIT,
 						term : () => {

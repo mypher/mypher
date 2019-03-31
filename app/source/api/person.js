@@ -21,7 +21,7 @@ module.exports = {
 					table : 'person',
 				}, d[i] );
 				if (data!==null&&data.length>0&&d[i]===data[0].personid) {
-					ret.push({personid:d[i], name:data[0].name});
+					ret.push({personid:d[i], pname:data[0].pname});
 				}
 			}
 			return ret;
@@ -118,7 +118,7 @@ module.exports = {
 			data.forEach(v => {
 				ret.push({
 					personid : v.personid,
-					name : v.name,
+					pname : v.pname,
 				});
 			});
 			return ret;
@@ -136,10 +136,10 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach(v => {
-				if (v.personid.includes(n) || v.name.includes(n)) {
+				if (v.personid.includes(n) || v.pname.includes(n)) {
 					ret.push({
 						personid : v.personid,
-						name : v.name,
+						pname : v.pname,
 						tags : v.tags
 					});
 				}
@@ -153,7 +153,7 @@ module.exports = {
 		try {
 			if (!cmn.chkTypes([
 				{p:d.personid,   f:cmn.isEosID},
-				{p:d.name, f:cmn.isEmpty, r:true},
+				{p:d.pname, f:cmn.isEmpty, r:true},
 				{p:d.tags, f:cmn.isArray}
 			])) {
 				return {code:'INVALID_PARAM'};
@@ -161,7 +161,7 @@ module.exports = {
 
 			let data = {
 				personid : d.personid,
-				name : d.name,
+				pname : d.pname,
 				tags : d.tags
 			};
 			if (cmn.isEmpty(d.desc)) {

@@ -6,7 +6,7 @@
 #include "mypher.hpp"
 #include <eosiolib/print.hpp>
 
-void Mypher::pupdate(const eosio::name& personid, const string& pname, const std::vector<std::string>& tags, const std::string& hash) {
+void Mypher::pupdate(const eosio::name& personid, const string pname, const std::vector<std::string> tags, const std::string hash) {
 	require_auth(personid);
 
 	// search the target data

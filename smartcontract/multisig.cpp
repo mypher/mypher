@@ -12,7 +12,7 @@
 
 using namespace eosio;
 
-void Mypher::sendProposeAction(const eosio::name& multisig, const name& proposal_name,
+void Mypher::sendProposeAction(const name& multisig, const name& proposal_name,
 		const eosio::name& recipient, const uint64_t& amount, const string& memo, const vector<eosio::name>& approvals) {
 
 	transaction trans(time_point_sec(now())+days(3)); // TODO:

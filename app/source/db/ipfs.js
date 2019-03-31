@@ -8,7 +8,7 @@
 let log = require('../cmn/logger')('db.ipfs');
 let ipfsApi = require('ipfs-api');
 
-const ipfs = ipfsApi('localhost', 5001, {protocol: 'http'});
+const ipfs = ipfsApi('127.0.0.1', 7100, {protocol: 'http'});
 
 module.exports = {
 	add : async data => {

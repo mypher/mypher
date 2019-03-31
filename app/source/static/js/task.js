@@ -115,7 +115,7 @@ class Task {
 				cipherid : this.data.cipherid, 
 				cdraftid : this.data.cdraftid
 			}]);
-			this.data.cipher = d.name;
+			this.data.cipher = d.cname;
 			this.data.editors = d.editors;
 			this.data.multisig = d.multisig;
 			this.data.formalver = d.formalver;
@@ -349,7 +349,7 @@ class Task {
 					ret.forEach(v => {
 						l.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					elm.obj.pulldown(l);
@@ -364,7 +364,7 @@ class Task {
 					l.forEach(v => {
 						ret.push({
 							key : v.personid,
-							name : v.name + '（' + v.personid + '）'
+							name : v.pname + '（' + v.personid + '）'
 						});
 					});
 					return ret;
@@ -394,7 +394,7 @@ class Task {
 						l.forEach(v => {
 							ret.push({
 								key : v.cipherid,
-								name : v.name + '（' + v.cipherid + '）'
+								name : v.cname + '（' + v.cipherid + '）'
 							});
 						});
 						return ret;
@@ -424,7 +424,7 @@ class Task {
 						ret.forEach(v => {
 							l.push({
 								key : v.tokenid,
-								name : v.name + '（' + v.tokenid + '）'
+								name : v.tkname + '（' + v.tokenid + '）'
 							});
 						});
 						elm.obj.pulldown(l);
@@ -439,7 +439,7 @@ class Task {
 						l.forEach(v => {
 							ret.push({
 								key : v.tokenid,
-								name : v.name + '（' + v.tokenid + '）'
+								name : v.tkname + '（' + v.tokenid + '）'
 							});
 						});
 						return ret;

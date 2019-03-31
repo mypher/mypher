@@ -107,7 +107,7 @@ module.exports = {
 
 	list : async function(d) {
 		try {
-			if (!cmn.isString(d.name)) {
+			if (!cmn.isString(d.tkname)) {
 				return {code:'INVALID_PARAM'};
 			}
 			const data = await eos.getData({
@@ -118,7 +118,7 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach( v=> {
-				if (v.name.includes(d.name)) {
+				if (v.tkname.includes(d.tkname)) {
 					ret.push(v);
 				}
 			});
@@ -214,7 +214,7 @@ module.exports = {
 					ret.push({
 						tokenid : v.tokenid,
 						issuer : issuer,
-						name : v.name,
+						tkname : v.tkname,
 						quantity : issued.quantity,
 						status : issued.status,
 						payinf : issued.payinf,
@@ -290,10 +290,10 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach(v => {
-				if (String(v.tokenid).includes(n) || v.name.includes(n)) {
+				if (String(v.tokenid).includes(n) || v.tkname.includes(n)) {
 					ret.push({
 						tokenid : v.tokenid,
-						name : v.name,
+						tkname : v.tkname,
 						tags : v.tags
 					});
 				}
@@ -317,7 +317,7 @@ module.exports = {
 				if (v.issuer === n) {
 					ret.push({
 						tokenid : v.tokenid,
-						name : v.name,
+						tkname : v.tkname,
 					});
 				}
 			});
@@ -355,7 +355,7 @@ module.exports = {
 			data.forEach(v => {
 				ret.push({
 					tokenid : v.tokenid,
-					name : v.name,
+					tkname : v.tkname,
 				});
 			});
 			return ret;
