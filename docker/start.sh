@@ -17,12 +17,12 @@ ENVFILE=envfile/$1.env
 export $(grep -v '^#' ${ENVFILE} | xargs)
 
 PWD=$(cd $(dirname $0) && pwd)
-SETTING=${PWD}/tmp/${UNAME}
+SETTING=${PWD}/tmp/$1
 
 # start docker
 docker run \
 	--rm \
-	--name mypher_${UNAME} \
+	--name mypher_$1 \
     --net host \
 	-p ${PUBLISH_PORT_HTTP}:8888 \
 	-p ${PUBLISH_PORT_APP}:8800 \
@@ -43,7 +43,7 @@ docker run \
 	-v ${SETTING}/data/keys:/keys \
 	-v ${SETTING}/data/ipfs:/ipfs \
 	mypher \
-	/bin/bash -c "/scripts/start.sh"
+	/bin/bash -c ${RUN_SCRIPT}
 #	/bin/bash -c "sleep 10000"
 
 #	-d \

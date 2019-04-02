@@ -4,30 +4,47 @@
 # SPDX-License-Identifier: LGPL-3.0+
 #
 
-BASE=tmp/$1
+# generating the blockchain network settings for development
 
-if [ $# -ne 1 ]; then
-	echo "bash inittmp.sh [username]"
-	exit
-fi
+
+BASE=tmp
+
+function make_dir() {
+	local root="${BASE}/$1"
+	mkdir ${root}
+	mkdir ${root}/data
+	mkdir ${root}/wallet
+	mkdir ${root}/data/config
+	mkdir ${root}/data/db
+	mkdir ${root}/data/eosdata
+	mkdir ${root}/data/keys
+	mkdir ${root}/data/work
+	mkdir ${root}/data/ipfs
+	cp envfile/swarm.key ${root}/data/ipfs/swarm.key_
+	cp nodeenv/base_config.ini ${root}/data/config/
+	cp nodeenv/mypher_config.ini ${root}/data/config/
+	echo "enable-stale-production = $2" >> ${root}/data/config/base_config.ini
+	cp nodeenv/p2plist.ini ${root}/data/config/
+}
+
+function copy_key() {
+	cp nodeenv/keys/$1.owner ${BASE}/$2/data/keys/
+	cp nodeenv/keys/$1.active ${BASE}/$2/data/keys/
+}
+
 rm -Rf ${BASE} 2>/dev/null
 mkdir ${BASE}
-mkdir ${BASE}/data
-mkdir ${BASE}/wallet
-mkdir ${BASE}/data/config
-mkdir ${BASE}/data/db
-mkdir ${BASE}/data/eosdata
-mkdir ${BASE}/data/keys
-mkdir ${BASE}/data/work
-mkdir ${BASE}/data/ipfs
-cp envfile/swarm.key ${BASE}/data/ipfs/swarm.key_
-cp nodeenv/base_config.ini ${BASE}/data/config/
-cp nodeenv/mypher_config.ini ${BASE}/data/config/
-if [ "$1" = "myphersystem" ]; then
-	cp nodeenv/myphersystem.user ${BASE}/data/keys/
-	echo "export GENESIS=true" >> ${BASE}/data/config/mypher_config.ini
-	echo "enable-stale-production = true" >> ${BASE}/data/config/base_config.ini
-else
-	cp nodeenv/p2plist.ini ${BASE}/data/config/
-	echo "enable-stale-production = false" >> ${BASE}/data/config/base_config.ini
-fi
+
+make_dir eosio true
+make_dir myphersystem false
+make_dir user false
+
+cp nodeenv/keys/eosio.owner ${BASE}/eosio/data/keys/
+copy_key myphersystem eosio
+copy_key testuser1111 eosio
+copy_key testuser2222 eosio
+copy_key testuser3333 eosio
+copy_key testuser4444 eosio
+copy_key myphersystem myphersystem
+
+
