@@ -8,7 +8,7 @@
 #  the account is already created
 
 # prepare the wallet
-bash -c ./common.sh
+source /scripts/common.sh
 
 function init_ipfs() {
 	echo "###init ipfs"
@@ -38,7 +38,7 @@ cp -f /mnt/dev/config/base_config.ini /mnt/dev/config/config.ini
 # TODO: get lists from genesis node
 cat /mnt/dev/config/p2plist.ini >> /mnt/dev/config/config.ini
 
-nodeos \ 
+nodeos \
    --config-dir /mnt/dev/config \
    --max-transaction-time=1000 \
    --verbose-http-errors \
@@ -46,18 +46,15 @@ nodeos \
 
 wait2start
 
+sleep 10000
 echo "### start node.js"
 pushd /app/source
 node main.js &
 popd
 
-echo "import key to wallet"
-import_key2wallet $1.active
-import_key2wallet $2.owner
+# /user/bin/node
+#echo "import key to wallet"
+#import_key2wallet $1.active
+#import_key2wallet $2.owner
 
-
-
-echo "prepare the contracts of mypher system"
-create_contract myphersystem
-
-onstart
+infinite_loop

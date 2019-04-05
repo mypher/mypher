@@ -8,9 +8,7 @@
 #  the account is already created
 
 # prepare the wallet
-bash -c ./common.sh
-
-sleep 10000
+source /scripts/common.sh
 
 # prepare the wallet
 prepare_wallet
@@ -20,7 +18,7 @@ cp -f /mnt/dev/config/base_config.ini /mnt/dev/config/config.ini
 # TODO: get lists from genesis node
 cat /mnt/dev/config/p2plist.ini >> /mnt/dev/config/config.ini
 
-nodeos \ 
+nodeos \
    --config-dir /mnt/dev/config \
    --max-transaction-time=1000 \
    --verbose-http-errors \
@@ -34,5 +32,4 @@ import_key2wallet myphersystem.owner
 
 echo "prepare the contracts of mypher system"
 create_contract myphersystem
-
-onstart
+infinite_loop

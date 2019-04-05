@@ -32,26 +32,60 @@ function create_container() {
 	#	-p 4001:4001 \
 	#	-p 5001:5001 \
 	# start docker
-	docker create \
-		--rm \
-		--name ${cname} \
-		--env-file ${envfile} \
-		-v ${spath}/wallet:/root/eosio-wallet \
-		-v ${cur}/contracts:/contracts \
-		-v ${cur}/scripts:/scripts \
-		-v ${cur}/../app:/app \
-		-v ${spath}/data/db:/data/db \
-		-v ${spath}/data/work:/work \
-		-v ${spath}/data/eosdata:/mnt/dev/data \
-		-v ${spath}/data/config:/mnt/dev/config \
-		-v ${spath}/data/keys:/keys \
-		-v ${spath}/data/ipfs:/ipfs \
-		mypher \
-		/bin/bash -c ${RUN_SCRIPT}
+	if [ $1 = "user" ]; then
+		docker create \
+			--rm \
+			--name ${cname} \
+			--env-file ${envfile} \
+			--expose 8888 \
+			--expose 8800 \
+			--expose 9876 \
+			--expose 7000 \
+			--expose 7100 \
+			--expose 4001 \
+			--expose 5001 \
+			-p 8800:8800 \
+			-v ${spath}/wallet:/root/eosio-wallet \
+			-v ${cur}/contracts:/contracts \
+			-v ${cur}/scripts:/scripts \
+			-v ${cur}/../app:/app \
+			-v ${spath}/data/db:/data/db \
+			-v ${spath}/data/work:/work \
+			-v ${spath}/data/eosdata:/mnt/dev/data \
+			-v ${spath}/data/config:/mnt/dev/config \
+			-v ${spath}/data/keys:/keys \
+			-v ${spath}/data/ipfs:/ipfs \
+			mypher \
+			/bin/bash -c ${RUN_SCRIPT}
+	else
+		docker create \
+			--rm \
+			--name ${cname} \
+			--env-file ${envfile} \
+			--expose 8888 \
+			--expose 8800 \
+			--expose 9876 \
+			--expose 7000 \
+			--expose 7100 \
+			--expose 4001 \
+			--expose 5001 \
+			-v ${spath}/wallet:/root/eosio-wallet \
+			-v ${cur}/contracts:/contracts \
+			-v ${cur}/scripts:/scripts \
+			-v ${cur}/../app:/app \
+			-v ${spath}/data/db:/data/db \
+			-v ${spath}/data/work:/work \
+			-v ${spath}/data/eosdata:/mnt/dev/data \
+			-v ${spath}/data/config:/mnt/dev/config \
+			-v ${spath}/data/keys:/keys \
+			-v ${spath}/data/ipfs:/ipfs \
+			mypher \
+			/bin/bash -c ${RUN_SCRIPT}
+	fi
 
 	#docker network connect --ip 192.168.1.$2 myphernetwork ${cname}
 	docker network connect --alias ${cname} myphernetwork ${cname}
 	docker network connect host ${cname}
 }
 
-create_container $1
+create_container $1 
