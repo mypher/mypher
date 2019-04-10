@@ -173,6 +173,7 @@ var $L = {
 		'RECIPIENT' : '受取人',
 		'PAYINF' : '支払申請名',
 		'EXPIRATION' : '有効期限',
+		'VER_DRAFT' : '版数・案番号',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

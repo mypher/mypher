@@ -23,6 +23,15 @@ class DebugLayout extends View {
 
 	async draw() {
 		await Util.load($('#main'), 'parts/' + this.data.name + '.html', this.data.mode, {
+			verdraft : {
+				oninit : async d => {
+					const v = ['バージョン１', true, '案３', false];
+					d.val(v);
+				},
+				onclick : async d => {
+
+				}
+			},
 		});
 	}
 };

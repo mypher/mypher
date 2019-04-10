@@ -272,6 +272,7 @@ let Util = {
 					case 'radio':
 					case 'select':
 					case 'list':
+					case 'verctrl':
 						line = true;
 					case 'button':
 						attrs['formtype'] = undefined;
@@ -310,6 +311,9 @@ let Util = {
 							break;
 						case 'select':
 							Util.initSelect(elm, mode, proc, attrs);
+							break;
+						case 'verctrl':
+							Util.initVerCtrl(elm, mode, proc, attrs);
 							break;
 						case 'button':
 							for (let j=0; j<5; j++) {
@@ -438,6 +442,11 @@ let Util = {
 					break;
 				}
 			};
+		} else {
+			data = {
+				div : list.eq(0),
+				type : mode,
+			};
 		}
 		elm.obj = new List(data, cb, attrs);
 	},
@@ -448,6 +457,10 @@ let Util = {
 	initSelect : function(div, mode, proc, attrs) {
 		const elm = div.get(0);
 		elm.obj = new Select(div, mode, proc, attrs);
+	},
+	initVerCtrl : function(div, mode, proc, attrs) {
+		const elm = div.get(0);
+		elm.obj = new VerCtrl(div, mode, proc, attrs);
 	},
 	setData : function(div, d) {
 		for ( var i in d ) {
@@ -1126,6 +1139,37 @@ Select.prototype = {
 		this.canedit = v;
 	}
 }
+
+class VerCtrl {
+	constructor(div, mode, proc, attrs) {
+		this.div = div;
+		this,mode = mode;
+		this.proc = proc;
+		this.attrs = attrs;
+		this.draw();
+	}
+
+	async draw() {
+		const elm = $('<div/>').addClass('verctrl');
+		this.div.append(elm);
+		elm.click(()=> {
+			this.proc&&this.proc['onclick']&&this.proc['onclick'](this);
+		});
+		await this.proc&&this.proc['oninit']&&this.proc['oninit'](this);
+	}
+
+	val(v) {
+		if (v.length!==4) return;
+		const out = [];
+		const elm = this.div.find('.verctrl');
+		out.push(v[1]===true ? '<img src="img/formal.gif"/>' : '<img src="img/unformal.gif"/>');
+		out.push(v[0]);
+		out.push('&nbsp;&nbsp;');
+		out.push(v[3]===true ? '<img src="img/formal.gif"/>' : '<img src="img/unformal.gif"/>');
+		out.push(v[2]);
+		elm.html(out.join(''));
+	}
+};
 
 
 function Radio(div, mode, proc, attrs) {

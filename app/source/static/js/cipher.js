@@ -229,6 +229,15 @@ class Cipher {
 			editors : person,
 			authors : person,
 			approved : person,
+			verdraft : {
+				oninit : async d => {
+					const v = await this.getVerDraftVal();
+					d.val(v);
+				},
+				onclick : async d => {
+
+				}
+			},
 			tokenlist : {
 				col : [
 					{ width : 6, label : _L('ID'), name : 'tokenid' },
@@ -343,6 +352,10 @@ class Cipher {
 		this.div.find('button[name="hist"]').click(() => {
 			this.hist();
 		});
+	}
+
+	async getVerDraftVal() {
+		return ['バージョン１', true, '案３', false];
 	}
 
 	async hist() {

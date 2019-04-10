@@ -6,9 +6,12 @@
 <div>
 	<h2 ltext="BASIC_INFORMATION"/>
 	<div formtype="short" ltext="ID" field="cipherid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="CDRAFT_ID" field="cdraftid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="VERSION" field="version" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
-	<div formtype="short" ltext="DRAFT_NO" field="no" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<hr/>
+	<div formtype="long" ltext="VER_DRAFT" field="verdraft" proc="verdraft" ctrl="verctrl" disable_on="add,edit"/>
+	<!--<div formtype="short" ltext="CDRAFT_ID" field="cdraftid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="VERSION" field="version" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>-->
+	<!--<div formtype="short" ltext="DRAFT_NO" field="no" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/> -->
 	<div class="long right" hide_on="add">
 		<button class="btn btn-ver btn-normal" name="hist"></button>
 	</div>
