@@ -4,5 +4,4 @@
 # SPDX-License-Identifier: LGPL-3.0+
 #
 
-#docker build . --no-cache -t mypher --network=host --build-arg EOS_VER=v1.2.2
-docker build . -t mypher --network=host --build-arg EOS_VER=v1.6.0-rc1
+docker build . -t mypher --network=host -f Dockerfile

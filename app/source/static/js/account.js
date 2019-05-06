@@ -122,7 +122,7 @@ Account = {
 			}
 			return true;
 		} catch (e) {
-			UI.alert(e);
+			UI.alert(e.message);
 		}
 		return false;
 	},

@@ -94,10 +94,13 @@ select {
 .slinner > .slinner2 .verctrl {
 	height : 100%;
 }
-.slinner > .slinner2 .verctrl img {
-	width:auto;
-	height:52px;
+
+.slinner > .slinner2 .verctrl span {
+	color: #e0e000;
+	filter: drop-shadow(1px 1px #880);
+	margin: 0px 8px 0px 0px;
 }
+
 .slinner > .editright {
 }
 

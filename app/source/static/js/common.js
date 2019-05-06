@@ -1162,10 +1162,14 @@ class VerCtrl {
 		if (v.length!==4) return;
 		const out = [];
 		const elm = this.div.find('.verctrl');
-		out.push(v[1]===true ? '<img src="img/formal.gif"/>' : '<img src="img/unformal.gif"/>');
+		const code = {
+			true : '<span>&#9733;</span>',
+			false : '<span>&#9734;</span>'
+		}
+		out.push(code[v[1]]);
 		out.push(v[0]);
-		out.push('&nbsp;&nbsp;');
-		out.push(v[3]===true ? '<img src="img/formal.gif"/>' : '<img src="img/unformal.gif"/>');
+		out.push('&nbsp;&nbsp;&nbsp;&nbsp;');
+		out.push(code[v[3]]);
 		out.push(v[2]);
 		elm.html(out.join(''));
 	}

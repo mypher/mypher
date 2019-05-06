@@ -12,10 +12,11 @@ let log = require('./cmn/logger')('sv.sv');
 
 module.exports = {
 	run : function() {
+		const port = parseInt(process.argv[2]);
 		http.createServer()
 		.on('request', request)
 		.listen(
-			allconf.WebEnv.port, 
+			isNaN(port) ? allconf.WebEnv.port : port, 
 			allconf.WebEnv.url
 		);
 	}

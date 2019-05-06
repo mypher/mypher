@@ -46,10 +46,10 @@ nodeos \
 
 wait2start
 
-sleep 10000
+sleep 5
 echo "### start node.js"
 pushd /app/source
-node main.js &
+node --inspect=0.0.0.0 main.js &
 popd
 
 # /user/bin/node
