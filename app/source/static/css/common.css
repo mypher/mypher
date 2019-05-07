@@ -96,8 +96,8 @@ select {
 }
 
 .slinner > .slinner2 .verctrl span {
-	color: #e0e000;
-	filter: drop-shadow(1px 1px #880);
+	color: #28c;
+	filter: drop-shadow(2px 1px #ccc);
 	margin: 0px 8px 0px 0px;
 }
 
@@ -165,7 +165,7 @@ h2 {
 	border-radius: 4px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
-	overflow:scroll;
+	overflow:auto;
 	padding:30px;
 	background-color:#fff;
 }

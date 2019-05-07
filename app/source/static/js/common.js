@@ -621,6 +621,9 @@ let Util = {
 	},
 	isEmpty : d => {
 		return (d===undefined)||(d==='');
+	},
+	isNumber : d => {
+		return !isNaN(parseInt(d));
 	}
 };
 

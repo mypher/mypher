@@ -46,6 +46,8 @@ function prepare_eosio() {
 function create_mypher_account() {
 	local pubkey=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
 	cleos system newaccount eosio --transfer $1 ${pubkey} --stake-net "1000000.0000 EOS" --stake-cpu "100000.0000 EOS" --buy-ram-kbytes 5000
+	sleep 1
+	cleos transfer eosio $1 "10000 EOS"
 }
 
 # prepare the wallet

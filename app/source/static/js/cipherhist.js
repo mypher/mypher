@@ -11,6 +11,7 @@ function CipherHist(d) {
 		draft : [],
 		history : []
 	};
+	this.cb = d.cb;
 }
 
 CipherHist.prototype = {
@@ -60,15 +61,6 @@ CipherHist.prototype = {
 
 	refresh : async function() {
 		const self = this;
-		const next = d => {
-			const cipher = new Cipher({
-				mode : MODE.REF,
-				cipherid : self.data.cipherid,
-				cdraftid : d.cdraftid,
-				div : $('#main')
-			});
-			History.run(_L('CIPHER'), cipher);
-		}
 
 		await Util.load(this.div, 'parts/cipherhist.html', MODE.REF, {
 			current : {
@@ -80,7 +72,7 @@ CipherHist.prototype = {
 				ondata : (d, list) => {
 					list.show(this.data.formal);
 				},
-				onselect : next
+				onselect : this.cb
 			},
 			draft : {
 				col : [
@@ -92,7 +84,7 @@ CipherHist.prototype = {
 				ondata : (d, list) => {
 					list.show(this.data.draft);
 				},
-				onselect : next 
+				onselect : this.cb
 			},
 			history : {
 				col : [
@@ -105,14 +97,8 @@ CipherHist.prototype = {
 				ondata : (d, list) => {
 					list.show(this.data.history);
 				},
-				onselect : next 
-			},
-			button : [{
-				text : 'BACK',
-				click : () => {
-					History.back();
-				}
-			}]
+				onselect : this.cb
+			}
 		});
 	}
 };

@@ -174,6 +174,10 @@ var $L = {
 		'PAYINF' : '支払申請名',
 		'EXPIRATION' : '有効期限',
 		'VER_DRAFT' : '版数・案番号',
+		'FMT_VER' : '第&nbsp;#0#&nbsp;版',
+		'FMT_DRAFT' : '案&nbsp;#0#',
+		'FMT_VER_UNKNOWN' : '(版数未確定)',
+		'FMT_DRAFT_UNKNOWN' : '(案番号未確定)',
 
 		'INVALID_PARAM' : '入力値が正しくありません',
 		'PASS_DIFFER_FROM_CONF' : 'パスワードと確認用パスワードが一致していません。',

@@ -235,7 +235,20 @@ class Cipher {
 					d.val(v);
 				},
 				onclick : async d => {
-
+					if (this.mode !== MODE.REF) return;
+					const ch = new CipherHist({
+						cipherid : this.data.cipherid,
+						div : UI.popup(700,500),
+						cb : d => {
+							this.data = {
+								cipherid : this.data.cipherid,
+								cdraftid : d.cdraftid,
+							};
+							UI.closePopup();
+							this.draw();
+						}
+					});
+					ch.draw();
 				}
 			},
 			tokenlist : {
@@ -355,7 +368,13 @@ class Cipher {
 	}
 
 	async getVerDraftVal() {
-		return ['バージョン１', true, '案３', false];
+		
+		if (Util.isNumber(this.data.version) && Util.isNumber(this.data.no)) {
+			const fml = (parseInt(this.data.version)==parseInt(this.data.formalver)) 
+					&& (parseInt(this.data.no)==parseInt(this.data.formaldraft));
+			return [_L('FMT_VER', this.data.version), fml, _L('FMT_DRAFT', this.data.no), fml];
+		}
+		return [_L('FMT_VER_UNKNOWN'), false, _L('FMT_DRAFT_UNKNOWN'), false];
 	}
 
 	async hist() {

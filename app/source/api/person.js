@@ -165,10 +165,10 @@ module.exports = {
 				tags : d.tags
 			};
 			if (cmn.isEmpty(d.desc)) {
-				data.info = null;
+				data.hash = null;
 			} else {
 				let ret = await ipfs.add({desc:d.desc});
-				data.info = ret[0].path;
+				data.hash = ret[0].path;
 			}
 			return await eos.pushAction({
 				actions :[{
