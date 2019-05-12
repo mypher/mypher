@@ -242,6 +242,16 @@ var $L = {
 		'E9999' : 'データが正しくありません。(E9999)',
 
 		'@' : ''
+	},
+	'en-US' : {
+		'USER' : 'user',
+		'CIPHER' : 'cipher',
+		'TASK' : 'task',
+		'TOKEN' : 'token',
+		'NAME2' : 'name',
+		'TAGS' : 'tag name',
+		'SEARCH' : 'search',
+		'@' : ''
 	}
 };
 
@@ -251,7 +261,8 @@ var __r = [
 ];
 
 function _L(id, prm) {
-	var w = $L[Util.getLocale()][id]||id;
+	const $l = $L[Util.getLocale()]||{};
+	var w = $l[id]||id;
 	prm = prm||[];
 	for ( var i=0; i<prm.length; i++) {
 		w = w.replace(__r[i], prm[i]);
