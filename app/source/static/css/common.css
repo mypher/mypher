@@ -1,0 +1,376 @@
+/*
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+*/
+
+
+select {
+	height:calc(2.25rem + 2px);
+	width:100%;
+}
+
+.btn {
+	font-size:0.8rem;
+	line-height:0.8rem;
+}
+
+.main_frame {
+	margin:12px;
+}
+
+.short {
+	box-sizing: border-box;
+	display:table;
+	padding:4px;
+}
+
+.long {
+	box-sizing: border-box;
+	display:table;
+	padding:4px;
+}
+
+.editright {
+	text-align:right;
+	padding-right:16px;
+}
+
+
+.slinner {
+	margin: 4px 4px 0px 4px;
+	height:30px;
+	display:table;
+	width:100%;
+}
+
+.special {
+	border: 3px double #ccc;
+	padding: 8px;
+	margin: 8px 0px 8px 0px;
+}
+
+.slline {
+	border-bottom: 1px solid #24aff3;
+}
+
+.inner1 {
+	display:table;
+}
+
+.innermain {
+	display:table-cell;
+	width:100%;
+}
+.innersub {
+	display:table-cell;
+}
+
+.short > .slinner > .label, .long > .slinner > .label {
+	color : #28c;
+	display:table-cell;
+	margin-right:12px;
+	width:1%;
+	white-space:nowrap;
+	padding-right:24px;
+	vertical-align:top;
+}
+
+.slinner > .slinner2 {
+	display:table-cell;
+	padding-bottom:2px;
+	height:100%;
+}
+
+.slinner > .slinner2 > input {
+	border:0px;
+	width:100%;
+}
+
+.slinner > .slinner2 > textarea {
+	border:1px dashed #eee;
+	width:100%;
+}
+
+.slinner > .slinner2 .verctrl {
+	height : 100%;
+}
+
+.slinner > .slinner2 .verctrl span {
+	color: #28c;
+	filter: drop-shadow(2px 1px #ccc);
+	margin: 0px 8px 0px 0px;
+}
+
+.slinner > .editright {
+}
+
+.slinner > .editleft {
+}
+
+.addition {
+	border:2px dashed #eee;
+	margin:12px;
+}
+
+.sep {
+	line-height:40px;
+	clear:left
+}
+
+.clause::before {
+	clear:both;
+}
+.clause {
+	clear:left;
+	height:40px;
+}
+
+@media (max-width: 576px) {
+
+.short {
+	width:100%;
+}
+
+.long {
+	width:100%;
+}
+
+}
+
+@media (min-width: 576px) {
+
+.short {
+	width:50%;
+	float:left;
+}
+
+.long {
+	width:100%;
+}
+
+}
+
+
+h2 {
+	font-size: 1.4rem;
+	background-color: #24aff3;
+	padding: 8px;
+	color: #fff;
+	border-radius: .25rem;
+}
+
+.popup {
+	border:1px solid #888;
+	box-shadow: 1px 1px 1px 1px #aaa;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	overflow:auto;
+	padding:30px;
+	background-color:#fff;
+}
+
+.popupback {
+	position:fixed;
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	background-color:#111;
+	filter:alpha(opacity=50);
+	-moz-opacity: 0.5;
+	opacity: 0.5;
+}
+
+.row > .name {
+	color:#28c;
+}
+.row > .discraimer {
+	color:#f00;
+}
+
+.row > label {
+	word-wrap:break-word;
+}
+
+@media screen and (min-width: 575px) {
+	.row > .name {
+		text-align:right;
+	}
+}
+
+div.lockmark {
+	background: url(../img/glyphicons-204-lock.png);
+	background-repeat:no-repeat;
+	background-position:center;
+	min-width:24px;
+	min-height:24px;
+	background-size:12px 16px;
+}
+
+div.unlockmark {
+	background: url(../img/glyphicons-205-unlock.png);
+	background-repeat:no-repeat;
+	background-position:center;
+	min-width:24px;
+	min-height:24px;
+	background-size:12px 16px;
+}
+
+td {
+	min-width:0;
+}
+
+.btn-normal {
+	color: #fff;
+	background-color: #30b0f0;
+	border-color: #30b0f0;
+	margin:0px 2px;
+}
+
+.btn-disabled {
+	background-color: #78caf7;
+	border-color: #78caf7;
+}
+
+.btn-normal:not(:disabled):not(.disabled).active, .btn-normal:not(:disabled):not(.disabled):active, .show > .btn-normal.dropdown-toggle {
+	color: #fff;
+	background-color: #1080c0;
+	border-color: #1080c0;
+}
+
+.btn-detail {
+	background: url(../img/detail.png) center no-repeat;
+	height:100%;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.btn-search {
+	background: url(../img/search.png) center no-repeat;
+	height:38px;
+	width:48px;
+	background-color:#30b0f0;
+}
+
+.right {
+	text-align:right;
+}
+
+/*
+.tag {
+	float: left;
+	background-color: #fe8;
+	margin: 4px;
+	padding: 8px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	cursor: pointer;
+}*/
+
+.tag {
+	float: left;
+	padding: 0px 22px 4px 22px;
+	background: url(../img/glyphicons-66-tag2.png);
+	background-repeat: no-repeat;
+	background-position: left;
+	min-height: 24px;
+	background-size: 16px 16px;
+	cursor: pointer;
+}
+
+
+.taginp {
+	border: 0px;
+	padding: 0px 4px;
+	margin: 0px;
+	outline:none;
+	z-index:1;
+}
+
+.userlist {
+	float: left;
+	background-color: #30b0f0;
+	margin: 4px;
+	padding: 2px 16px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	cursor: pointer;
+	font-size: 10pt;
+	color:#fff;
+}
+
+.section {
+	border:3px solid #ddd;
+	padding:4px;
+	margin:10px 0px;
+	background-color:#30b0f0;
+}
+
+.section h5 {
+	color:#fff;
+	font-size:14pt;
+	margin:2px;
+}
+
+.rowspace {
+	margin-bottom:8px;
+}
+.leftnospace {
+	padding-left:0px;
+}
+
+.elmallow {
+	border : 1px dashed #30b0f0;
+	height : 100%;
+	padding-left:8px;
+}
+
+.elmdisallow {
+	border : 1px dashed #ddd;
+	width : 100%;
+	height: 100%;
+}
+.elmdisabled {
+	background-color:#e9ecef;
+}
+
+.elmlistpd {
+	border : 1px solid #ddd;
+	background-color:#fff;
+	padding:0px;
+	box-shadow:2px 2px #eee;
+	z-index:2;
+	overflow:scroll;
+	min-width:100px;
+}
+
+.elmlistpd > ul {
+	padding:0px;
+}
+
+.elmlistpd > ul > li {
+	list-style-type: none;
+	padding: 2px 8px;
+	cursor: pointer;
+}
+
+.elmlistpd > ul > .nosel {
+}
+
+.elmlistpd > ul > .sel {
+	background-color: #24aff3;
+	color: #fff;
+}
+
+.elmback {
+	position:fixed;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	z-index:1;
+}
+

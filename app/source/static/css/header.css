@@ -1,0 +1,30 @@
+/*
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+*/
+.header {
+	background-color:#30b0f0;
+	color:#fff;
+	background-image: url('../img/logo.gif');
+	background-size:40px;
+	background-repeat:no-repeat;
+	background-position:left top;
+	padding-left:16px;
+	background-origin:content-box;
+}
+
+.header a {
+	color:#fff;
+}
+
+.header > span {
+	margin-left:60px;
+}
+
+.menu-icon {
+	background-image: url('../img/menu.png');
+}
+
+#menuitem {
+	text-align:right;
+}

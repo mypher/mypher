@@ -1,0 +1,34 @@
+<!--
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="ISSUER" field="cipher" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="TOKENID" field="tokenid" ctrl="editleft" disable_on="add,edit,ref" hide_on="add"/>
+	<div formtype="long" ltext="NAME1" field="tkname" ctrl="editleft" disable_on="ref"/>
+	<div formtype="short" ltext="ISSUE_LIMIT" field="limit" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+	<h2 ltext="FUNCTION"/>
+	<div formtype="short" ltext="TYPE" ctrl="select" field="type" disable_on="ref" proc="type" sel="0:NONE,1:QRCODE,2:DEVIDE_TOKEN,3:DEVIDE_SYS"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="WHEN" ctrl="select" field="when" disable_on="ref" proc="when" sel="0:NONE,1:BY_COMPLETION_OF_TASK,2:BY_NUMBER_OF_OWNED,3:ALWAYS,4:BY_ISSUER"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="AFTER_USE" ctrl="radio" field="disposal" disable_on="ref" sel="0:COLLECT,1:NOT_COLLECT"/>
+	<div class="clause"/>
+	<h2 ltext="ATTRIBUTES"/>
+	<div formtype="short" ltext="TASK" ctrl="elm" proc="task" field="taskid" limit="1"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="RELATED_TOKEN" ctrl="elm" proc="token" field="extokenid" limit="1"/>
+	<div formtype="short" ltext="REFERENCE_TOKEN" ctrl="editleft" field="reftoken" disable_on="ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="DEVIDE_TYPE" ctrl="radio" field="rcalctype" disable_on="ref" sel="0:SPECIFIED_NUMBER,1:ISSUED_PER_SPECIFIED"/>
+	<div formtype="short" ltext="NOF_DEVIDED_TOKEN" ctrl="editleft" field="nofdesttoken" disable_on="ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="NOF_DEVIDED_EOS" ctrl="editleft" field="nofdesteos" disable_on="ref"/>
+	<div class="clause"/>
+	<div ctrl="button" proc="button"/>
+	
+</div>
+

@@ -1,0 +1,41 @@
+<!--
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="ID" field="cipherid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<hr/>
+	<div formtype="long" ltext="VER_DRAFT" field="verdraft" proc="verdraft" ctrl="verctrl" disable_on="add,edit"/>
+	<div formtype="long" ltext="DRAFT_EDIT_MEMBER" field="editors" ctrl="elm" proc="editors" disable_on="ref"/>
+	<div formtype="long" ltext="NAME1" field="cname" ctrl="editleft" disable_on="ref"/>
+	<div formtype="long" ltext="PURPOSE" field="purpose" ctrl="textarea" disable_on="ref"/>
+	<div formtype="long" ltext="TAGS" field="tags" ctrl="tag" proc="tags" disable_on="ref"/>
+	<div formtype="short" ltext="MULTISIG" field="multisig" ctrl="editleft" disable_on="ref"/>
+	<br class="sep"/>
+	<div class="special" name="multisig">
+	<div formtype="long" ltext="COOWNER" field="coowner" ctrl="elm" proc="coowner" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="NOF_REQ_AUTH" field="threshold" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	</div>
+	<div class="clause"/>
+	<h2 ltext="RULE_OF_APPROVAL"/>
+	<div formtype="long" ltext="APPROVERS" field="approvers" ctrl="elm" proc="authors" disable_on="ref"/>
+	<div formtype="short" ltext="REQ_NUM_APPROVERS" field="nofapproval" ctrl="editleft" disable_on="ref"/>
+	<br class="sep"/>
+	<div ctrl="button" proc="button1" hide_on="ref"/>
+	<div class="clause"/>
+	<h2 ltext="TOKEN" hide_on="add"/>
+	<div formtype="long" ctrl="list" proc="tokenlist" hide_on="add"/>
+	<div class="clause" hide_on="add"/>
+	<h2 ltext="TASK" hide_on="add"/>
+	<div formtype="long" ctrl="list" proc="tasklist" hide_on="add"/>
+	<div class="clause" hide_on="add"/>
+	<h2 ltext="APPROVE" hide_on="add,edit"/>
+	<div ltext="APPROVE" formtype="long" field="approved" ctrl="elm" proc="approved" disable_on="ref" hide_on="add,edit"/>
+	<br class="sep"/>
+	<div ctrl="button" name="button2" proc="button2" hide_on="add" class="right"/>
+</div>
+

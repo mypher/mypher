@@ -1,0 +1,144 @@
+@startuml
+skinparam {
+	defaultFontName Geneva
+	BoxPadding 20
+}
+title Lifecycle of Task
+box "P.I.C."
+	actor "a person" as pic
+	entity "eos account" as wallet
+end box
+box "node.js"
+	control app
+end box
+box "eos"
+	control "smart contracts" As eos
+	entity task
+	entity cipher
+end box
+
+box "cipher"
+	entity "multisig account" As account
+	actor "coowner1\napprover1" As coowner1
+	actor coowner2
+	actor coowner3
+	actor "approver2" As approver2
+end box
+
+== planning ==
+coowner1 -> app : create the plan
+activate app
+app -> eos : create the plan
+activate eos
+eos -> task : create
+note right : ex) the plan is set the approval rule\nas to need to get approve from 2 approvers 
+deactivate eos
+deactivate app
+
+approver2 -> app : edit the plan
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+deactivate app
+coowner1 -> app : approve the plan
+activate app
+app -> eos : update
+activate eos
+eos -> cipher : update
+deactivate eos
+deactivate app
+note right : (1/2)
+
+approver2 -> app : approve the plan
+activate app
+app -> eos : update
+activate eos
+eos -> cipher : update
+note right : (2/2)the plan is approved
+eos -> task : set to formal 
+deactivate eos
+deactivate app
+
+== reqruitment ==
+
+pic -> app : apply
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+deactivate app
+note right : no one approved yet. to approve the P.I.C,\nit needed to get the approvals specified above and the approval of P.I.C.
+
+coowner1 -> app : approve the P.I.C.
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+deactivate app
+note right : (1/2)
+
+approver2 -> app : approve the P.I.C.
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+deactivate app
+note right : (2/2) the P.I.C. is approved
+
+== execution ==
+pic -> app : specifiy the place of results
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+deactivate app
+
+== review ==
+
+pic -> app : request the review for results
+activate app
+app -> eos : update
+activate eos
+eos -> task : update
+deactivate eos
+app -> account : payme
+note right : ex) the accounts need 2 approvals\nof coowners to the payment
+deactivate app
+
+coowner1 -> app : approve the results
+activate app
+app -> eos : update
+eos -> task : update
+deactivate eos
+app -> account : approve the "payme"
+note right : (1/2)
+deactivate app
+
+approver2 -> app : approve the results
+activate app
+app -> eos : update
+eos -> task : update
+deactivate eos
+deactivate app
+
+== payment ==
+
+coowner3 -> app : approve the payment
+activate app
+app -> account : approve the "payme"
+note right : (2/2) the recipient become able to get pay
+deactivate app
+
+pic -> app : execute getting the payment
+activate app
+app -> account : execute the "payme"
+account -> wallet : pay
+deactivate app
+
+@enduml

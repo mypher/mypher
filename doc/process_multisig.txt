@@ -1,0 +1,52 @@
+@startuml
+skinparam {
+	defaultFontName Geneva
+}
+
+[*] --> Draft : create
+
+state Draft {
+	state Planning
+	state "Approval for the planning" as Approval
+	[*] --> Planning
+	Planning --> Planning : update
+	Planning --> Approval  : approve
+	Approval --> Planning : cancel or update
+	Approval --> Formal : approve
+	Approval --> Approval : approve
+}
+
+state Formal {
+	state Recruitment
+	state "Approval for the P.I.C." as Approval2
+	[*] --> Recruitment
+	Recruitment --> Approval2 : apply
+	Approval2 --> Recruitment : cancel application
+	Approval2 --> Approval2 : approve
+	Approval2 --> Execution : approve
+}
+
+state Execution {
+	state InProgress
+	state "Review the results" as Review
+	state "Done the task" as Done
+	state "Finish the task" as Finish
+	[*] --> InProgress
+	InProgress --> Review : request the review
+	Review --> InProgress : cancel the request
+	Review --> Review : approve
+	Review --> Done : approve
+	Done --> Finish : get pay
+	Finish --> [*]
+}
+note right of Review 
+	request "payme" 
+	together with requesting the review
+end note
+note left of Done 
+	approve "payme" 
+	together with approve the results
+end note
+note right of Finish : exec "payme"
+
+@enduml

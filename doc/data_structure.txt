@@ -1,0 +1,112 @@
+@startuml
+skinparam {
+	defaultFontName Geneva
+}
+package Cipher <<Frame>> {
+	class cdraft << (M,crimson) >> {
+		CIPHERID
+		--
+		-cdraftid : CDRAFTID
+		version : uint16
+		no : uint16
+		formal : bool
+		cname : string
+		tags : string[]
+		editors : name[]
+		hash : ipfskey
+		nofapproval : uint16
+		approvers : name[]
+		approved : name[]
+		tasklist : TDRAFTID[]
+		tokenlist : TOKENID[]
+		--
+		key2 -> version + no
+	}
+
+	class cformal << (M,crimson) >> {
+		"myphersystem"
+		--
+		-ciperid : CIPHERID
+		cdraftid : CDRAFTID
+		multisig : name
+		cname : string
+		tags : string[]
+	}
+}
+
+package Token <<Frame>> {
+	class token << (M,crimson) >> {
+		"myphersystem"
+		--
+		-tokenid : TOKENID
+		tkname : string
+		issuer : CIPHERID
+		limit : uint64
+		when : uint8
+		disposal : uint8
+		type : uint8
+		taskid : TDRAFTID
+		extokenid : TOKENID
+		reftoken : uint64
+		rcalctype : uint8
+		nofdesttoken : uint64
+		nofdesteos : float64
+		approval_4ex : name[]
+		--
+		key2 -> issuer	
+	}
+
+	class issue << (M,crimson) >> {
+		TOKENID
+		--
+		-owner : name
+		quantity : uint64
+	}
+}
+
+package Task <<Frame>> {
+	class tformal << (M,crimson) >> {
+		"myphersystem"
+		--
+		-tformalid : TFORMALID
+		cipherid : CIPHERID
+		tdraftid : TDRAFTID
+		taname : string
+		approve_pic : name[]
+		approve_results : name[]
+		tags : string[]
+		results : string
+		payment : name
+		--
+		key2 -> cipherid 
+	}
+	class tdraft << (M,crimson) >> {
+		CIPHERID
+		--
+		-tdraftid : TDRAFTID
+		taname : string
+		rewardid : TOKENID
+		quantity : uint64
+		nofapproval : uint8
+		approvers : name[]
+		pic : name[]
+		hash : ipfskey
+		tags : string[]
+	}
+}
+
+package Person <<Frame>> {
+	class person << (M,crimson) >> {
+		"myphersystem"
+		--
+		-personid : name
+		pname : string
+		tags : string[]
+		hash : string
+		tokenlist : TOKENID[]
+	}
+}
+
+
+
+@enduml

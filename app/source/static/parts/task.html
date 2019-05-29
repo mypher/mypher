@@ -1,0 +1,54 @@
+<!--
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div>
+	<h2 ltext="BASIC_INFORMATION"/>
+	<div formtype="short" ltext="CIPHER" field="cipher" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="TFORMALID" field="tformalid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="TDRAFTID" field="tdraftid" ctrl="editleft" hide_on="add" disable_on="add,edit,ref"/>
+	<div formtype="long" ltext="NAME1" field="taname" ctrl="editleft" disable_on="ref"/>
+	<div formtype="long" ltext="DESC" field="description" ctrl="textarea" disable_on="ref"/>
+	<div formtype="long" ltext="TAGS" field="tags" ctrl="tag" proc="tags" disable_on="ref"/>
+	<div class="clause"/>
+	
+	<h2 ltext="REWARD"/>
+	<div formtype="short" ltext="TOKEN" field="rewardid" limit="1" ctrl="elm" proc="rewardid" disable_on="ref"/>
+	<div formtype="short" ltext="QUANTITY" field="noftoken" ctrl="editleft" disable_on="ref"/>
+	<div formtype="short" ltext="CRYPTOCURRENCY" field="amount" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+	
+	<h2 ltext="RULE_OF_APPROVAL"/>
+	<div formtype="long" ltext="APPROVERS" field="approvers" ctrl="elm" proc="approvers" disable_on="ref"/>
+	<div formtype="short" ltext="REQ_NUM_APPROVERS" field="nofapproval" ctrl="editleft" disable_on="ref"/>
+	<div class="clause"/>
+
+	<h2 ltext="RULE_OF_PAYMENT"/>
+	<div class="special" name="multisig">
+	<div formtype="short" ltext="MULTISIG" field="multisig" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="long" ltext="EOS_APPROVERS" field="eos_approvers" ctrl="elm" proc="eos_approvers" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="NOF_EOS_APPROVERS" field="nof_eos_approvers" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	</div>
+	<div class="clause" name="rop_footer"/>
+
+	<h2 ltext="RESULTS" hide_on="add,edit"/>
+	<div formtype="long" ltext="RESULTS" field="results" ctrl="editleft" hide_on="add,edit"/>
+	<div class="clause" name="rop_footer"/>
+
+	<h2 ltext="PROGRESS" hide_on="add,edit"/>
+	<div formtype="short" ltext="PIC" field="pic" limit="1" ctrl="elm" proc="pic" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<br class="sep" hide_on="add,edit"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PIC" field="approve_pic" ctrl="elm" proc="approve_pic" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="APPROVAL_FOR_RESULTS" field="approve_results" ctrl="elm" proc="approve_results" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div class="clause" name="rop_footer" hide_on="add,edit"/>
+
+	<h2 ltext="PROPOSE_PAYMENTS"/>
+	<div formtype="long" ltext="PROPOSE_NAME" field="payment" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PAYMENT" field="approve_payment" ctrl="elm" proc="approve_results" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="short" ltext="COMPLETE" ctrl="radio" field="completed" hide_on="add,edit" disable_on="add,edit,ref" proc="type" sel="0:NOCOMPLETE,1:COMPLETE"/>
+	<div class="clause" hide_on="add,edit"/>
+	<div ctrl="button" proc="button"/>
+</div>

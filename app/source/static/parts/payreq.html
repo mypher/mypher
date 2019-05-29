@@ -1,0 +1,22 @@
+<!--
+    Copyright (C) 2018-2019 The Mypher Authors
+    SPDX-License-Identifier: LGPL-3.0+
+-->
+<div>
+	<h2 ltext="PROPOSE_PAYMENTS"/>
+	<div formtype="long" ltext="EXPIRATION" field="expiration" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add"/>
+	<div formtype="short" ltext="RECIPIENT" field="recipient" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="short" ltext="PROPOSE_NAME" field="proposal_name" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<br class="sep"/>
+	<div formtype="short" ltext="QUANTITY" field="quantity" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="APPROVAL_FOR_PAYMENT" field="approve_payment" ctrl="elm" proc="approve_payment" disable_on="add,edit,ref" hide_on="add,edit"/>
+	<div formtype="long" ltext="MEMO" field="memo" ctrl="editleft" dispable_on="add,edit,ref" hide_on="add,edit"/>
+	<div class="special" name="payer">
+	<div formtype="short" ltext="MULTISIG" field="payer" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	<div formtype="long" ltext="EOS_APPROVERS" field="eos_approvers" ctrl="elm" proc="eos_approvers" disable_on="add,edit,ref"/>
+	<div formtype="short" ltext="NOF_EOS_APPROVERS" field="nof_eos_approvers" ctrl="editleft" disable_on="add,edit,ref"/>
+	<br class="sep"/>
+	</div>
+	<div ctrl="button" proc="button"/>
+</div>

@@ -3,6 +3,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0+
 #
+. ../ver.properties
 
-#docker build . --no-cache -t mypher --network=host --build-arg EOS_VER=v1.2.2
-docker build . -t mypher --network=host --build-arg EOS_VER=v1.3.0
+echo ${IMAGEVER}
+docker build . -t mypher/mypher:${IMAGEVER} --network=host -f Dockerfile
