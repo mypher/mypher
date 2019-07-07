@@ -24,8 +24,8 @@ void Mypher::sendProposeAction(const name& multisig, const name& proposal_name,
 	trans.actions.push_back(action(
 		permission_level{multisig, ACTIVE},
 		"eosio.token"_n,              
-  		"transfer"_n,
-   		std::make_tuple(multisig, recipient, ast, memo)
+		"transfer"_n,
+		std::make_tuple(multisig, recipient, ast, memo)
 	));
 	action(
 		permission_level{recipient, ACTIVE},
@@ -38,7 +38,7 @@ void Mypher::exec_multisig(const eosio::name& proposer, const name& proposal_nam
 	action(
 		permission_level{proposer, ACTIVE},
 		"eosio.msig"_n,              
-  		"exec"_n,
-   		std::make_tuple(proposer, proposal_name, proposer)
+		"exec"_n,
+		std::make_tuple(proposer, proposal_name, proposer)
 	).send();
 }

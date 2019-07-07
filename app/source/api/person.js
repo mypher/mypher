@@ -116,10 +116,12 @@ module.exports = {
 			});
 			let ret = [];
 			data.forEach(v => {
-				ret.push({
-					personid : v.personid,
-					pname : v.pname,
-				});
+				if (d.indexOf(v.personid)>-1) {
+					ret.push({
+						personid : v.personid,
+						pname : v.pname,
+					});
+				}
 			});
 			return ret;
 		} catch (e) {

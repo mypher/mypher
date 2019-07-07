@@ -229,12 +229,12 @@ const multisig = module.exports = {
 			const data2 = await eos.getDataWithPKey({
 				code : 'eosio.msig',
 				scope : d.account,
-				table : 'approvals'
+				table : 'approvals2'
 			}, d.proposal_name);
 			if (data2===null||data2.length===0) {
 				return {code:'NOT_FOUND'};
 			}
-			data[0].approved = data2[0].provided_approvals.map(v => { return v.actor; });
+			data[0].approved = data2[0].provided_approvals.map(v => { return v.level.actor; });
 			return data[0];
 		} catch (e) {
 			console.log(e);

@@ -84,9 +84,20 @@ module.exports = {
 				table : 'tformal',
 				limit : -1,
 			});
+			const cdata = await eos.getData({
+				code : 'myphersystem',
+				scope : 'myphersystem',
+				table : 'cformal',
+				limit : -1,
+			});
+			let key = {};
+			cdata.forEach(d => {
+				key[d.cipherid] = d.cname;
+			});
 			let ret = [];
 			data.forEach( v=> {
 				if (v.taname.includes(d.taname)) {
+					v.owner = key[v.cipherid];
 					ret.push(v);
 				}
 			});

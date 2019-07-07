@@ -45,9 +45,16 @@ function prepare_eosio() {
 # for developing
 function create_mypher_account() {
 	local pubkey=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+	local prikey=`cat /keys/$1.active | sed -n 1P | sed "s/Private key: \(.*\)/\1/"`
 	cleos system newaccount eosio --transfer $1 ${pubkey} --stake-net "1000000.0000 EOS" --stake-cpu "100000.0000 EOS" --buy-ram-kbytes 5000
 	sleep 1
+	cleos wallet import --private-key ${prikey}
 	cleos transfer eosio $1 "10000 EOS"
+}
+
+function grant_permission() {
+	local pubkey=`cat /keys/$1.active | sed -n 2P | sed "s/Public key: \(.*\)/\1/"`
+	cleos set account permission $1 active '{"threshold": 1, "keys": [{ "key": "'${pubkey}'", "weight": 1 }], "accounts": [{"permission": {"actor":"myphersystem","permission": "eosio.code"},"weight": 1}]}' owner -p
 }
 
 # prepare the wallet
@@ -70,8 +77,24 @@ nodeos --producer-name eosio \
 wait2start
 prepare_eosio
 create_mypher_account myphersystem
-create_mypher_account testuser1111
-create_mypher_account testuser2222
-create_mypher_account testuser3333
-create_mypher_account testuser4444
+#create_mypher_account testuser1111
+#create_mypher_account testuser2222
+#create_mypher_account testuser3333
+#create_mypher_account testuser4444
+create_mypher_account gonzalez1111
+create_mypher_account vukovich1111
+create_mypher_account natalie11111
+create_mypher_account yoshio111111
+create_mypher_account daisuke11111
+create_mypher_account yone11111111
+
+sleep 1
+echo "#####test#######"
+grant_permission gonzalez1111
+grant_permission vukovich1111
+grant_permission natalie11111
+grant_permission yoshio111111
+grant_permission daisuke11111
+grant_permission yone11111111
+
 infinite_loop

@@ -82,22 +82,58 @@ Header = {
 			Account.loginout();
 		});
 		// for debug 
-		addItem('login with testuser1111', () => {
+//		addItem('login with testuser1111', () => {
+//			Account.open({
+//				name:'testuser1111', 
+//				pass:'5KDtQbY3AfDUL6wRzGjfCrYSe3oQPamT2Wi5mqg742XMBELxp7r'
+//			});
+//		});
+//		addItem('login with testuser2222', () => {
+//			Account.open({
+//				name:'testuser2222', 
+//				pass:'5JNspGMzEipL9MSieWoUCESLoRvQ4wUm9SkJF2XVrKcZBHH4BH9'
+//			});
+//		});
+//		addItem('login with testuser3333', () => {
+//			Account.open({
+//				name:'testuser3333', 
+//				pass:'5JaZYVEicSB3HzUXy5tirJuxbaZAgyv5rwCZCWEGQnE11eg3ujG'
+//			});
+//		});
+		addItem('login with gonzalez111', () => {
 			Account.open({
-				name:'testuser1111', 
-				pass:'5KDtQbY3AfDUL6wRzGjfCrYSe3oQPamT2Wi5mqg742XMBELxp7r'
+				name:'gonzalez1111', 
+				pass:'5JBmrLEt5kZgvVAYAC7X7msT9WzCuS3iHWVzXZtawQS3KTGwFki'
 			});
 		});
-		addItem('login with testuser2222', () => {
+		addItem('login with vukovich1111', () => {
 			Account.open({
-				name:'testuser2222', 
-				pass:'5JNspGMzEipL9MSieWoUCESLoRvQ4wUm9SkJF2XVrKcZBHH4BH9'
+				name:'vukovich1111', 
+				pass:'5JBNkmQc8BWsk9LmuyQWrLfYiiAGiywUPzkeh6cuU6YoWZBoD1B'
 			});
 		});
-		addItem('login with testuser3333', () => {
+		addItem('login with natalie11111', () => {
 			Account.open({
-				name:'testuser3333', 
-				pass:'5JaZYVEicSB3HzUXy5tirJuxbaZAgyv5rwCZCWEGQnE11eg3ujG'
+				name:'natalie11111', 
+				pass:'5KFo1utJrejhM5oCnK8YGF8TJEJLdsMs19XSgNAYArxeuv7XwuW'
+			});
+		});
+		addItem('login with yoshio111111', () => {
+			Account.open({
+				name:'yoshio111111', 
+				pass:'5JiwLBLBGa1TooLiPd7ti5aaVvNRwupfq5L2jKoxvWuYecXfGGV'
+			});
+		});
+		addItem('login with daisuke11111', () => {
+			Account.open({
+				name:'daisuke11111', 
+				pass:'5KiqDS9FpnsBqgw8sq2h4Vd8YxKLJZXZFhLs4wJeT9uypNTJNHM'
+			});
+		});
+		addItem('login with yone11111111', () => {
+			Account.open({
+				name:'yone11111111', 
+				pass:'5JthNxtybJecKerJ5RkWdzePEHzbcbekizTvLXpDVnVVJBYzNDJ'
 			});
 		});
 		addItem('check the layout', () => {
